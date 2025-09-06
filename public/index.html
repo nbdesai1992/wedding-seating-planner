@@ -208,14 +208,17 @@
             <p class="text-gray-400 text-sm">Design your event layout with ease.</p>
         </div>
         <div class="flex items-center space-x-4">
-            <button id="save-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                Save Layout
+            <button id="save-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path></svg>
+                <span>Download Layout</span>
             </button>
-            <button id="load-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                Load Layout
+            <button id="load-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                <span>Upload Layout</span>
             </button>
-            <button id="clear-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
-                Clear All
+            <button id="clear-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <span>Clear All</span>
             </button>
         </div>
     </header>
@@ -273,6 +276,9 @@
             <div id="modal-actions" class="mt-6 flex justify-end space-x-2"></div>
         </div>
     </div>
+
+    <!-- Hidden file input for loading layouts -->
+    <input type="file" id="file-input" accept=".json,application/json" style="display: none;">
 
     <script>
         // Data Storage
@@ -333,15 +339,123 @@
             }
         }
 
-        function showNotification(message) {
+        function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+            const bgColor = type === 'error' ? 'bg-red-600' : 'bg-green-600';
+            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300`;
             notification.textContent = message;
             document.body.appendChild(notification);
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 300);
             }, 2000);
+        }
+
+        // File-based Save/Load Functions
+        function downloadLayout() {
+            const layoutData = {
+                version: '1.0',
+                created: new Date().toISOString(),
+                lastModified: new Date().toISOString(),
+                metadata: {
+                    appVersion: '1.0.0',
+                    totalTables: Object.keys(tables).length,
+                    totalGuests: Object.keys(guests).length,
+                    totalFeatures: Object.keys(roomFeatures).length
+                },
+                data: {
+                    tables: tables,
+                    guests: guests,
+                    roomFeatures: roomFeatures
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(layoutData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+            a.download = `wedding-layout-${timestamp}.json`;
+            a.href = url;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Also save to localStorage as backup
+            saveToLocalStorage();
+            showNotification('Layout downloaded successfully!');
+        }
+
+        function uploadLayout(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const layoutData = JSON.parse(e.target.result);
+                    if (validateLayout(layoutData)) {
+                        loadLayoutData(layoutData);
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    showNotification('Invalid file format. Please select a valid layout file.', 'error');
+                }
+            };
+            reader.onerror = () => {
+                showNotification('Error reading file. Please try again.', 'error');
+            };
+            reader.readAsText(file);
+        }
+
+        function validateLayout(layoutData) {
+            // Check for required fields
+            if (!layoutData || !layoutData.data) {
+                showNotification('Invalid layout file: missing data', 'error');
+                return false;
+            }
+
+            if (!layoutData.version) {
+                showNotification('Invalid layout file: missing version', 'error');
+                return false;
+            }
+
+            // Check version compatibility
+            const majorVersion = parseInt(layoutData.version.split('.')[0]);
+            if (majorVersion > 1) {
+                showNotification('This layout file was created with a newer version. Please update the application.', 'error');
+                return false;
+            }
+
+            // Check for required data fields
+            const requiredFields = ['tables', 'guests', 'roomFeatures'];
+            for (const field of requiredFields) {
+                if (!layoutData.data.hasOwnProperty(field)) {
+                    showNotification(`Invalid layout file: missing ${field} data`, 'error');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function loadLayoutData(layoutData) {
+            // Confirm before overwriting current layout
+            if (Object.keys(tables).length > 0 || Object.keys(guests).length > 0) {
+                if (!confirm('Loading this file will replace your current layout. Continue?')) {
+                    return;
+                }
+            }
+
+            // Load the data
+            tables = layoutData.data.tables || {};
+            guests = layoutData.data.guests || {};
+            roomFeatures = layoutData.data.roomFeatures || {};
+
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Re-render everything
+            renderAll();
+            
+            showNotification('Layout loaded successfully!');
         }
 
         // Data Management Functions
@@ -497,6 +611,49 @@
             seat.style.left = x;
             seat.style.top = y;
             return seat;
+        }
+
+        // Reposition seats during table resize
+        function repositionSeats(tableElement, width, height) {
+            const tableId = tableElement.dataset.tableId;
+            const table = tables[tableId];
+            if (!table) return;
+            
+            const seats = tableElement.querySelectorAll('.seat');
+            
+            if (table.shape === 'circle') {
+                seats.forEach((seat, i) => {
+                    const angle = (i / table.capacity) * 2 * Math.PI;
+                    const radiusX = (width / 2) + 35;
+                    const radiusY = (height / 2) + 35;
+                    seat.style.left = `${(width / 2) + Math.cos(angle) * radiusX}px`;
+                    seat.style.top = `${(height / 2) + Math.sin(angle) * radiusY}px`;
+                });
+            } else if (table.shape === 'half-moon') {
+                seats.forEach((seat, i) => {
+                    const spacing = width / (table.capacity + 1);
+                    seat.style.left = `${spacing * (i + 1)}px`;
+                    seat.style.top = `${height + 22}px`;
+                });
+            } else { // rectangle
+                const isWide = width >= height;
+                const longSide = isWide ? width : height;
+                const seatsSide1 = Math.ceil(table.capacity / 2);
+                const seatsSide2 = table.capacity - seatsSide1;
+                
+                seats.forEach((seat, i) => {
+                    if (i < seatsSide1) {
+                        const spacing = longSide / (seatsSide1 + 1);
+                        seat.style.left = isWide ? `${spacing * (i + 1)}px` : '-22px';
+                        seat.style.top = isWide ? '-22px' : `${spacing * (i + 1)}px`;
+                    } else {
+                        const spacing = longSide / (seatsSide2 + 1);
+                        const sideIndex = i - seatsSide1;
+                        seat.style.left = isWide ? `${spacing * (sideIndex + 1)}px` : `${width + 22}px`;
+                        seat.style.top = isWide ? `${height + 22}px` : `${spacing * (sideIndex + 1)}px`;
+                    }
+                });
+            }
         }
 
         function createGuestElement(guest, context) {
@@ -772,13 +929,21 @@
             document.getElementById('add-feature').addEventListener('click', addFeature);
             
             // Save/Load/Clear buttons
-            document.getElementById('save-btn').addEventListener('click', saveToLocalStorage);
+            document.getElementById('save-btn').addEventListener('click', downloadLayout);
             document.getElementById('load-btn').addEventListener('click', () => {
-                loadFromLocalStorage();
-                renderAll();
-                showNotification('Layout loaded successfully!');
+                document.getElementById('file-input').click();
             });
             document.getElementById('clear-btn').addEventListener('click', clearAll);
+            
+            // File input handler
+            document.getElementById('file-input').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadLayout(file);
+                    // Reset the input so the same file can be loaded again if needed
+                    e.target.value = '';
+                }
+            });
 
             // Zoom controls
             document.getElementById('zoom-in').addEventListener('click', () => zoom(0.1));
@@ -913,6 +1078,11 @@
                     if (initialItemGeom.isCircle) newHeight = newWidth;
                     resizedPlannerItem.style.width = `${newWidth}px`; 
                     resizedPlannerItem.style.height = `${newHeight}px`;
+                    
+                    // Reposition seats during resize
+                    if (resizedPlannerItem.dataset.tableId) {
+                        repositionSeats(resizedPlannerItem, newWidth, newHeight);
+                    }
                 } else if (rotatedPlannerItem) {
                     const { centerX, centerY } = initialItemGeom;
                     const dx = e.clientX - centerX;
@@ -986,6 +1156,35 @@
                     }
                 }
             });
+        }
+
+        // Auto-save to localStorage on changes
+        function autoSave() {
+            const data = {
+                tables: tables,
+                guests: guests,
+                roomFeatures: roomFeatures
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Override the update functions to include auto-save
+        const originalUpdateTable = updateTable;
+        async function updateTable(tableId, updates) {
+            await originalUpdateTable(tableId, updates);
+            autoSave();
+        }
+
+        const originalUpdateGuest = updateGuest;
+        async function updateGuest(guestId, updates) {
+            await originalUpdateGuest(guestId, updates);
+            autoSave();
+        }
+
+        const originalUpdateFeature = updateFeature;
+        async function updateFeature(featureId, updates) {
+            await originalUpdateFeature(featureId, updates);
+            autoSave();
         }
 
         // Initialize the application
