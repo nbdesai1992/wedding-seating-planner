@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: wedding-seating-planner
+    runtime: node
+    repo: https://github.com/YOUR_USERNAME/wedding-seating-planner # Update with your repo
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        generateValue: true # Render will auto-generate the port
+    # Optional: Specify Node version
+    # engines:
+    #   node: ">=14.0.0"

@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seating Chart Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .guest, .table-container, .feature-container {
+            touch-action: none;
+        }
+        #seating-area {
+            background-color: #111827;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            cursor: grab;
+        }
+        #seating-area.panning {
+            cursor: grabbing;
+        }
+        #zoom-container {
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+        }
+        .planner-item {
+            position: absolute;
+            cursor: move;
+            transform-origin: center center;
+        }
+        .planner-item.resizing, .planner-item.rotating {
+            z-index: 25;
+        }
+        .table-body, .feature-body {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            width: 100%;
+            height: 100%;
+            transition: all 0.2s ease-in-out;
+        }
+        .table-body {
+            background-color: #374151;
+            color: #d1d5db;
+            border: 2px solid #4b5563;
+        }
+        .planner-item:hover .table-body {
+            border-color: #3b82f6;
+        }
+        .table-text-span {
+            display: inline-block;
+            white-space: pre-wrap;
+            word-break: break-word;
+            text-align: center;
+            padding: 8px;
+            line-height: 1.3;
+            max-width: 100%;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+        .feature-body {
+             background-color: rgba(55, 65, 81, 0.5);
+             border: 2px dashed #6b7280;
+             color: #9ca3af;
+        }
+         .planner-item:hover .feature-body {
+            border-color: #a5b4fc;
+        }
+        .table-body.circle, .feature-body.circle {
+            border-radius: 50%;
+        }
+        .table-body.rectangle, .feature-body.rectangle {
+            border-radius: 0.5rem;
+        }
+        .table-body.half-moon {
+            border-radius: 9999px 9999px 0 0;
+        }
+        .seat {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            background-color: rgba(75, 85, 99, 0.6);
+            border: 2px dashed #9ca3af;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.65rem;
+            text-align: center;
+            overflow: hidden;
+            z-index: 5;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease-in-out;
+        }
+        .seat.occupied {
+            background-color: #3b82f6;
+            border-style: solid;
+            border-color: #60a5fa;
+            color: white;
+            font-weight: 500;
+        }
+        .seat .guest-in-seat {
+            cursor: grab;
+            touch-action: none;
+        }
+        .seat.drag-over {
+            transform: scale(1.15) translate(-43%, -43%);
+            background-color: #60a5fa;
+        }
+        .guest-list-container.drag-over {
+            border-color: #3b82f6;
+            background-color: #1e293b;
+        }
+        .dragging {
+            opacity: 0.5;
+            cursor: grabbing !important;
+        }
+        .resize-handle, .rotate-handle {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #e5e7eb;
+            border-radius: 50%;
+            z-index: 30;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .planner-item:hover .resize-handle, .planner-item:hover .rotate-handle {
+            opacity: 1;
+        }
+        .resize-handle {
+            border: 2px solid #3b82f6;
+            bottom: -7px; 
+            right: -7px; 
+            cursor: se-resize; 
+        }
+        .rotate-handle {
+            border: 2px solid #8b5cf6;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: grabbing;
+        }
+        .rotate-handle::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: #8b5cf6;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .delete-btn, .copy-btn {
+            position: absolute;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 40;
+            transition: all 0.2s ease-in-out;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        .delete-btn {
+             background-color: #ef4444;
+             top: -14px; right: -14px; 
+        }
+        .copy-btn {
+            background-color: #3b82f6;
+            top: -14px; right: 22px; 
+        }
+        .planner-item:hover .delete-btn, .planner-item:hover .copy-btn {
+             opacity: 1;
+             transform: scale(1);
+        }
+        .delete-btn:hover {
+            background-color: #dc2626;
+            transform: scale(1.15) !important;
+        }
+        .copy-btn:hover {
+            background-color: #2563eb;
+            transform: scale(1.15) !important;
+        }
+        .delete-btn.feature { top: -14px; right: -14px; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 h-screen overflow-hidden flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4 z-20 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold text-white">Seating Chart Planner</h1>
+            <p class="text-gray-400 text-sm">Design your event layout with ease.</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button id="save-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                Save Layout
+            </button>
+            <button id="load-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                Load Layout
+            </button>
+            <button id="clear-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
+                Clear All
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Left Panel -->
+        <aside class="w-80 bg-gray-800 p-4 overflow-y-auto border-r border-gray-700 flex flex-col space-y-6">
+            <div>
+                <h2 class="text-base font-semibold mb-3 text-gray-300">Layout Elements</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="add-rect-table" class="bg-gray-700 text-gray-300 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition-colors flex flex-col items-center space-y-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg><span class="text-xs font-medium">Rectangle Table</span></button>
+                    <button id="add-circle-table" class="bg-gray-700 text-gray-300 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition-colors flex flex-col items-center space-y-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 100-18 9 9 0 000 18z"></path></svg><span class="text-xs font-medium">Circle Table</span></button>
+                    <button id="add-sweetheart-table" class="bg-gray-700 text-gray-300 p-3 rounded-lg hover:bg-pink-500 hover:text-white transition-colors flex flex-col items-center space-y-1"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg><span class="text-xs font-medium">Sweetheart Table</span></button>
+                    <button id="add-bar-table" class="bg-gray-700 text-gray-300 p-3 rounded-lg hover:bg-cyan-500 hover:text-white transition-colors flex flex-col items-center space-y-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 10l4-8h10l4 8M12 10v12M8 22h8"></path></svg><span class="text-xs font-medium">Add Bar</span></button>
+                    <button id="add-cake-table" class="bg-gray-700 text-gray-300 p-3 rounded-lg hover:bg-rose-500 hover:text-white transition-colors flex flex-col items-center space-y-1"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3c-1.2 0-2.3.4-3.2 1.1A6.4 6.4 0 003 9v5h14V9a6.4 6.4 0 00-3.8-4.9A5 5 0 0010 3zM3 15v2h14v-2H3zM10 1c-.5 0-1 .1-1.5.2A3.5 3.5 0 0110 5a3.5 3.5 0 011.5-3.8A5 5 0 0010 1z"></path></svg><span class="text-xs font-medium">Add Cake Table</span></button>
+                    <button id="add-feature" class="bg-gray-700 text-gray-300 p-3 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors flex flex-col items-center space-y-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5"></path></svg><span class="text-xs font-medium">Room Feature</span></button>
+                </div>
+            </div>
+            
+            <div>
+                <h2 class="text-base font-semibold mb-3 text-gray-300">Manage Guests</h2>
+                <form id="add-guest-form" class="flex space-x-2">
+                    <input type="text" id="guest-name" placeholder="New Guest's Name" class="flex-1 bg-gray-900 border border-gray-600 rounded-lg p-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Add</button>
+                </form>
+            </div>
+
+            <div class="flex-1 flex flex-col min-h-0">
+                 <h2 class="text-base font-semibold mb-3 text-gray-300">Guest List</h2>
+                 <div id="guest-list-container" class="guest-list-container flex-1 border-2 border-dashed border-gray-600 rounded-lg p-2 bg-gray-900/50 space-y-2 overflow-y-auto">
+                    <p class="text-gray-500 text-center p-4">Add guests to see them here.</p>
+                 </div>
+            </div>
+        </aside>
+
+        <!-- Right Panel: Seating Area -->
+        <main id="seating-area" class="flex-1 relative overflow-hidden">
+            <div id="zoom-container">
+                <!-- Tables will be dynamically added here -->
+            </div>
+             <div id="zoom-controls" class="absolute bottom-4 right-4 z-30 flex items-center space-x-2 bg-gray-800 p-2 rounded-lg shadow-lg border border-gray-700">
+                <button id="zoom-out" class="w-8 h-8 font-bold text-lg rounded-md hover:bg-gray-700">-</button>
+                <span id="zoom-level" class="font-semibold text-gray-300 w-14 text-center">100%</span>
+                <button id="zoom-in" class="w-8 h-8 font-bold text-lg rounded-md hover:bg-gray-700">+</button>
+                <button id="zoom-reset" class="px-3 h-8 rounded-md hover:bg-gray-700">Reset</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex items-center justify-center">
+        <div id="modal-content" class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-xl w-full max-w-sm border border-gray-700">
+            <h3 id="modal-title" class="text-lg font-bold mb-4"></h3>
+            <div id="modal-body"></div>
+            <div id="modal-actions" class="mt-6 flex justify-end space-x-2"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let tables = {}, guests = {}, roomFeatures = {};
+        const STORAGE_KEY = 'seating-chart-data';
+
+        const seatingArea = document.getElementById('seating-area');
+        const zoomContainer = document.getElementById('zoom-container');
+        const guestListContainer = document.getElementById('guest-list-container');
+        const zoomLevelDisplay = document.getElementById('zoom-level');
+
+        let draggedElement = null, draggedPlannerItem = null, resizedPlannerItem = null, rotatedPlannerItem = null;
+        let dragOffsetX = 0, dragOffsetY = 0;
+        let initialItemGeom = {};
+        let scale = 1.0, panOffset = { x: 0, y: 0 };
+        let isPanning = false, panStart = { x: 0, y: 0 };
+
+        // Initialize
+        function initialize() {
+            loadFromLocalStorage();
+            renderAll();
+            setupEventListeners();
+        }
+
+        // Local Storage Functions
+        function saveToLocalStorage() {
+            const data = {
+                tables: tables,
+                guests: guests,
+                roomFeatures: roomFeatures
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showNotification('Layout saved successfully!');
+        }
+
+        function loadFromLocalStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    tables = data.tables || {};
+                    guests = data.guests || {};
+                    roomFeatures = data.roomFeatures || {};
+                } catch (e) {
+                    console.error('Failed to load saved data:', e);
+                }
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear everything? This cannot be undone.')) {
+                tables = {};
+                guests = {};
+                roomFeatures = {};
+                localStorage.removeItem(STORAGE_KEY);
+                renderAll();
+                showNotification('All data cleared!');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Data Management Functions
+        async function updateTable(tableId, updates) {
+            if (tables[tableId]) {
+                tables[tableId] = { ...tables[tableId], ...updates };
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+
+        async function updateGuest(guestId, updates) {
+            if (guests[guestId]) {
+                guests[guestId] = { ...guests[guestId], ...updates };
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+
+        async function updateFeature(featureId, updates) {
+            if (roomFeatures[featureId]) {
+                roomFeatures[featureId] = { ...roomFeatures[featureId], ...updates };
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+
+        function renderAll() {
+            zoomContainer.innerHTML = '';
+            Object.values(roomFeatures).forEach(f => zoomContainer.appendChild(createFeatureElement(f)));
+            Object.values(tables).forEach(t => zoomContainer.appendChild(createTableElement(t)));
+            renderGuests();
+        }
+        
+        function renderGuests() {
+            guestListContainer.innerHTML = '';
+            const allGuests = Object.values(guests).sort((a,b) => a.name.localeCompare(b.name));
+            
+            if (allGuests.length > 0) {
+                 allGuests.forEach(guest => guestListContainer.appendChild(createGuestElement(guest, 'list')));
+            } else {
+                 guestListContainer.innerHTML = '<p class="text-gray-500 text-center p-4">No guests added yet.</p>';
+            }
+            
+            document.querySelectorAll('.seat').forEach(seatEl => {
+                const { tableId, seatIndex } = seatEl.dataset;
+                const guest = Object.values(guests).find(g => g.tableId === tableId && g.seatIndex == seatIndex);
+                seatEl.innerHTML = '';
+                if (guest) {
+                    seatEl.appendChild(createGuestElement(guest, 'seat'));
+                    seatEl.classList.add('occupied');
+                } else {
+                    seatEl.classList.remove('occupied');
+                }
+            });
+        }
+
+        function createPlannerItem(item, type) {
+            const container = document.createElement('div');
+            container.className = `planner-item ${type}-container`;
+            container.id = `${type}-${item.id}`;
+            container.dataset[`${type}Id`] = item.id;
+            const zIndex = type === 'table' ? 10 : 5;
+            const rotation = item.rotation || 0;
+            container.style.cssText = `left:${item.x}px; top:${item.y}px; width:${item.width}px; height:${item.height}px; z-index: ${zIndex}; transform: rotate(${rotation}deg);`;
+
+            const body = document.createElement('div');
+            body.className = `${type}-body ${item.shape || 'rectangle'}`;
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'table-text-span';
+            textSpan.textContent = item.name;
+            body.appendChild(textSpan);
+            
+            container.appendChild(body);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            deleteBtn.title = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            deleteBtn.className = `delete-btn ${type}`;
+            deleteBtn.onclick = (e) => { 
+                e.stopPropagation(); 
+                if (type === 'table') deleteTable(item.id);
+                else deleteFeature(item.id);
+            };
+            container.appendChild(deleteBtn);
+
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle se';
+            container.appendChild(resizeHandle);
+            
+            if (type === 'table') {
+                const rotateHandle = document.createElement('div');
+                rotateHandle.className = 'rotate-handle';
+                container.appendChild(rotateHandle);
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
+                copyBtn.title = 'Copy Table';
+                copyBtn.className = 'copy-btn';
+                copyBtn.onclick = (e) => { e.stopPropagation(); copyTable(item.id); };
+                container.appendChild(copyBtn);
+            }
+            
+            return container;
+        }
+
+        function createTableElement(table) {
+            const container = createPlannerItem(table, 'table');
+            // Seat positioning logic
+            if (table.shape === 'circle') {
+                for (let i = 0; i < table.capacity; i++) {
+                    const angle = (i / table.capacity) * 2 * Math.PI;
+                    const radiusX = (table.width / 2) + 35; const radiusY = (table.height / 2) + 35;
+                    const seat = createSeatElement(table.id, i, `${(table.width / 2) + Math.cos(angle) * radiusX}px`, `${(table.height / 2) + Math.sin(angle) * radiusY}px`);
+                    container.appendChild(seat);
+                }
+            } else if (table.shape === 'half-moon') {
+                for (let i = 0; i < table.capacity; i++) {
+                    const spacing = table.width / (table.capacity + 1);
+                    const seat = createSeatElement(table.id, i, `${spacing * (i + 1)}px`, `${table.height + 22}px`);
+                    container.appendChild(seat);
+                }
+            } else { // Smart rectangle logic
+                const isWide = table.width >= table.height;
+                const longSide = isWide ? table.width : table.height;
+                const seatsSide1 = Math.ceil(table.capacity / 2);
+                const seatsSide2 = table.capacity - seatsSide1;
+                
+                for (let i = 0; i < seatsSide1; i++) {
+                    const spacing = longSide / (seatsSide1 + 1);
+                    const seat = createSeatElement(table.id, i, isWide ? `${spacing * (i + 1)}px` : '-22px', isWide ? `-22px` : `${spacing * (i + 1)}px`);
+                    container.appendChild(seat);
+                }
+                for (let i = 0; i < seatsSide2; i++) {
+                    const spacing = longSide / (seatsSide2 + 1);
+                    const seat = createSeatElement(table.id, seatsSide1 + i, isWide ? `${spacing * (i + 1)}px` : `${table.width + 22}px`, isWide ? `${table.height + 22}px` : `${spacing * (i + 1)}px`);
+                    container.appendChild(seat);
+                }
+            }
+            return container;
+        }
+
+        function createFeatureElement(feature) {
+             return createPlannerItem(feature, 'feature');
+        }
+
+        function createSeatElement(tableId, seatIndex, x, y) {
+            const seat = document.createElement('div');
+            seat.className = 'seat';
+            seat.dataset.tableId = tableId; 
+            seat.dataset.seatIndex = seatIndex;
+            seat.style.left = x;
+            seat.style.top = y;
+            return seat;
+        }
+
+        function createGuestElement(guest, context) {
+            const el = document.createElement('div');
+            el.id = `guest-${guest.id}`;
+            el.dataset.guestId = guest.id;
+            
+            if (context === 'list') {
+                el.className = 'guest bg-gray-700 p-2 rounded-lg border-l-4 flex justify-between items-center';
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'text-sm font-medium text-gray-200';
+                nameSpan.textContent = guest.name;
+                el.appendChild(nameSpan);
+
+                if (guest.tableId && tables[guest.tableId]) {
+                    el.classList.add('opacity-60');
+                    el.draggable = false;
+                    el.style.borderColor = '#6b7280';
+                    const seatedInfo = document.createElement('span');
+                    seatedInfo.className = 'text-xs text-gray-400 italic';
+                    seatedInfo.textContent = `at ${tables[guest.tableId].name}`;
+                    el.appendChild(seatedInfo);
+                } else {
+                    el.classList.add('cursor-grab', 'active:cursor-grabbing');
+                    el.draggable = true;
+                    el.style.borderColor = '#3b82f6';
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    deleteBtn.className = 'text-gray-500 hover:text-red-500 font-bold';
+                    deleteBtn.onclick = (e) => { e.stopPropagation(); deleteGuest(guest.id); };
+                    el.appendChild(deleteBtn);
+                }
+            } else { // 'seat' context
+                el.className = 'guest-in-seat w-full h-full flex items-center justify-center text-white font-semibold text-center break-words p-1';
+                el.textContent = guest.name;
+                el.draggable = true;
+            }
+            return el;
+        }
+        
+        const modal = {
+            backdrop: document.getElementById('modal-backdrop'),
+            title: document.getElementById('modal-title'),
+            body: document.getElementById('modal-body'),
+            actions: document.getElementById('modal-actions'),
+            show() { this.backdrop.classList.remove('hidden'); },
+            hide() { this.body.innerHTML = ''; this.actions.innerHTML = ''; this.backdrop.classList.add('hidden'); },
+            confirm(title, bodyText) {
+                this.title.textContent = title;
+                this.body.innerHTML = `<p class="text-gray-400">${bodyText}</p>`; this.show();
+                return new Promise(resolve => {
+                    const btnDelete = Object.assign(document.createElement('button'), { textContent: 'Delete', className: "bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700", onclick: () => { this.hide(); resolve(true); } });
+                    const btnCancel = Object.assign(document.createElement('button'), { textContent: 'Cancel', className: "bg-gray-600 text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-700", onclick: () => { this.hide(); resolve(false); } });
+                    this.actions.append(btnCancel, btnDelete);
+                });
+            },
+            prompt(title, fields) {
+                this.title.textContent = title; this.show();
+                return new Promise(resolve => {
+                    const form = document.createElement('form'); form.className = 'space-y-4';
+                    fields.forEach(f => {
+                        const label = `<label class="block"><span class="text-gray-400 text-sm font-medium">${f.label}</span>`;
+                        const commonClasses = `class="mt-1 block w-full bg-gray-900 border border-gray-600 rounded-lg p-2 text-gray-200" required`;
+                        if (f.type === 'textarea') {
+                            form.innerHTML += `${label}<textarea id="${f.id}" ${commonClasses} style="height: 96px;">${f.value}</textarea></label>`;
+                        } else {
+                            form.innerHTML += `${label}<input type="${f.type}" id="${f.id}" value="${f.value}" ${commonClasses}></label>`;
+                        }
+                    });
+                    this.body.appendChild(form);
+                    const btnOk = Object.assign(document.createElement('button'), { textContent: 'OK', className: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" });
+                    const btnCancel = Object.assign(document.createElement('button'), { textContent: 'Cancel', className: "bg-gray-600 text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-700", onclick: () => { this.hide(); resolve(null); } });
+                    btnOk.onclick = () => { if (form.checkValidity()) { const result = {}; fields.forEach(f => result[f.id] = form.querySelector(`#${f.id}`).value); this.hide(); resolve(result); } else { form.reportValidity(); } };
+                    this.actions.append(btnCancel, btnOk);
+                });
+            }
+        };
+
+        async function addTable(shape) {
+            const result = await modal.prompt('Add New Table', [ { id: 'name', label: 'Table Name', type: 'text', value: `Table ${Object.keys(tables).length + 1}`}, { id: 'capacity', label: 'Capacity', type: 'number', value: '8'} ]);
+            const capacity = result ? parseInt(result.capacity) : NaN;
+            if (!result || isNaN(capacity) || capacity < 0) return;
+            const isCircle = shape === 'circle';
+            const tableId = `table_${Date.now()}`;
+            tables[tableId] = { 
+                id: tableId,
+                name: result.name, 
+                shape, 
+                capacity, 
+                x: 50, 
+                y: 50, 
+                width: isCircle ? 150 : 200, 
+                height: isCircle ? 150 : 100, 
+                rotation: 0 
+            };
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        async function addSpecialTable(defaultName, shape) {
+            const result = await modal.prompt(`Add ${defaultName}`, [
+                { id: 'name', label: 'Label', type: 'text', value: defaultName }
+            ]);
+            if (!result) return;
+            const tableId = `table_${Date.now()}`;
+            tables[tableId] = {
+                id: tableId,
+                name: result.name,
+                shape,
+                capacity: 0,
+                x: 50,
+                y: 50,
+                width: 180,
+                height: 70,
+                rotation: 0
+            };
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        async function addSweetheartTable() {
+            const result = await modal.prompt('Add Sweetheart Table', [
+                { id: 'name', label: 'Table Name', type: 'text', value: 'Sweetheart Table' },
+                { id: 'capacity', label: 'Capacity', type: 'number', value: '2' }
+            ]);
+            if (!result || !result.capacity || parseInt(result.capacity) < 0) return;
+            const tableId = `table_${Date.now()}`;
+            tables[tableId] = {
+                id: tableId,
+                name: result.name,
+                shape: 'half-moon',
+                capacity: parseInt(result.capacity),
+                x: 50,
+                y: 50,
+                width: 180,
+                height: 90,
+                rotation: 0
+            };
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        async function deleteTable(tableId) {
+            if (!await modal.confirm('Delete Table?', 'All seated guests will be unseated.')) return;
+            Object.values(guests).filter(g => g.tableId === tableId).forEach(g => {
+                g.tableId = null;
+                g.seatIndex = null;
+            });
+            delete tables[tableId];
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        async function copyTable(tableId) {
+            const originalTable = tables[tableId];
+            if (!originalTable) return;
+            const newTableId = `table_${Date.now()}`;
+            tables[newTableId] = { 
+                ...originalTable, 
+                id: newTableId,
+                name: `${originalTable.name} (Copy)`, 
+                x: originalTable.x + 30, 
+                y: originalTable.y + 30 
+            };
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        async function addFeature() {
+            const result = await modal.prompt('Add Room Feature', [ { id: 'name', label: 'Feature Name', type: 'text', value: 'Dance Floor'} ]);
+            if (!result) return;
+            const featureId = `feature_${Date.now()}`;
+            roomFeatures[featureId] = { 
+                id: featureId,
+                name: result.name, 
+                shape: 'rectangle', 
+                x: 100, 
+                y: 100, 
+                width: 200, 
+                height: 200 
+            };
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        async function deleteFeature(featureId) {
+            if (await modal.confirm('Delete Feature?', 'This will permanently remove the feature from the layout.')) {
+                delete roomFeatures[featureId];
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+
+        async function deleteGuest(guestId) { 
+            if (await modal.confirm('Delete Guest?', 'Permanently remove this guest from the list?')) {
+                delete guests[guestId];
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+        
+        async function editTable(tableId) {
+            const table = tables[tableId];
+            if (!table) return;
+            const result = await modal.prompt('Edit Table', [
+                { id: 'name', label: 'Table Name', type: 'textarea', value: table.name },
+                { id: 'capacity', label: 'Capacity', type: 'number', value: table.capacity }
+            ]);
+            if (result) {
+                const newCapacity = parseInt(result.capacity);
+                table.name = result.name;
+                if (!isNaN(newCapacity) && newCapacity >= 0) {
+                    table.capacity = newCapacity;
+                }
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+
+        async function editFeature(featureId) {
+            const feature = roomFeatures[featureId];
+            if (!feature) return;
+            const result = await modal.prompt('Edit Feature', [
+                { id: 'name', label: 'Feature Name', type: 'textarea', value: feature.name }
+            ]);
+            if (result) {
+                feature.name = result.name;
+                renderAll();
+                saveToLocalStorage();
+            }
+        }
+
+        async function handleGuestDrop(guestId, toTableId, toSeatIndex) {
+            const guestToMove = guests[guestId]; 
+            if (!guestToMove) return;
+            
+            const occupant = Object.values(guests).find(g => g.tableId === toTableId && g.seatIndex == toSeatIndex);
+            
+            if(occupant && occupant.id !== guestId) { 
+                occupant.tableId = guestToMove.tableId;
+                occupant.seatIndex = guestToMove.seatIndex;
+            }
+            
+            guestToMove.tableId = toTableId;
+            guestToMove.seatIndex = parseInt(toSeatIndex);
+            
+            renderAll();
+            saveToLocalStorage();
+        }
+
+        function updateTransform() { 
+            zoomContainer.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`; 
+            zoomLevelDisplay.textContent = `${Math.round(scale * 100)}%`; 
+        }
+        
+        function zoom(delta) { 
+            scale = Math.max(0.2, Math.min(3, scale + delta)); 
+            updateTransform(); 
+        }
+        
+        const getCanvasCoords = (e) => { 
+            const rect = seatingArea.getBoundingClientRect(); 
+            return { x: (e.clientX - rect.left - panOffset.x) / scale, y: (e.clientY - rect.top - panOffset.y) / scale }; 
+        };
+
+        function setupEventListeners() {
+            // Button event listeners
+            document.getElementById('add-rect-table').addEventListener('click', () => addTable('rectangle'));
+            document.getElementById('add-circle-table').addEventListener('click', () => addTable('circle'));
+            document.getElementById('add-sweetheart-table').addEventListener('click', addSweetheartTable);
+            document.getElementById('add-bar-table').addEventListener('click', () => addSpecialTable('Bar', 'rectangle'));
+            document.getElementById('add-cake-table').addEventListener('click', () => addSpecialTable('Cake Table', 'rectangle'));
+            document.getElementById('add-feature').addEventListener('click', addFeature);
+            
+            // Save/Load/Clear buttons
+            document.getElementById('save-btn').addEventListener('click', saveToLocalStorage);
+            document.getElementById('load-btn').addEventListener('click', () => {
+                loadFromLocalStorage();
+                renderAll();
+                showNotification('Layout loaded successfully!');
+            });
+            document.getElementById('clear-btn').addEventListener('click', clearAll);
+
+            // Zoom controls
+            document.getElementById('zoom-in').addEventListener('click', () => zoom(0.1));
+            document.getElementById('zoom-out').addEventListener('click', () => zoom(-0.1));
+            document.getElementById('zoom-reset').addEventListener('click', () => { 
+                scale = 1.0; 
+                panOffset = { x: 0, y: 0 }; 
+                updateTransform(); 
+            });
+
+            // Guest form
+            document.getElementById('add-guest-form').addEventListener('submit', async (e) => {
+                e.preventDefault(); 
+                const input = document.getElementById('guest-name');
+                if (input.value.trim()) { 
+                    const guestId = `guest_${Date.now()}`;
+                    guests[guestId] = { 
+                        id: guestId,
+                        name: input.value.trim(), 
+                        tableId: null, 
+                        seatIndex: null 
+                    };
+                    input.value = ''; 
+                    renderAll();
+                    saveToLocalStorage();
+                }
+            });
+
+            // Drag and drop for guests
+            document.addEventListener('dragstart', (e) => { 
+                const guestEl = e.target.closest('[data-guest-id]');
+                if (guestEl && guestEl.draggable) { 
+                    draggedElement = guestEl; 
+                    setTimeout(() => guestEl.classList.add('dragging'), 0); 
+                    e.dataTransfer.effectAllowed = 'move'; 
+                    e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'guest', guestId: guestEl.dataset.guestId })); 
+                }
+            });
+
+            document.addEventListener('dragend', () => draggedElement?.classList.remove('dragging'));
+            document.addEventListener('dragover', (e) => e.preventDefault());
+            
+            seatingArea.addEventListener('dragenter', (e) => e.target.closest('.seat')?.classList.add('drag-over'));
+            seatingArea.addEventListener('dragleave', (e) => e.target.closest('.seat')?.classList.remove('drag-over'));
+            seatingArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const targetSeat = e.target.closest('.seat');
+                if (targetSeat) { 
+                    targetSeat.classList.remove('drag-over'); 
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain')); 
+                    if (data.type === 'guest') handleGuestDrop(data.guestId, targetSeat.dataset.tableId, targetSeat.dataset.seatIndex); 
+                }
+            });
+
+            guestListContainer.addEventListener('dragenter', () => guestListContainer.classList.add('drag-over'));
+            guestListContainer.addEventListener('dragleave', () => guestListContainer.classList.remove('drag-over'));
+            guestListContainer.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                guestListContainer.classList.remove('drag-over');
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                if (data.type === 'guest' && guests[data.guestId]?.tableId) {
+                    guests[data.guestId].tableId = null;
+                    guests[data.guestId].seatIndex = null;
+                    renderAll();
+                    saveToLocalStorage();
+                }
+            });
+
+            // Pointer events for tables and panning
+            seatingArea.addEventListener('pointerdown', (e) => {
+                if (e.target.closest('.guest-in-seat')) return;
+
+                const plannerItemEl = e.target.closest('.planner-item');
+                if (plannerItemEl) {
+                    e.preventDefault(); 
+                    e.target.setPointerCapture(e.pointerId);
+                    const canvasCoords = getCanvasCoords(e);
+                    const itemData = tables[plannerItemEl.dataset.tableId] || roomFeatures[plannerItemEl.dataset.featureId];
+                    
+                    if (e.target.classList.contains('rotate-handle')) {
+                        rotatedPlannerItem = plannerItemEl;
+                        rotatedPlannerItem.classList.add('rotating');
+                        const rect = rotatedPlannerItem.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        initialItemGeom = { centerX, centerY };
+                    } else if (e.target.classList.contains('resize-handle')) {
+                        resizedPlannerItem = plannerItemEl; 
+                        resizedPlannerItem.classList.add('resizing');
+                        initialItemGeom = { 
+                            x: canvasCoords.x, 
+                            y: canvasCoords.y, 
+                            width: itemData.width, 
+                            height: itemData.height, 
+                            isCircle: itemData.shape === 'circle' 
+                        };
+                    } else if (e.target.closest('.table-body, .feature-body')) {
+                        draggedPlannerItem = plannerItemEl; 
+                        draggedPlannerItem.classList.add('dragging');
+                        dragOffsetX = canvasCoords.x - itemData.x; 
+                        dragOffsetY = canvasCoords.y - itemData.y;
+                    }
+                } else { 
+                    isPanning = true; 
+                    seatingArea.classList.add('panning'); 
+                    panStart = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y }; 
+                    e.target.setPointerCapture(e.pointerId); 
+                }
+            });
+
+            seatingArea.addEventListener('pointermove', (e) => {
+                if (isPanning) { 
+                    panOffset.x = e.clientX - panStart.x; 
+                    panOffset.y = e.clientY - panStart.y; 
+                    updateTransform(); 
+                    return; 
+                }
+                if (!draggedPlannerItem && !resizedPlannerItem && !rotatedPlannerItem) return;
+
+                e.preventDefault(); 
+                
+                if (draggedPlannerItem) {
+                    const canvasCoords = getCanvasCoords(e);
+                    draggedPlannerItem.style.left = `${canvasCoords.x - dragOffsetX}px`; 
+                    draggedPlannerItem.style.top = `${canvasCoords.y - dragOffsetY}px`; 
+                } else if (resizedPlannerItem) {
+                    const canvasCoords = getCanvasCoords(e);
+                    const dx = canvasCoords.x - initialItemGeom.x; 
+                    const dy = canvasCoords.y - initialItemGeom.y;
+                    let newWidth = Math.max(80, initialItemGeom.width + dx); 
+                    let newHeight = Math.max(80, initialItemGeom.height + dy);
+                    if (initialItemGeom.isCircle) newHeight = newWidth;
+                    resizedPlannerItem.style.width = `${newWidth}px`; 
+                    resizedPlannerItem.style.height = `${newHeight}px`;
+                } else if (rotatedPlannerItem) {
+                    const { centerX, centerY } = initialItemGeom;
+                    const dx = e.clientX - centerX;
+                    const dy = e.clientY - centerY;
+                    const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+                    rotatedPlannerItem.style.transform = `rotate(${angle}deg)`;
+                    
+                    const textSpan = rotatedPlannerItem.querySelector('.table-text-span');
+                    if (textSpan) {
+                        let normalizedAngle = angle % 360;
+                        if (normalizedAngle < 0) normalizedAngle += 360;
+                        if (normalizedAngle > 90 && normalizedAngle < 270) {
+                            textSpan.style.transform = `rotate(180deg)`;
+                        } else {
+                            textSpan.style.transform = `rotate(0deg)`;
+                        }
+                    }
+                }
+            });
+
+            seatingArea.addEventListener('pointerup', async (e) => {
+                if (isPanning) { 
+                    isPanning = false; 
+                    seatingArea.classList.remove('panning'); 
+                    if (e.target.hasPointerCapture(e.pointerId)) e.target.releasePointerCapture(e.pointerId); 
+                    return; 
+                }
+                
+                const itemEl = draggedPlannerItem || resizedPlannerItem || rotatedPlannerItem;
+                if (!itemEl) return;
+                
+                const tableId = itemEl.dataset.tableId;
+                const featureId = itemEl.dataset.featureId;
+                const isTable = !!tableId;
+                const itemId = tableId || featureId;
+                const item = isTable ? tables[itemId] : roomFeatures[itemId];
+
+                if (draggedPlannerItem) {
+                    itemEl.classList.remove('dragging');
+                    item.x = parseInt(itemEl.style.left);
+                    item.y = parseInt(itemEl.style.top);
+                } else if (resizedPlannerItem) {
+                    itemEl.classList.remove('resizing');
+                    item.width = parseInt(itemEl.style.width);
+                    item.height = parseInt(itemEl.style.height);
+                } else if (rotatedPlannerItem && isTable) {
+                    itemEl.classList.remove('rotating');
+                    const transform = rotatedPlannerItem.style.transform;
+                    const rotationMatch = transform.match(/rotate\(([^deg]+)deg\)/);
+                    const rotation = rotationMatch ? parseFloat(rotationMatch[1]) : 0;
+                    item.rotation = rotation;
+                }
+                
+                saveToLocalStorage();
+                draggedPlannerItem = null; 
+                resizedPlannerItem = null; 
+                rotatedPlannerItem = null;
+                if (e.target.hasPointerCapture(e.pointerId)) e.target.releasePointerCapture(e.pointerId);
+            });
+            
+            seatingArea.addEventListener('dblclick', (e) => {
+                const targetBody = e.target.closest('.table-body, .feature-body');
+                if (targetBody) {
+                    const plannerItemEl = targetBody.closest('.planner-item');
+                    const tableId = plannerItemEl.dataset.tableId;
+                    const featureId = plannerItemEl.dataset.featureId;
+                    if (tableId) {
+                        editTable(tableId);
+                    } else if (featureId) {
+                        editFeature(featureId);
+                    }
+                }
+            });
+        }
+
+        // Initialize the application
+        initialize();
+    </script>
+</body>
+</html>
