@@ -1,0 +1,14 @@
+{
+  "project_name": "wedding-planner",
+  "project_slug": "wedding-planner",
+  "project_description": "This would be an AI-based wedding seat planner and guest management app. It's marketed towards a bride to keep track of their guests and can use a description to generate a spatial layout of their room and align the tables, dance floor, etc all ke yaspects of the layout and it will have a very intuitive and easy to use layout and methodology for assignign guests to tables. We hsoud be thinking about usability and flexibilty both. Users should nto get frustrated that it cant do what they want, but it should also be easy. We should also have a PDF export option of the actual seting chart. We should offer support for multiple events as well. This should give you an idea",
+  "domain": "utility",
+  "frontend_framework": "nextjs",
+  "backend_framework": "fastapi",
+  "database": "postgresql",
+  "deploy_platform": "render",
+  "design_context": "visual feel should be marketd at a bride it should feel like like the UI/UX is geared towards that. It needs to be beautiful and streamliend but not over hte top. The oclro scheme and ease of use go a long way here.",
+  "dev_server_port": 3000,
+  "dev_server_command": "npm run dev",
+  "testing_policy": "local"
+}
