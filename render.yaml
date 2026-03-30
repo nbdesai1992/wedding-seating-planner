@@ -19,6 +19,11 @@ services:
         fromDatabase:
           name: wedding-planner-db
           property: connectionString
+      - key: CORS_ORIGINS
+        value: "https://wedding-planner-frontend-c7a4.onrender.com"
+      - key: FRONTEND_URL
+        value: "https://wedding-planner-frontend-c7a4.onrender.com"
+      - fromGroup: general_builder_keys
 
   - type: web
     name: wedding-planner-frontend
@@ -34,6 +39,7 @@ services:
         value: production
       - key: PORT
         value: "10000"
+      - fromGroup: general_builder_keys
 
 databases:
   - name: wedding-planner-db
