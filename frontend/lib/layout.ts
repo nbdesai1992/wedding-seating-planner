@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api, BASE_URL, getToken } from "./api";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -187,13 +187,7 @@ export async function applySeating(
 // ── Export ──────────────────────────────────────────────────
 
 export async function exportPDF(eventId: string): Promise<Blob> {
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://wedding-planner-api-z0l3.onrender.com";
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("auth_token")
-      : null;
+  const token = await getToken();
 
   const res = await fetch(`${BASE_URL}/api/events/${eventId}/export/pdf`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},

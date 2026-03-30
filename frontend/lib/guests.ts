@@ -1,4 +1,4 @@
-import { api, ApiError } from "./api";
+import { api, ApiError, BASE_URL, getToken } from "./api";
 
 export interface Guest {
   id: string;
@@ -62,14 +62,6 @@ export async function deleteGuest(
   await api.delete(`/api/events/${eventId}/guests/${guestId}`);
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://wedding-planner-api-z0l3.onrender.com";
-
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("auth_token");
-}
-
 export async function importCSV(
   eventId: string,
   file: File
@@ -78,7 +70,7 @@ export async function importCSV(
   formData.append("file", file);
 
   const headers: Record<string, string> = {};
-  const token = getToken();
+  const token = await getToken();
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -93,8 +85,7 @@ export async function importCSV(
   );
 
   if (res.status === 401 && typeof window !== "undefined") {
-    localStorage.removeItem("auth_token");
-    window.location.href = "/login";
+    window.location.href = "/sign-in";
     throw new ApiError("Unauthorized", 401);
   }
 

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Heart, CalendarDays, LogOut } from "lucide-react";
+import { Plus, Heart, CalendarDays } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/Button";
 import { EventCard } from "@/components/events/EventCard";
 import { useAuth } from "@/lib/auth";
@@ -10,7 +11,7 @@ import { getEvents, deleteEvent, type Event } from "@/lib/events";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,13 +76,16 @@ export default function DashboardPage() {
                 {user.name}
               </span>
             )}
-            <button
-              onClick={logout}
-              className="p-2 rounded-soft text-warm-gray-400 hover:text-warm-gray-600 hover:bg-cream-100 transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8 ring-2 ring-rose-100",
+                  userButtonPopoverCard: "shadow-card-hover border border-cream-200 rounded-card",
+                  userButtonPopoverActionButton: "text-warm-gray-600 hover:bg-cream-50",
+                  userButtonPopoverFooter: "hidden",
+                },
+              }}
+            />
           </div>
         </div>
       </header>

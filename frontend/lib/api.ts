@@ -13,10 +13,28 @@ class ApiError extends Error {
   }
 }
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("auth_token");
+// ── Token injection ────────────────────────────────────────
+// Components call `setApiToken(await getToken())` to inject the Clerk session token.
+// This avoids having to pass tokens through every API call.
+
+let _tokenGetter: (() => Promise<string | null>) | null = null;
+
+/**
+ * Register a function that returns the current auth token.
+ * Called once by the AuthTokenProvider in the app layout.
+ */
+export function setTokenGetter(getter: () => Promise<string | null>) {
+  _tokenGetter = getter;
 }
+
+async function getToken(): Promise<string | null> {
+  if (_tokenGetter) {
+    return _tokenGetter();
+  }
+  return null;
+}
+
+// ── Request helper ─────────────────────────────────────────
 
 async function request<T>(
   method: string,
@@ -29,7 +47,7 @@ async function request<T>(
   };
 
   if (!options.skipAuth) {
-    const token = getToken();
+    const token = await getToken();
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -41,10 +59,9 @@ async function request<T>(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  // Handle 401 — redirect to login
+  // Handle 401 — redirect to sign-in
   if (res.status === 401 && typeof window !== "undefined") {
-    localStorage.removeItem("auth_token");
-    window.location.href = "/login";
+    window.location.href = "/sign-in";
     throw new ApiError("Unauthorized", 401);
   }
 
@@ -80,4 +97,4 @@ export const api = {
     request<T>("DELETE", path, undefined, options),
 };
 
-export { ApiError };
+export { ApiError, BASE_URL, getToken };

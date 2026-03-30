@@ -1,14 +1,10 @@
 """Pydantic schemas for request/response validation."""
 
-from app.schemas.auth import RegisterRequest, LoginRequest, AuthResponse
 from app.schemas.user import UserResponse
 from app.schemas.event import EventCreate, EventUpdate, EventResponse
 from app.schemas.guest import GuestCreate, GuestUpdate, GuestResponse
 
 __all__ = [
-    "RegisterRequest",
-    "LoginRequest",
-    "AuthResponse",
     "UserResponse",
     "EventCreate",
     "EventUpdate",

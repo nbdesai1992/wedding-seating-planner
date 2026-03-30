@@ -39,6 +39,8 @@ services:
         value: production
       - key: PORT
         value: "10000"
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        sync: false
       - fromGroup: general_builder_keys
 
 databases:
