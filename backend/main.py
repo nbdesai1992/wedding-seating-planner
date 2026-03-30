@@ -1,16 +1,5 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+"""Entry point for uvicorn. Imports the app factory."""
 
-app = FastAPI()
+from app import create_app
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+app = create_app()
