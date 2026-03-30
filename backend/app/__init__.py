@@ -8,6 +8,9 @@ from app.routers.auth import router as auth_router
 from app.routers.events import router as events_router
 from app.routers.guests import router as guests_router
 from app.routers.layout import router as layout_router
+from app.routers.ai_layout import router as ai_layout_router
+from app.routers.seating import router as seating_router
+from app.routers.export import router as export_router
 
 
 def create_app() -> FastAPI:
@@ -32,6 +35,9 @@ def create_app() -> FastAPI:
     app.include_router(events_router)
     app.include_router(guests_router)
     app.include_router(layout_router)
+    app.include_router(ai_layout_router)
+    app.include_router(seating_router)
+    app.include_router(export_router)
 
     @app.get("/health")
     def health():

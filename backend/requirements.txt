@@ -10,5 +10,7 @@ passlib[bcrypt]
 bcrypt==4.0.1
 python-multipart
 httpx
+anthropic
+reportlab
 pytest
 pytest-asyncio
