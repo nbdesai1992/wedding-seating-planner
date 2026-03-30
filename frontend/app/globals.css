@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-sans text-warm-gray-800 bg-cream-50;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif text-warm-gray-800;
+    line-height: 1.3;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+
+  h3 {
+    @apply text-xl font-medium;
+  }
+
+  h4 {
+    @apply text-lg font-medium;
+  }
+
+  /* Subtle scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-cream-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-warm-gray-300 rounded-pill;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-warm-gray-400;
+  }
+}
+
+@layer components {
+  /* Gold divider — signature element */
+  .divider-gold {
+    @apply h-px w-full;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #D4A574 20%,
+      #D4A574 80%,
+      transparent 100%
+    );
+    opacity: 0.4;
+  }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Backdrop blur for modals */
+  .backdrop-blur-modal {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Focus visible utility */
+@layer utilities {
+  .focus-ring-rose {
+    @apply outline-none ring-2 ring-rose-400 ring-offset-2 ring-offset-cream-50;
+  }
+
+  .focus-ring-gold {
+    @apply outline-none ring-2 ring-gold-400 ring-offset-2 ring-offset-cream-50;
+  }
+}
