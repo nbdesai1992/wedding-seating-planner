@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Heart, CalendarDays } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
@@ -16,6 +16,8 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const hasFetched = useRef(false);
+
   const fetchEvents = useCallback(async () => {
     try {
       const data = await getEvents();
@@ -28,10 +30,11 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (!authLoading) {
+    if (!authLoading && !hasFetched.current) {
+      hasFetched.current = true;
       fetchEvents();
     }
-  }, [authLoading, fetchEvents]);
+  }, [authLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleDelete(id: string) {
     try {

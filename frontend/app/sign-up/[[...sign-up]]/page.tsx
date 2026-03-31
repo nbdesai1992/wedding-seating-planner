@@ -36,7 +36,7 @@ export default function SignUpPage() {
             <div className="divider-gold mb-4" />
 
             {/* Clerk SignUp component */}
-            <div className="flex justify-center">
+            <div className="w-full">
               <SignUp
                 fallbackRedirectUrl="/dashboard"
                 signInUrl="/sign-in"
@@ -46,7 +46,7 @@ export default function SignUpPage() {
                     colorText: "#3D3535",
                     colorTextSecondary: "#6B5B5B",
                     colorInputText: "#3D3535",
-                    colorInputBackground: "#FFFCF8",
+                    colorInputBackground: "#FFFFFF",
                     colorBackground: "transparent",
                     borderRadius: "10px",
                     fontFamily: "Inter, system-ui, sans-serif",
@@ -70,7 +70,7 @@ export default function SignUpPage() {
                       background: "transparent",
                     },
                     main: {
-                      gap: "16px",
+                      gap: "12px",
                     },
                     headerTitle: {
                       display: "none",
@@ -82,7 +82,7 @@ export default function SignUpPage() {
                       border: "1px solid #EDE5DD",
                       borderRadius: "10px",
                       color: "#3D3535",
-                      background: "#FFFCF8",
+                      background: "#FFFFFF",
                       fontWeight: "500",
                       padding: "10px 16px",
                       transition: "all 0.15s ease",
@@ -102,7 +102,7 @@ export default function SignUpPage() {
                       border: "1px solid #EDE5DD",
                       borderRadius: "10px",
                       color: "#3D3535",
-                      background: "#FFFCF8",
+                      background: "#FFFFFF",
                       padding: "10px 14px",
                       fontSize: "14px",
                       transition: "border-color 0.15s ease, box-shadow 0.15s ease",
