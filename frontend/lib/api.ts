@@ -59,9 +59,9 @@ async function request<T>(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  // Handle 401 — redirect to sign-in
-  if (res.status === 401 && typeof window !== "undefined") {
-    window.location.href = "/sign-in";
+  // Handle 401 — let the caller handle it (middleware handles real unauthenticated users).
+  // Do NOT hard-redirect here: it causes a loop when the token isn't ready during Clerk hydration.
+  if (res.status === 401) {
     throw new ApiError("Unauthorized", 401);
   }
 

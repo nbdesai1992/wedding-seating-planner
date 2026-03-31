@@ -84,8 +84,7 @@ export async function importCSV(
     }
   );
 
-  if (res.status === 401 && typeof window !== "undefined") {
-    window.location.href = "/sign-in";
+  if (res.status === 401) {
     throw new ApiError("Unauthorized", 401);
   }
 

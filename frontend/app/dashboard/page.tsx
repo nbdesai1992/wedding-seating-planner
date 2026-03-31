@@ -30,11 +30,11 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (!authLoading && !hasFetched.current) {
+    if (!authLoading && user && !hasFetched.current) {
       hasFetched.current = true;
       fetchEvents();
     }
-  }, [authLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [authLoading, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleDelete(id: string) {
     try {
