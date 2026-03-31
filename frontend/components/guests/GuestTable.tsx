@@ -189,7 +189,7 @@ export function GuestTable({
             onClick={onAdd}
             className={cn(
               "inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium",
-              "bg-rose-400 text-white rounded-soft shadow-sm",
+              "bg-rose-500 text-white rounded-soft shadow-sm",
               "hover:bg-rose-600 transition-colors"
             )}
           >
@@ -218,7 +218,7 @@ export function GuestTable({
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={onAdd}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-rose-400 text-white rounded-soft shadow-sm hover:bg-rose-600 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-rose-500 text-white rounded-soft shadow-sm hover:bg-rose-600 transition-colors"
                   >
                     <UserPlus className="w-4 h-4" />
                     Add First Guest

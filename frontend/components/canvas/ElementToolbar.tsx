@@ -178,7 +178,7 @@ export function ElementToolbar({
             />
             <button
               type="submit"
-              className="text-xs px-2 py-1 bg-rose-400 text-white rounded-md hover:bg-rose-500 transition-colors"
+              className="text-xs px-2 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors"
             >
               Save
             </button>
@@ -223,7 +223,7 @@ export function ElementToolbar({
             />
             <button
               type="submit"
-              className="text-xs px-2 py-1 bg-rose-400 text-white rounded-md hover:bg-rose-500 transition-colors flex-1"
+              className="text-xs px-2 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors flex-1"
             >
               Update
             </button>

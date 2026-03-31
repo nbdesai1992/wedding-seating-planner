@@ -253,7 +253,7 @@ export function PromptBar({
               "flex items-center justify-center",
               "transition-all duration-200",
               value.trim() && !isLoading
-                ? "bg-rose-400 text-white hover:bg-rose-600 shadow-sm active:scale-95"
+                ? "bg-rose-500 text-white hover:bg-rose-600 shadow-sm active:scale-95"
                 : "bg-cream-100 text-warm-gray-300 cursor-not-allowed"
             )}
             aria-label={mode === "modify" ? "Modify layout" : "Generate layout"}

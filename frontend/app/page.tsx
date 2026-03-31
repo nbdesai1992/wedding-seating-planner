@@ -34,11 +34,11 @@ function useScrollReveal() {
       { threshold: 0.1, rootMargin: "0px 0px -60px 0px" }
     );
 
-    elements.forEach((el, i) => {
+    elements.forEach((el) => {
       const htmlEl = el as HTMLElement;
       htmlEl.style.opacity = "0";
       htmlEl.style.transform = "translateY(24px)";
-      htmlEl.style.transition = `opacity 0.7s ease ${i * 0.08}s, transform 0.7s ease ${i * 0.08}s`;
+      htmlEl.style.transition = "opacity 0.6s ease, transform 0.6s ease";
       observer.observe(el);
     });
 

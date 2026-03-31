@@ -36,7 +36,7 @@ export default function RootLayout({
           headerTitle: "font-serif text-warm-gray-800",
           headerSubtitle: "text-warm-gray-400",
           formButtonPrimary:
-            "bg-rose-400 hover:bg-rose-500 text-white shadow-none font-medium",
+            "bg-rose-500 hover:bg-rose-600 text-white shadow-none font-medium",
           formFieldInput:
             "border-cream-200 focus:border-rose-400 focus:ring-rose-400/25 bg-white",
           footerActionLink: "text-rose-500 hover:text-rose-600 font-medium",
