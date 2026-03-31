@@ -5,7 +5,7 @@ import { Heart } from "lucide-react";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-cream-100 relative overflow-hidden">
+    <div className="auth-page min-h-screen flex flex-col bg-cream-100 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-rose-50 opacity-60 blur-3xl -translate-y-1/2" />

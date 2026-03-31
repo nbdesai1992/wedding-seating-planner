@@ -93,6 +93,50 @@
   }
 }
 
+/* ─── Clerk auth page overrides (scoped to .auth-page to avoid affecting UserButton) ─── */
+.auth-page .cl-card {
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.auth-page .cl-cardBox {
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.auth-page .cl-socialButtonsBlockButton {
+  box-shadow: none !important;
+  border: 1px solid #EDE5DD !important;
+  background: #FFFCF8 !important;
+}
+
+.auth-page .cl-formFieldInput {
+  box-shadow: none !important;
+  border: 1px solid #EDE5DD !important;
+  background: #FFFCF8 !important;
+}
+
+.auth-page .cl-formFieldInput:focus {
+  border-color: #C4848A !important;
+  box-shadow: 0 0 0 3px rgba(196, 132, 138, 0.15) !important;
+}
+
+.auth-page .cl-formButtonPrimary {
+  background: linear-gradient(135deg, #D4949A 0%, #C4848A 100%) !important;
+  box-shadow: 0 2px 8px rgba(196, 132, 138, 0.3) !important;
+  border: none !important;
+}
+
+.auth-page .cl-formButtonPrimary:hover {
+  background: linear-gradient(135deg, #C4848A 0%, #A86A70 100%) !important;
+  box-shadow: 0 4px 12px rgba(196, 132, 138, 0.4) !important;
+}
+
 /* Focus visible utility */
 @layer utilities {
   .focus-ring-rose {
