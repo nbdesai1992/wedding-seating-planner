@@ -1,9 +1,18 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Hero, Features, HowItWorks, Testimonials, Footer } from "@/components/landing";
+import {
+  LandingNav,
+  Hero,
+  SocialProof,
+  Features,
+  HowItWorks,
+  Testimonials,
+  FinalCTA,
+  Footer,
+} from "@/components/landing";
 
-function useFadeInOnScroll() {
+function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,14 +31,14 @@ function useFadeInOnScroll() {
           }
         });
       },
-      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.1, rootMargin: "0px 0px -60px 0px" }
     );
 
     elements.forEach((el, i) => {
       const htmlEl = el as HTMLElement;
       htmlEl.style.opacity = "0";
-      htmlEl.style.transform = "translateY(20px)";
-      htmlEl.style.transition = `opacity 0.6s ease ${i * 0.1}s, transform 0.6s ease ${i * 0.1}s`;
+      htmlEl.style.transform = "translateY(24px)";
+      htmlEl.style.transition = `opacity 0.7s ease ${i * 0.08}s, transform 0.7s ease ${i * 0.08}s`;
       observer.observe(el);
     });
 
@@ -40,14 +49,17 @@ function useFadeInOnScroll() {
 }
 
 export default function Home() {
-  const fadeRef = useFadeInOnScroll();
+  const revealRef = useScrollReveal();
 
   return (
-    <div ref={fadeRef} className="min-h-screen flex flex-col" style={{ background: "#FFFCF8" }}>
+    <div ref={revealRef} className="min-h-screen flex flex-col" style={{ background: "#FFFCF8" }}>
+      <LandingNav />
       <Hero />
+      <SocialProof />
       <Features />
       <HowItWorks />
       <Testimonials />
+      <FinalCTA />
       <Footer />
     </div>
   );

@@ -1,5 +1,9 @@
+export { LandingNav } from "./LandingNav";
 export { Hero } from "./Hero";
+export { ProductPreview } from "./ProductPreview";
+export { SocialProof } from "./SocialProof";
 export { Features } from "./Features";
 export { HowItWorks } from "./HowItWorks";
 export { Testimonials } from "./Testimonials";
+export { FinalCTA } from "./FinalCTA";
 export { Footer } from "./Footer";
