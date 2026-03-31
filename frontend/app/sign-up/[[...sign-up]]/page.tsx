@@ -33,25 +33,79 @@ export default function SignUpPage() {
               fallbackRedirectUrl="/dashboard"
               signInUrl="/sign-in"
               appearance={{
+                variables: {
+                  colorPrimary: "#E8B4B8",
+                  colorText: "#3D3535",
+                  colorTextSecondary: "#6B5B5B",
+                  colorInputText: "#3D3535",
+                  colorInputBackground: "#FFFFFF",
+                  colorBackground: "transparent",
+                  borderRadius: "8px",
+                  fontFamily: "Inter, system-ui, sans-serif",
+                  fontSize: "14px",
+                },
                 elements: {
-                  rootBox: "w-full",
-                  card: "w-full shadow-none border-0 bg-transparent p-0",
-                  headerTitle: "hidden",
-                  headerSubtitle: "hidden",
-                  socialButtonsBlockButton:
-                    "border border-cream-200 hover:bg-cream-100 text-warm-gray-600 rounded-soft",
-                  dividerLine: "bg-cream-200",
-                  dividerText: "text-warm-gray-400 text-xs",
-                  formFieldInput:
-                    "border-cream-200 rounded-soft focus:border-rose-400 focus:ring-2 focus:ring-rose-400/25 bg-white text-warm-gray-800 placeholder:text-warm-gray-300",
-                  formFieldLabel: "text-warm-gray-600 font-medium text-sm",
-                  formButtonPrimary:
-                    "bg-rose-400 hover:bg-rose-500 active:bg-rose-600 text-white rounded-soft shadow-none font-medium py-2.5",
-                  footerActionLink:
-                    "text-rose-500 hover:text-rose-600 font-medium",
-                  identityPreviewEditButton: "text-rose-500 hover:text-rose-600",
-                  formFieldAction: "text-rose-500 hover:text-rose-600",
-                  footer: "hidden",
+                  rootBox: {
+                    width: "100%",
+                  },
+                  card: {
+                    width: "100%",
+                    boxShadow: "none",
+                    border: "0",
+                    background: "transparent",
+                    padding: "0",
+                  },
+                  headerTitle: {
+                    display: "none",
+                  },
+                  headerSubtitle: {
+                    display: "none",
+                  },
+                  socialButtonsBlockButton: {
+                    border: "1px solid #F5F0EB",
+                    borderRadius: "8px",
+                    color: "#6B5B5B",
+                    background: "transparent",
+                  },
+                  dividerLine: {
+                    background: "#F5F0EB",
+                  },
+                  dividerText: {
+                    color: "#8B7D7D",
+                    fontSize: "12px",
+                  },
+                  formFieldInput: {
+                    border: "1px solid #F5F0EB",
+                    borderRadius: "8px",
+                    color: "#3D3535",
+                    background: "#FFFFFF",
+                  },
+                  formFieldLabel: {
+                    color: "#6B5B5B",
+                    fontWeight: "500",
+                    fontSize: "13px",
+                  },
+                  formButtonPrimary: {
+                    background: "#E8B4B8",
+                    borderRadius: "8px",
+                    boxShadow: "none",
+                    fontWeight: "500",
+                    padding: "10px 0",
+                    color: "#FFFFFF",
+                  },
+                  footerActionLink: {
+                    color: "#D4949A",
+                    fontWeight: "500",
+                  },
+                  identityPreviewEditButton: {
+                    color: "#D4949A",
+                  },
+                  formFieldAction: {
+                    color: "#D4949A",
+                  },
+                  footer: {
+                    display: "none",
+                  },
                 },
               }}
             />
