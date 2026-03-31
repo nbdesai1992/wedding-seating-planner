@@ -36,7 +36,7 @@ export default function SignInPage() {
             <div className="divider-gold mb-4" />
 
             {/* Clerk SignIn component */}
-            <div className="flex justify-center">
+            <div className="w-full">
               <SignIn
                 fallbackRedirectUrl="/dashboard"
                 signUpUrl="/sign-up"

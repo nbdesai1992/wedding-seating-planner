@@ -100,6 +100,14 @@
   border: none !important;
   border-radius: 0 !important;
   padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.auth-page .cl-rootBox {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .auth-page .cl-cardBox {
@@ -107,6 +115,8 @@
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .auth-page .cl-socialButtonsBlockButton {
