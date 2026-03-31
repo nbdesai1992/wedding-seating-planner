@@ -20,7 +20,7 @@ export default function SignUpPage() {
           {/* Unified auth card */}
           <div className="bg-white rounded-2xl shadow-card-hover px-8 pt-10 pb-8">
             {/* Logo + Header */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 mb-4 shadow-rose-glow">
                 <Heart className="w-6 h-6 text-rose-500" fill="currentColor" />
               </div>
@@ -33,7 +33,7 @@ export default function SignUpPage() {
             </div>
 
             {/* Divider */}
-            <div className="divider-gold mb-6" />
+            <div className="divider-gold mb-4" />
 
             {/* Clerk SignUp component */}
             <div className="flex justify-center">
@@ -114,7 +114,7 @@ export default function SignUpPage() {
                       marginBottom: "4px",
                     },
                     formButtonPrimary: {
-                      background: "linear-gradient(135deg, #D4949A 0%, #C4848A 100%)",
+                      background: "linear-gradient(135deg, #C4848A 0%, #A86A70 100%)",
                       borderRadius: "10px",
                       boxShadow: "0 2px 8px rgba(196, 132, 138, 0.3)",
                       fontWeight: "600",

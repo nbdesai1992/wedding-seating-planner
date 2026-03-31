@@ -21,7 +21,7 @@ visual feel should be marketd at a bride it should feel like like the UI/UX is g
 - Dev server port: 3000
 - Dev server command: `npm run dev`
 - Backend API URL: https://wedding-planner-api.onrender.com
-- Frontend URL: https://wedding-planner-frontend.onrender.com
+- Frontend URL: https://wedding-planner-frontend-c7a4.onrender.com
 
 ### Development Workflow
 

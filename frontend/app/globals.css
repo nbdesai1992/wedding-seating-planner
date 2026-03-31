@@ -127,14 +127,14 @@
 }
 
 .auth-page .cl-formButtonPrimary {
-  background: linear-gradient(135deg, #D4949A 0%, #C4848A 100%) !important;
-  box-shadow: 0 2px 8px rgba(196, 132, 138, 0.3) !important;
+  background: linear-gradient(135deg, #C4848A 0%, #A86A70 100%) !important;
+  box-shadow: 0 2px 10px rgba(168, 106, 112, 0.35) !important;
   border: none !important;
 }
 
 .auth-page .cl-formButtonPrimary:hover {
-  background: linear-gradient(135deg, #C4848A 0%, #A86A70 100%) !important;
-  box-shadow: 0 4px 12px rgba(196, 132, 138, 0.4) !important;
+  background: linear-gradient(135deg, #A86A70 0%, #8C5056 100%) !important;
+  box-shadow: 0 4px 14px rgba(168, 106, 112, 0.45) !important;
 }
 
 /* Focus visible utility */
