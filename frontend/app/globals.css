@@ -112,18 +112,22 @@
 .auth-page .cl-socialButtonsBlockButton {
   box-shadow: none !important;
   border: 1px solid #EDE5DD !important;
-  background: #FFFCF8 !important;
+  background: #FFFFFF !important;
 }
 
 .auth-page .cl-formFieldInput {
   box-shadow: none !important;
   border: 1px solid #EDE5DD !important;
-  background: #FFFCF8 !important;
+  background: #FFFFFF !important;
 }
 
 .auth-page .cl-formFieldInput:focus {
   border-color: #C4848A !important;
   box-shadow: 0 0 0 3px rgba(196, 132, 138, 0.15) !important;
+}
+
+.auth-page .cl-main {
+  gap: 12px !important;
 }
 
 .auth-page .cl-formButtonPrimary {
