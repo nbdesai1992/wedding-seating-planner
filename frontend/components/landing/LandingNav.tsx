@@ -36,12 +36,12 @@ export function LandingNav() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
             style={{ background: scrolled ? "#F9E8E8" : "rgba(249, 232, 232, 0.7)" }}
           >
-            <Heart size={14} style={{ color: "#E8B4B8" }} fill="#E8B4B8" />
+            <Heart size={18} style={{ color: "#E8B4B8" }} fill="#E8B4B8" />
           </div>
-          <span className="font-serif text-lg font-semibold tracking-tight text-warm-gray-800">
+          <span className="font-serif text-2xl font-semibold tracking-tight text-warm-gray-800">
             Seated
           </span>
         </Link>

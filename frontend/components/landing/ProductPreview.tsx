@@ -269,7 +269,7 @@ export function ProductPreview() {
             {/* Event title bar */}
             <rect x="0" y="0" width="330" height="28" fill="white" opacity="0.9" />
             <text x="12" y="17" fontSize="8" fontWeight="600" fill="#3D3535" fontFamily="Georgia, serif">
-              Sarah & James — Grand Ballroom
+              Sarah & James · Grand Ballroom
             </text>
             <rect x="240" y="8" width="38" height="13" rx="3" fill="#E8B4B8" opacity="0.85" />
             <text x="259" y="17" textAnchor="middle" fontSize="4.5" fill="white" fontWeight="500" fontFamily="Inter, sans-serif">

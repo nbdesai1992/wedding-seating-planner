@@ -7,14 +7,14 @@ const steps = [
     number: "01",
     title: "Create Your Event",
     description:
-      "Set up your event and describe your venue in your own words. Whether it's a grand ballroom, a rustic barn, or an intimate garden — your layout appears in seconds.",
+      "Set up your event and describe your venue in your own words. Whether it's a grand ballroom, a rustic barn, or an intimate garden, your layout appears in seconds.",
     accent: "#D4A574",
   },
   {
     number: "02",
     title: "Build Your Guest List",
     description:
-      "Import your guest list or add guests one by one. Track RSVPs, meal choices, seating groups, and plus-ones — all in one organized view.",
+      "Import your guest list or add guests one by one. Track RSVPs, meal choices, seating groups, and plus-ones, all in one organized view.",
     accent: "#E8B4B8",
   },
   {
@@ -58,7 +58,7 @@ export function HowItWorks() {
             Three Simple Steps
           </h2>
           <p className="text-warm-gray-400 max-w-md mx-auto text-base">
-            From your guest list to a finished seating chart in minutes — not hours.
+            From your guest list to a finished seating chart in minutes, not hours.
           </p>
           <div className="divider-gold mx-auto max-w-[160px] mt-6" />
         </div>

@@ -304,7 +304,7 @@ const features = [
   {
     title: "Describe Your Venue, Watch It Come to Life",
     description:
-      "Tell us about your space — the shape, the size, the vibe — and watch your custom layout appear instantly. No floor plans or measuring tape needed.",
+      "Tell us about your space, the shape, the size, the vibe, and watch your custom layout appear instantly. No floor plans or measuring tape needed.",
     Visual: VenueVisual,
     imageFirst: true,
   },
@@ -318,7 +318,7 @@ const features = [
   {
     title: "Manage Every Detail",
     description:
-      "Guest lists, meal preferences, groups, plus-ones, RSVPs — everything organized in one beautiful place so nothing falls through the cracks.",
+      "Guest lists, meal preferences, groups, plus-ones, RSVPs. Everything organized in one beautiful place so nothing falls through the cracks.",
     Visual: GuestListVisual,
     imageFirst: true,
   },

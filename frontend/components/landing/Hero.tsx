@@ -160,7 +160,7 @@ export function Hero() {
             {/* Subtitle */}
             <p className="text-lg sm:text-xl leading-relaxed mb-10" style={{ color: "#8B7D7D" }}>
               The effortless way to plan your wedding seating chart. Describe your venue,
-              arrange your tables, and seat every guest — all in one beautiful place.
+              arrange your tables, and seat every guest. All in one beautiful place.
             </p>
 
             {/* CTA */}
