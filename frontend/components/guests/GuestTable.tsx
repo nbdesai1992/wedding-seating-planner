@@ -12,6 +12,8 @@ import {
   Check,
   X,
   Users,
+  Upload,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Guest } from "@/lib/guests";
@@ -209,27 +211,52 @@ export function GuestTable({
                   <Users className="w-7 h-7 text-rose-300" />
                 </div>
                 <p className="text-sm font-medium text-warm-gray-700 mb-1">
-                  No guests yet
+                  Your guest list starts here
                 </p>
-                <p className="text-xs text-warm-gray-400 mb-5">
-                  Start building your guest list by adding guests individually
-                  or importing a CSV file.
+                <p className="text-xs text-warm-gray-400 max-w-sm mx-auto mb-6 leading-relaxed">
+                  Add guests one at a time, or import your full list from a
+                  spreadsheet. You&apos;ll need guests before you can create a
+                  seating chart.
                 </p>
-                <div className="flex items-center justify-center gap-3">
+
+                {/* Two option cards */}
+                <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3 max-w-md mx-auto mb-4">
                   <button
                     onClick={onAdd}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-rose-500 text-white rounded-soft shadow-sm hover:bg-rose-600 transition-colors"
+                    className={cn(
+                      "flex-1 flex flex-col items-center gap-2 px-5 py-4",
+                      "bg-rose-500 text-white rounded-card shadow-sm",
+                      "hover:bg-rose-600 transition-colors group"
+                    )}
                   >
-                    <UserPlus className="w-4 h-4" />
-                    Add First Guest
+                    <UserPlus className="w-5 h-5" />
+                    <span className="text-sm font-medium">Add Guest</span>
+                    <span className="text-[11px] text-rose-200">
+                      Enter details manually
+                    </span>
                   </button>
                   <button
                     onClick={onImportCSV}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-cream-100 text-warm-gray-700 border border-cream-300 rounded-soft hover:bg-cream-200 transition-colors"
+                    className={cn(
+                      "flex-1 flex flex-col items-center gap-2 px-5 py-4",
+                      "bg-cream-50 text-warm-gray-700 rounded-card",
+                      "border border-cream-300",
+                      "hover:bg-cream-100 hover:border-rose-200 transition-colors group"
+                    )}
                   >
-                    Import CSV
+                    <Upload className="w-5 h-5 text-gold-400" />
+                    <span className="text-sm font-medium">Import CSV</span>
+                    <span className="text-[11px] text-warm-gray-400">
+                      Upload your spreadsheet
+                    </span>
                   </button>
                 </div>
+
+                {/* Hint */}
+                <p className="text-[11px] text-warm-gray-400 flex items-center gap-1.5 justify-center">
+                  <ArrowRight className="w-3 h-3 text-gold-400" />
+                  After adding guests, head to the Seating tab to assign them
+                </p>
               </>
             ) : (
               <>

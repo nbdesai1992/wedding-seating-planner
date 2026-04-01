@@ -15,6 +15,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { getEvent, type Event } from "@/lib/events";
+import { ProgressIndicator } from "@/components/events/ProgressIndicator";
 
 const navItems = [
   { label: "Overview", href: "", icon: LayoutDashboard },
@@ -152,6 +153,14 @@ export default function EventLayout({
 
             <div className="divider-gold mb-6" />
 
+            {/* Progress indicator */}
+            <ProgressIndicator
+              eventId={eventId}
+              guestCount={event.guest_count}
+            />
+
+            <div className="divider-gold mb-6" />
+
             {/* Navigation */}
             <nav className="space-y-1">
               {navItems.map((item) => {
@@ -183,6 +192,12 @@ export default function EventLayout({
 
         {/* Mobile nav */}
         <div className="md:hidden border-b border-cream-200 bg-white w-full fixed top-[calc(1px+56px)] z-10">
+          <div className="px-4 pt-2 pb-1">
+            <ProgressIndicator
+              eventId={eventId}
+              guestCount={event.guest_count}
+            />
+          </div>
           <div className="flex items-center gap-1 px-4 py-2 overflow-x-auto">
             {navItems.map((item) => {
               const href = basePath + item.href;

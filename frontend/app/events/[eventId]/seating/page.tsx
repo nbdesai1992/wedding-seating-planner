@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Canvas,
   ZoomControls,
@@ -29,14 +29,34 @@ import {
   type Feature,
   type SeatingSuggestion,
 } from "@/lib/layout";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Users, Sparkles, ArrowRight } from "lucide-react";
+import { getGuests } from "@/lib/guests";
+
+// ── Example Prompts ────────────────────────────────────────
+
+const EXAMPLE_PROMPTS = [
+  "A ballroom with 8 round tables, a dance floor in the center, and a head table at the front",
+  "An outdoor garden reception with 6 rectangular farm tables in two rows and a stage area",
+  "An intimate dinner with 4 round tables of 10 and a sweetheart table for the couple",
+  "A banquet hall with 12 round tables, a DJ booth, a bar, and a photo booth near the entrance",
+];
 
 // ── Empty State ────────────────────────────────────────────
 
-function EmptyCanvas() {
+function EmptyCanvas({
+  guestCount,
+  eventId,
+  onPromptClick,
+}: {
+  guestCount: number;
+  eventId: string;
+  onPromptClick: (prompt: string) => void;
+}) {
+  const router = useRouter();
+
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div className="text-center max-w-md px-8">
+      <div className="text-center max-w-lg px-8 pointer-events-auto">
         <div className="w-16 h-16 rounded-full bg-cream-100 border border-cream-200 mx-auto mb-4 flex items-center justify-center">
           <svg
             width="28"
@@ -58,13 +78,57 @@ function EmptyCanvas() {
         <h3 className="font-serif text-lg text-warm-gray-700 mb-2">
           Design Your Seating Layout
         </h3>
-        <p className="text-sm text-warm-gray-400 leading-relaxed">
-          Use the prompt bar above to describe your venue and we&apos;ll create a
-          layout for you. Try something like:{" "}
-          <span className="text-warm-gray-500 italic">
-            &ldquo;A ballroom with 8 round tables, a dance floor in the center,
-            and a head table at the front&rdquo;
-          </span>
+        <p className="text-sm text-warm-gray-400 leading-relaxed mb-5">
+          Describe your venue in the prompt bar above, or pick one of these
+          examples to get started:
+        </p>
+
+        {/* No-guests warning */}
+        {guestCount === 0 && (
+          <div className="mb-5 mx-auto max-w-md flex items-center gap-3 px-4 py-3 rounded-card bg-amber-50 border border-amber-200">
+            <Users className="w-4 h-4 text-amber-500 shrink-0" />
+            <div className="text-left">
+              <p className="text-xs font-medium text-amber-700">
+                No guests added yet
+              </p>
+              <p className="text-[11px] text-amber-600/80 mt-0.5">
+                Add guests first so you can assign them to seats later.
+              </p>
+            </div>
+            <button
+              onClick={() =>
+                router.push(`/events/${eventId}/guests`)
+              }
+              className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-soft transition-colors"
+            >
+              Add Guests
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+        )}
+
+        {/* Clickable example prompts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
+          {EXAMPLE_PROMPTS.map((prompt, i) => (
+            <button
+              key={i}
+              onClick={() => onPromptClick(prompt)}
+              className="group text-left px-3.5 py-2.5 rounded-card border border-cream-200 bg-white/80 hover:border-gold-400/40 hover:shadow-card transition-all duration-200"
+            >
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-3 h-3 text-gold-400 mt-0.5 shrink-0 group-hover:text-gold-500 transition-colors" />
+                <span className="text-xs text-warm-gray-500 leading-relaxed group-hover:text-warm-gray-700 transition-colors line-clamp-2">
+                  {prompt}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Tip */}
+        <p className="text-[11px] text-warm-gray-400 leading-relaxed max-w-sm mx-auto">
+          Tip: Add your guests from the Guests tab first, then come back here to
+          assign them to seats.
         </p>
       </div>
     </div>
@@ -81,6 +145,7 @@ export default function SeatingPage() {
   const [isLoadingLayout, setIsLoadingLayout] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [guestCount, setGuestCount] = useState<number>(0);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null
   );
@@ -94,7 +159,7 @@ export default function SeatingPage() {
     panY: 60,
   });
 
-  // ── Load layout on mount ──────────────────────────────
+  // ── Load layout + guest count on mount ─────────────────
   useEffect(() => {
     async function load() {
       try {
@@ -107,7 +172,16 @@ export default function SeatingPage() {
         setIsLoadingLayout(false);
       }
     }
+    async function loadGuestCount() {
+      try {
+        const guests = await getGuests(eventId);
+        setGuestCount(guests.length);
+      } catch {
+        // Non-critical, default 0
+      }
+    }
     load();
+    loadGuestCount();
   }, [eventId]);
 
   // ── Generate layout from prompt ───────────────────────
@@ -154,6 +228,14 @@ export default function SeatingPage() {
       }
     },
     [eventId, transform]
+  );
+
+  // ── Example prompt click → generate directly ──────────
+  const handleExamplePromptClick = useCallback(
+    (prompt: string) => {
+      handleGenerate(prompt);
+    },
+    [handleGenerate]
   );
 
   // ── Canvas click (deselect) ───────────────────────────
@@ -453,7 +535,13 @@ export default function SeatingPage() {
           onCanvasClick={handleCanvasClick}
         >
           {/* Empty state */}
-          {!hasLayout && !isGenerating && <EmptyCanvas />}
+          {!hasLayout && !isGenerating && (
+            <EmptyCanvas
+              guestCount={guestCount}
+              eventId={eventId}
+              onPromptClick={handleExamplePromptClick}
+            />
+          )}
 
           {/* Tables */}
           {layout?.tables.map((table) => (

@@ -10,10 +10,13 @@ import {
   Grid3X3,
   ArrowRight,
   Sparkles,
+  CheckCircle2,
+  Circle,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { getEvent, type Event } from "@/lib/events";
+import { getLayout, type Layout } from "@/lib/layout";
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return "Date TBD";
@@ -46,7 +49,9 @@ export default function EventDetailPage() {
   const eventId = params.eventId as string;
 
   const [event, setEvent] = useState<Event | null>(null);
+  const [layout, setLayout] = useState<Layout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [layoutLoaded, setLayoutLoaded] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -62,6 +67,24 @@ export default function EventDetailPage() {
     load();
   }, [eventId, router]);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadLayout() {
+      try {
+        const data = await getLayout(eventId);
+        if (!cancelled) setLayout(data);
+      } catch {
+        // Layout doesn't exist yet — that's fine
+      } finally {
+        if (!cancelled) setLayoutLoaded(true);
+      }
+    }
+    loadLayout();
+    return () => {
+      cancelled = true;
+    };
+  }, [eventId]);
+
   if (isLoading || !event) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -71,6 +94,25 @@ export default function EventDetailPage() {
   }
 
   const countdown = daysUntil(event.date);
+
+  // ── Compute state for guided hints ──
+  const guestCount = event.guest_count;
+  const hasGuests = guestCount > 0;
+  const hasLayout = layout !== null && layout.tables.length > 0;
+  const tableCount = layout?.tables.length ?? 0;
+  const seatedCount =
+    layout?.tables.reduce(
+      (sum, t) =>
+        sum + (t.seats?.filter((s) => s.guest_id !== null).length ?? 0),
+      0
+    ) ?? 0;
+
+  // "Start here" logic:
+  // - No guests yet → badge on Guests card
+  // - Has guests but no layout → badge on Seating Chart card
+  // - Both exist → no badge needed
+  const showGuestBadge = !hasGuests;
+  const showSeatingBadge = hasGuests && !hasLayout;
 
   return (
     <div className="max-w-3xl animate-fade-in">
@@ -122,7 +164,7 @@ export default function EventDetailPage() {
             </div>
             <div>
               <p className="text-2xl font-serif font-semibold text-warm-gray-800">
-                {event.guest_count}
+                {guestCount}
               </p>
               <p className="text-xs text-warm-gray-400">Guests</p>
             </div>
@@ -172,10 +214,12 @@ export default function EventDetailPage() {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Guests card — always first */}
         <Card
           hover
           padding="md"
           onClick={() => router.push(`/events/${eventId}/guests`)}
+          className={showGuestBadge ? "ring-2 ring-rose-300/60 ring-offset-1" : ""}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -183,11 +227,20 @@ export default function EventDetailPage() {
                 <Users className="w-5 h-5 text-rose-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-warm-gray-700">
-                  Manage Guests
-                </p>
-                <p className="text-xs text-warm-gray-400">
-                  Add and organize your guest list
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-warm-gray-700">
+                    Manage Guests
+                  </p>
+                  {showGuestBadge && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-rose-400 text-white shadow-sm">
+                      Start here
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-warm-gray-400 mt-0.5">
+                  {hasGuests
+                    ? `${guestCount} guest${guestCount !== 1 ? "s" : ""} added`
+                    : "Add your guest list first"}
                 </p>
               </div>
             </div>
@@ -195,10 +248,12 @@ export default function EventDetailPage() {
           </div>
         </Card>
 
+        {/* Seating Chart card — always second */}
         <Card
           hover
           padding="md"
           onClick={() => router.push(`/events/${eventId}/seating`)}
+          className={showSeatingBadge ? "ring-2 ring-gold-400/60 ring-offset-1" : ""}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -206,11 +261,20 @@ export default function EventDetailPage() {
                 <Grid3X3 className="w-5 h-5 text-gold-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-warm-gray-700">
-                  Seating Chart
-                </p>
-                <p className="text-xs text-warm-gray-400">
-                  Design your table layout
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-warm-gray-700">
+                    Seating Chart
+                  </p>
+                  {showSeatingBadge && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-gold-400 text-white shadow-sm">
+                      Start here
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-warm-gray-400 mt-0.5">
+                  {hasLayout
+                    ? `${tableCount} table${tableCount !== 1 ? "s" : ""} set up`
+                    : "Create your layout after adding guests"}
                 </p>
               </div>
             </div>
@@ -218,6 +282,76 @@ export default function EventDetailPage() {
           </div>
         </Card>
       </div>
+
+      {/* ── Progress Checklist ── */}
+      {layoutLoaded && (
+        <>
+          <div className="divider-gold my-8" />
+
+          <h2 className="font-serif text-lg font-semibold text-warm-gray-800 mb-4">
+            Planning Checklist
+          </h2>
+
+          <Card padding="md">
+            <ul className="space-y-3">
+              {/* Guests check */}
+              <li className="flex items-center gap-3">
+                {hasGuests ? (
+                  <CheckCircle2 className="w-5 h-5 text-rose-400 shrink-0" />
+                ) : (
+                  <Circle className="w-5 h-5 text-warm-gray-300 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium ${hasGuests ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
+                    Guests
+                  </p>
+                  <p className={`text-xs ${hasGuests ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
+                    {hasGuests ? `${guestCount} added` : "0 added"}
+                  </p>
+                </div>
+              </li>
+
+              {/* Layout check */}
+              <li className="flex items-center gap-3">
+                {hasLayout ? (
+                  <CheckCircle2 className="w-5 h-5 text-rose-400 shrink-0" />
+                ) : (
+                  <Circle className="w-5 h-5 text-warm-gray-300 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium ${hasLayout ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
+                    Layout
+                  </p>
+                  <p className={`text-xs ${hasLayout ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
+                    {hasLayout
+                      ? `${tableCount} table${tableCount !== 1 ? "s" : ""} created`
+                      : "Not created"}
+                  </p>
+                </div>
+              </li>
+
+              {/* Seating check */}
+              <li className="flex items-center gap-3">
+                {guestCount > 0 && seatedCount >= guestCount ? (
+                  <CheckCircle2 className="w-5 h-5 text-rose-400 shrink-0" />
+                ) : (
+                  <Circle className="w-5 h-5 text-warm-gray-300 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium ${guestCount > 0 && seatedCount >= guestCount ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
+                    Seating
+                  </p>
+                  <p className={`text-xs ${guestCount > 0 && seatedCount >= guestCount ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
+                    {guestCount > 0
+                      ? `${seatedCount}/${guestCount} seated`
+                      : "0/0 seated"}
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </Card>
+        </>
+      )}
     </div>
   );
 }

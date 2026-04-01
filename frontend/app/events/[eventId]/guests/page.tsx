@@ -16,10 +16,20 @@ import {
 import { GuestTable } from "@/components/guests/GuestTable";
 import { GuestForm } from "@/components/guests/GuestForm";
 import { CSVImport } from "@/components/guests/CSVImport";
+import { ToastProvider, useToast } from "@/components/providers/ToastProvider";
 
 export default function GuestsPage() {
+  return (
+    <ToastProvider>
+      <GuestsContent />
+    </ToastProvider>
+  );
+}
+
+function GuestsContent() {
   const params = useParams();
   const eventId = params.eventId as string;
+  const toast = useToast();
 
   const [guests, setGuests] = useState<Guest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,12 +66,14 @@ export default function GuestsPage() {
   async function handleCreateGuest(data: CreateGuestData | UpdateGuestData) {
     await createGuest(eventId, data as CreateGuestData);
     await loadGuests();
+    toast.success("Guest added successfully");
   }
 
   async function handleUpdateGuest(data: CreateGuestData | UpdateGuestData) {
     if (!editGuest) return;
     await updateGuest(eventId, editGuest.id, data as UpdateGuestData);
     await loadGuests();
+    toast.success("Guest updated");
   }
 
   async function handleDeleteGuest(guest: Guest) {
@@ -78,8 +90,9 @@ export default function GuestsPage() {
         return next;
       });
       await loadGuests();
+      toast.success("Guest removed");
     } catch {
-      setError("Failed to delete guest. Please try again.");
+      toast.error("Failed to delete guest. Please try again.");
     } finally {
       setShowDeleteConfirm(null);
     }
@@ -93,14 +106,16 @@ export default function GuestsPage() {
     );
     if (!confirmed) return;
 
+    const count = selectedIds.size;
     try {
       await Promise.all(
         Array.from(selectedIds).map((id) => deleteGuest(eventId, id))
       );
       setSelectedIds(new Set());
       await loadGuests();
+      toast.success(`${count} guest${count !== 1 ? "s" : ""} removed`);
     } catch {
-      setError("Some deletions failed. Please try again.");
+      toast.error("Some deletions failed. Please try again.");
       await loadGuests();
     }
   }
@@ -108,7 +123,9 @@ export default function GuestsPage() {
   async function handleCSVImport(file: File): Promise<number> {
     const imported = await importCSV(eventId, file);
     await loadGuests();
-    return imported.length;
+    const count = imported.length;
+    toast.success(`Imported ${count} guest${count !== 1 ? "s" : ""}!`);
+    return count;
   }
 
   function handleToggleSelect(id: string) {

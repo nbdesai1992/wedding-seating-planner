@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Heart, CalendarDays } from "lucide-react";
+import { Plus, Heart, CalendarDays, Users, LayoutGrid, ArrowRight } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/Button";
 import { EventCard } from "@/components/events/EventCard";
@@ -145,20 +145,65 @@ export default function DashboardPage() {
 }
 
 function EmptyState({ onCreate }: { onCreate: () => void }) {
+  const steps = [
+    {
+      number: "1",
+      label: "Create your event",
+      description: "Name it, set the date",
+      icon: <CalendarDays className="w-4 h-4" />,
+    },
+    {
+      number: "2",
+      label: "Add your guests",
+      description: "One by one or import CSV",
+      icon: <Users className="w-4 h-4" />,
+    },
+    {
+      number: "3",
+      label: "Design your seating",
+      description: "AI arranges your layout",
+      icon: <LayoutGrid className="w-4 h-4" />,
+    },
+  ];
+
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-4">
+    <div className="flex flex-col items-center justify-center py-16 px-4">
       <div className="w-20 h-20 rounded-full bg-rose-50 flex items-center justify-center mb-6">
         <CalendarDays className="w-10 h-10 text-rose-300" />
       </div>
 
       <h2 className="font-serif text-xl font-semibold text-warm-gray-800 mb-2">
-        No events yet
+        Plan your perfect seating
       </h2>
-      <p className="text-sm text-warm-gray-400 text-center max-w-sm mb-8">
-        Create your first event to start planning the seating arrangement for
-        your special day.
+      <p className="text-sm text-warm-gray-400 text-center max-w-md mb-10">
+        Three simple steps to a beautifully arranged celebration.
       </p>
 
+      {/* 3-step journey */}
+      <div className="flex items-start gap-3 sm:gap-5 mb-10 max-w-lg w-full">
+        {steps.map((step, i) => (
+          <React.Fragment key={step.number}>
+            <div className="flex-1 text-center">
+              <div className="w-10 h-10 rounded-full bg-cream-100 border border-cream-200 flex items-center justify-center mx-auto mb-2.5 text-gold-400">
+                {step.icon}
+              </div>
+              <p className="text-xs font-semibold text-warm-gray-700 mb-0.5">
+                {step.label}
+              </p>
+              <p className="text-[11px] text-warm-gray-400 leading-snug">
+                {step.description}
+              </p>
+            </div>
+            {i < steps.length - 1 && (
+              <div className="pt-5 text-warm-gray-300 shrink-0">
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* CTA */}
       <Button
         size="lg"
         icon={<Plus className="w-4 h-4" />}
