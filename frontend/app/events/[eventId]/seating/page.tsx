@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Canvas,
@@ -12,14 +12,19 @@ import {
   SeatingAI,
   SuggestionOverlay,
   ExportButton,
+  CreationToolbar,
   type CanvasTransform,
+  type TableDefaults,
+  type FeatureDefaults,
 } from "@/components/canvas";
 import {
   getLayout,
   generateLayout,
   modifyLayout,
+  createTable,
   updateTable,
   deleteTable,
+  createFeature,
   updateFeature,
   deleteFeature,
   assignSeat,
@@ -79,8 +84,8 @@ function EmptyCanvas({
           Design Your Seating Layout
         </h3>
         <p className="text-sm text-warm-gray-400 leading-relaxed mb-5">
-          Describe your venue in the prompt bar above, or pick one of these
-          examples to get started:
+          Describe your venue in the prompt bar, use the toolbar to add
+          elements manually, or pick an example to get started:
         </p>
 
         {/* No-guests warning */}
@@ -236,6 +241,125 @@ export default function SeatingPage() {
       handleGenerate(prompt);
     },
     [handleGenerate]
+  );
+
+  // ── Ref for viewport-center calculation ───────────────
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+
+  function getViewportCenter(): { x: number; y: number } {
+    const rect = canvasContainerRef.current?.getBoundingClientRect();
+    const w = rect?.width ?? 800;
+    const h = rect?.height ?? 600;
+    return {
+      x: (w / 2 - transform.panX) / transform.zoom,
+      y: (h / 2 - transform.panY) / transform.zoom,
+    };
+  }
+
+  // ── Manual table creation ─────────────────────────────
+  const handleCreateTable = useCallback(
+    async (shape: string, defaults: TableDefaults) => {
+      const center = getViewportCenter();
+
+      // Auto-name: "Table N" avoiding collisions
+      const existingNums = (layout?.tables || []).map((t) => {
+        const m = t.name.match(/^Table (\d+)$/);
+        return m ? parseInt(m[1]) : 0;
+      });
+      const nextNum =
+        existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+
+      try {
+        const table = await createTable(eventId, {
+          name: `Table ${nextNum}`,
+          shape: shape as Table["shape"],
+          x: Math.round(center.x - defaults.width / 2),
+          y: Math.round(center.y - defaults.height / 2),
+          width: defaults.width,
+          height: defaults.height,
+          seat_count: defaults.seatCount,
+        });
+        setLayout((prev) => {
+          if (!prev) {
+            // First element on a blank layout — wrap in a layout shell
+            return {
+              id: table.layout_id,
+              event_id: eventId,
+              canvas_width: 2000,
+              canvas_height: 1500,
+              tables: [table],
+              features: [],
+            };
+          }
+          return { ...prev, tables: [...prev.tables, table] };
+        });
+        setSelectedElementId(table.id);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to create table"
+        );
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [eventId, layout, transform]
+  );
+
+  // ── Manual feature creation ───────────────────────────
+  const handleCreateFeature = useCallback(
+    async (type: string, defaults: FeatureDefaults) => {
+      const center = getViewportCenter();
+
+      // Auto-name from type label
+      const typeLabels: Record<string, string> = {
+        dance_floor: "Dance Floor",
+        bar: "Bar",
+        cake_table: "Cake Table",
+        stage: "Stage",
+        custom: "Feature",
+      };
+      const label = typeLabels[type] || "Feature";
+
+      // Avoid duplicate names
+      const existingOfType = (layout?.features || []).filter(
+        (f) => f.type === type
+      );
+      const name =
+        existingOfType.length === 0
+          ? label
+          : `${label} ${existingOfType.length + 1}`;
+
+      try {
+        const feature = await createFeature(eventId, {
+          name,
+          type,
+          shape: "rectangle",
+          x: Math.round(center.x - defaults.width / 2),
+          y: Math.round(center.y - defaults.height / 2),
+          width: defaults.width,
+          height: defaults.height,
+        });
+        setLayout((prev) => {
+          if (!prev) {
+            return {
+              id: feature.layout_id,
+              event_id: eventId,
+              canvas_width: 2000,
+              canvas_height: 1500,
+              tables: [],
+              features: [feature],
+            };
+          }
+          return { ...prev, features: [...prev.features, feature] };
+        });
+        setSelectedElementId(feature.id);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to create feature"
+        );
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [eventId, layout, transform]
   );
 
   // ── Canvas click (deselect) ───────────────────────────
@@ -488,7 +612,7 @@ export default function SeatingPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] -m-8 animate-fade-in">
       {/* Prompt bar + Toolbar */}
-      <div className="px-6 pt-5 pb-3">
+      <div className="px-6 pt-5 pb-3 space-y-2">
         <div className="flex items-start gap-3">
           <div className="flex-1">
             <PromptBar
@@ -510,6 +634,13 @@ export default function SeatingPage() {
           )}
         </div>
 
+        {/* Manual creation toolbar */}
+        <CreationToolbar
+          onCreateTable={handleCreateTable}
+          onCreateFeature={handleCreateFeature}
+          disabled={isGenerating}
+        />
+
         {/* Error message */}
         {error && (
           <div className="mt-3 flex items-center gap-2 px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-soft">
@@ -526,7 +657,7 @@ export default function SeatingPage() {
       </div>
 
       {/* Canvas area */}
-      <div className="flex-1 relative mx-3 mb-3 rounded-card overflow-hidden border border-cream-200 bg-cream-50">
+      <div ref={canvasContainerRef} className="flex-1 relative mx-3 mb-3 rounded-card overflow-hidden border border-cream-200 bg-cream-50">
         <Canvas
           width={layout?.canvas_width || 2000}
           height={layout?.canvas_height || 1500}

@@ -13,3 +13,10 @@ export { type SeatDropData, extractGuestFromDrop } from "./SeatDropZone";
 export { SeatingAI } from "./SeatingAI";
 export { SuggestionOverlay } from "./SuggestionOverlay";
 export { ExportButton } from "./ExportButton";
+export {
+  CreationToolbar,
+  TABLE_CATALOG,
+  FEATURE_CATALOG,
+  type TableDefaults,
+  type FeatureDefaults,
+} from "./CreationToolbar";

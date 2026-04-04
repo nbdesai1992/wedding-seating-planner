@@ -16,7 +16,7 @@ export interface Table {
   id: string;
   layout_id: string;
   name: string;
-  shape: "round" | "rectangle" | "oval";
+  shape: "round" | "rectangle" | "sweetheart";
   x: number;
   y: number;
   width: number;

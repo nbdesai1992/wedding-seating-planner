@@ -37,7 +37,7 @@ function computeSeatPositions(
   const cx = width / 2;
   const cy = height / 2;
 
-  if (shape === "round" || shape === "oval") {
+  if (shape === "round") {
     // Evenly spaced around an ellipse
     const rx = width / 2 + 14;
     const ry = height / 2 + 14;
@@ -104,16 +104,13 @@ function computeSeatPositions(
       }
     }
   } else {
-    // Sweetheart / oval fallback — seats along the curved front edge
-    const rx = width / 2 + 14;
-    const ry = height / 2 + 14;
-    // Seats along the front arc (180 degrees)
+    // Sweetheart — seats evenly spaced along the flat bottom edge
+    const margin = 14;
     for (let i = 0; i < seatCount; i++) {
-      const angle =
-        Math.PI * (i / (seatCount - 1 || 1)) - Math.PI / 2;
+      const spacing = width / (seatCount + 1);
       positions.push({
-        x: cx + rx * Math.cos(angle),
-        y: cy + ry * Math.sin(angle) * 0.8,
+        x: spacing * (i + 1),
+        y: height + margin,
       });
     }
   }
@@ -150,7 +147,8 @@ export function TableElement({
   const h = localSize?.h ?? table.height;
   const rotation = localRotation ?? table.rotation;
 
-  const isRound = table.shape === "round" || table.shape === "oval";
+  const isRound = table.shape === "round";
+  const isSweetheart = table.shape === "sweetheart";
   const seatedCount = table.seats.filter((s) => s.guest_id).length;
   const totalSeats = table.seats.length;
   const seatPositions = computeSeatPositions(table.shape, totalSeats, w, h);
@@ -276,9 +274,6 @@ export function TableElement({
     onDelete(table.id);
   }, [table.id, onDelete]);
 
-  // ── Sweetheart shape clip path ────────────────────────
-  const isHeart = table.shape === "oval"; // sweetheart
-
   return (
     <div
       data-element-wrapper
@@ -303,7 +298,7 @@ export function TableElement({
         <div
           className={cn(
             "absolute -inset-1 border-2 border-gold-400/60 pointer-events-none",
-            isRound || isHeart ? "rounded-full" : "rounded-xl"
+            isRound ? "rounded-full" : isSweetheart ? "rounded-t-full rounded-b-none" : "rounded-xl"
           )}
         />
       )}
@@ -317,7 +312,7 @@ export function TableElement({
             ? "border-rose-400 shadow-lg"
             : "border-rose-200 shadow-card group-hover:shadow-card-hover group-hover:border-rose-300",
           "bg-white/90 backdrop-blur-sm",
-          isRound ? "rounded-full" : isHeart ? "rounded-full" : "rounded-card"
+          isRound ? "rounded-full" : isSweetheart ? "rounded-t-full rounded-b-none" : "rounded-card"
         )}
       >
         {/* Table label */}
