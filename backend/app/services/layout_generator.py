@@ -29,21 +29,37 @@ SYSTEM_PROMPT = """You are a wedding venue layout designer. Given a venue descri
 you produce a structured JSON layout with tables and features positioned on a 2000x1500
 canvas (pixels).
 
-RULES:
-1. Tables and features must NOT overlap. Leave at least 20px padding between elements.
-2. Keep all elements within the canvas bounds (0-2000 for x, 0-1500 for y), accounting
+CRITICAL — NO OVERLAPPING:
+- NEVER place any element on top of another. Every table and feature must have its own
+  clear space with at least 40px of padding between all elements.
+- Features like the dance floor, stage, and bar are large obstacles. Place tables AROUND
+  them, never overlapping or on top of them.
+- The sweetheart or head table should FACE the dance floor from a nearby position, not
+  sit inside it.
+- Before finalizing positions, mentally verify that no two bounding boxes
+  (x, y, x+width, y+height) intersect when expanded by 40px on each side.
+
+LAYOUT RULES:
+1. Keep all elements within canvas bounds (0-2000 for x, 0-1500 for y), accounting
    for element width/height so nothing extends past the edges.
-3. Use sensible default sizes:
-   - Round tables: width=120, height=120 for 8 seats; scale proportionally for other counts
+2. Use these default sizes:
+   - Round tables: width=140, height=140 for 8-10 seats; width=120, height=120 for 6 or fewer
    - Rectangle tables: width=200, height=100 for 8 seats; scale proportionally
-   - Sweetheart tables: width=100, height=80 for 2 seats
-   - Dance floor: typically 300x300 to 500x500
+   - Sweetheart tables: width=120, height=80 for 2 seats
+   - Dance floor: typically 350x350 to 500x500
    - Bar: typically 250x80
    - Stage: typically 400x150
-   - Cake table: typically 80x80
-4. Distribute tables evenly across available space (grid or organic arrangement).
-5. Name tables sequentially: "Table 1", "Table 2", etc. unless the description specifies names.
-6. Each table must have a seat_count between 1 and 50.
+   - Cake table: typically 100x100
+3. Distribute tables evenly across the space NOT occupied by features. Use a grid
+   or organic arrangement with generous spacing.
+4. Name tables sequentially: "Table 1", "Table 2", etc. unless the description specifies names.
+5. Each table must have a seat_count between 1 and 50.
+
+POSITIONING STRATEGY:
+- First, place large features (dance floor, stage) in their logical positions.
+- Then arrange tables in the remaining open space around those features.
+- Leave wide aisles (at least 60px) between rows of tables for walkways.
+- Place the sweetheart/head table in a prominent position facing the dance floor or stage.
 
 You MUST respond with ONLY valid JSON (no markdown, no explanation) in this exact format:
 {
@@ -53,8 +69,8 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation) in this exac
       "shape": "round",
       "x": 200,
       "y": 200,
-      "width": 120,
-      "height": 120,
+      "width": 140,
+      "height": 140,
       "seat_count": 8
     }
   ],
@@ -166,6 +182,63 @@ def _validate_layout_json(data: dict) -> dict:
     tables = [_validate_table(t) for t in data.get("tables", [])]
     features = [_validate_feature(f) for f in data.get("features", [])]
     return {"tables": tables, "features": features}
+
+
+# ---------------------------------------------------------------------------
+# Overlap resolution
+# ---------------------------------------------------------------------------
+
+OVERLAP_PADDING = 40  # px minimum gap between elements
+
+
+def _boxes_overlap(a: dict, b: dict, padding: int = OVERLAP_PADDING) -> bool:
+    """Check if two element bounding boxes overlap (with padding)."""
+    return not (
+        a["x"] + a["width"] + padding <= b["x"]
+        or b["x"] + b["width"] + padding <= a["x"]
+        or a["y"] + a["height"] + padding <= b["y"]
+        or b["y"] + b["height"] + padding <= a["y"]
+    )
+
+
+def _resolve_overlaps(layout_data: dict) -> dict:
+    """Shift overlapping elements apart as a post-processing safety net.
+
+    Features are treated as anchors (placed first, don't move).
+    Tables are shifted if they overlap with anything.
+    """
+    features = layout_data.get("features", [])
+    tables = layout_data.get("tables", [])
+
+    # All anchors: features come first and stay fixed
+    anchors: list[dict] = list(features)
+
+    resolved_tables = []
+    for table in tables:
+        t = dict(table)  # work on a copy
+        # Try to resolve overlaps with up to 20 attempts
+        for _ in range(20):
+            has_overlap = False
+            for other in anchors + resolved_tables:
+                if other is t:
+                    continue
+                if _boxes_overlap(t, other):
+                    has_overlap = True
+                    # Shift table to the right of the overlapping element
+                    t["x"] = other["x"] + other["width"] + OVERLAP_PADDING
+                    # If pushed past canvas right edge, wrap to next row
+                    if t["x"] + t["width"] > 2000:
+                        t["x"] = OVERLAP_PADDING
+                        t["y"] = t["y"] + t["height"] + OVERLAP_PADDING
+                    # Clamp to canvas
+                    t["x"] = max(0, min(2000 - t["width"], t["x"]))
+                    t["y"] = max(0, min(1500 - t["height"], t["y"]))
+                    break  # re-check from the start
+            if not has_overlap:
+                break
+        resolved_tables.append(t)
+
+    return {"tables": resolved_tables, "features": features}
 
 
 # ---------------------------------------------------------------------------
@@ -310,6 +383,9 @@ def generate_layout(
         raise ValueError(f"Failed to parse AI response as JSON: {e}")
 
     layout_data = _validate_layout_json(raw_data)
+
+    # Resolve any overlapping elements the AI produced
+    layout_data = _resolve_overlaps(layout_data)
 
     # Clear existing and persist new
     _clear_existing_layout(layout, db)

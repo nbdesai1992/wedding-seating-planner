@@ -26,6 +26,7 @@ from app.services.layout_generator import (
     _validate_table,
     _validate_feature,
     _generate_seat_positions,
+    _resolve_overlaps,
 )
 
 
@@ -41,18 +42,19 @@ Your job is to apply the requested modifications and return the COMPLETE updated
 CRITICAL RULES:
 1. PRESERVE all elements that the user did NOT mention. Do not remove or change anything
    unless the user explicitly asks for it.
-2. When adding new elements, ensure they don't overlap with existing ones. Leave at least
-   20px padding between elements.
+2. NEVER place any element on top of another. Ensure at least 40px padding between
+   ALL elements. Features like the dance floor and stage are obstacles — place tables
+   AROUND them, never on top.
 3. Keep all elements within the canvas bounds (0-2000 for x, 0-1500 for y), accounting
    for width/height so nothing extends past edges.
 4. Use sensible default sizes for new elements:
-   - Round tables: width=120, height=120 for 8 seats; scale proportionally for other counts
+   - Round tables: width=140, height=140 for 8-10 seats; width=120, height=120 for 6 or fewer
    - Rectangle tables: width=200, height=100 for 8 seats; scale proportionally
-   - Sweetheart tables: width=100, height=80 for 2 seats
-   - Dance floor: typically 300x300 to 500x500
+   - Sweetheart tables: width=120, height=80 for 2 seats
+   - Dance floor: typically 350x350 to 500x500
    - Bar: typically 250x80
    - Stage: typically 400x150
-   - Cake table: typically 80x80
+   - Cake table: typically 100x100
 5. Name new tables sequentially after existing ones (e.g., if "Table 5" exists, start at "Table 6")
    unless the user specifies names.
 6. Each table must have a seat_count between 1 and 50.
@@ -435,6 +437,9 @@ def modify_layout(
         "tables": [_validate_table(t) for t in raw_data.get("tables", [])],
         "features": [_validate_feature(f) for f in raw_data.get("features", [])],
     }
+
+    # Resolve any overlapping elements
+    new_data = _resolve_overlaps(new_data)
 
     # Apply diff between current and new layout
     _apply_layout_changes(layout, current_data, new_data, db)

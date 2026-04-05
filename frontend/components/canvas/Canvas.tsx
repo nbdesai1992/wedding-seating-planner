@@ -240,7 +240,7 @@ export function Canvas({
       className={cn(
         "relative w-full h-full overflow-hidden select-none",
         "bg-cream-50",
-        isPanning || isSpaceDown ? "cursor-grabbing" : "cursor-default",
+        isPanning || isSpaceDown ? "cursor-grabbing" : "cursor-grab",
         className
       )}
       style={gridStyle}

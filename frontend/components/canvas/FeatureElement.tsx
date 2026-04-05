@@ -295,7 +295,7 @@ export function FeatureElement({
         />
         <span
           className={cn(
-            "text-xs font-medium text-center px-2 leading-tight",
+            "text-sm font-medium text-center px-2 leading-tight",
             styles.text
           )}
         >

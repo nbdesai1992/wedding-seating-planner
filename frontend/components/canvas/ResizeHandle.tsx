@@ -180,6 +180,16 @@ function SingleHandle({
         }
       }
 
+      // Shift+drag: proportional resize for corner handles
+      if (e.shiftKey && position.length === 2) {
+        const aspect = startRef.current.w / startRef.current.h;
+        if (newW / newH > aspect) {
+          newW = Math.max(minWidth, Math.round(newH * aspect));
+        } else {
+          newH = Math.max(minHeight, Math.round(newW / aspect));
+        }
+      }
+
       onResize(Math.round(newW), Math.round(newH), Math.round(offsetX), Math.round(offsetY));
     },
     [zoom, position, onResize, minWidth, minHeight]

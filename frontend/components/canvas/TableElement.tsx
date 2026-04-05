@@ -317,11 +317,11 @@ export function TableElement({
       >
         {/* Table label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-xs font-serif font-semibold text-warm-gray-700 leading-tight truncate max-w-[80%] text-center">
+          <span className="text-sm font-serif font-semibold text-warm-gray-700 leading-tight truncate max-w-[90%] text-center">
             {table.name}
           </span>
-          <span className="text-[10px] text-warm-gray-400 mt-0.5 flex items-center gap-0.5">
-            <Users className="w-2.5 h-2.5" />
+          <span className="text-xs text-warm-gray-400 mt-0.5 flex items-center gap-0.5">
+            <Users className="w-3 h-3" />
             {seatedCount}/{totalSeats}
           </span>
         </div>
