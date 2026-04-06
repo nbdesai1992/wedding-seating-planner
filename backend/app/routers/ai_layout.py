@@ -19,10 +19,11 @@ from app.models.seat import Seat
 from app.models.table import Table
 from app.models.user import User
 from app.models.venue_feature import VenueFeature
-from app.schemas.ai_layout import LayoutGenerateRequest, LayoutModifyRequest
+from app.schemas.ai_layout import LayoutGenerateRequest, LayoutModifyRequest, LayoutConfigRequest
 from app.schemas.layout import LayoutResponse
 from app.services.layout_generator import generate_layout
 from app.services.layout_modifier import modify_layout
+from app.services.layout_config_generator import generate_layout_from_config
 
 # Reuse the response helpers from the layout router
 from app.routers.layout import (
@@ -32,6 +33,19 @@ from app.routers.layout import (
 )
 
 router = APIRouter(prefix="/api/events/{event_id}/layout", tags=["ai-layout"])
+
+
+def _reload_layout(layout_id, db):
+    """Reload a layout with all nested relationships."""
+    return (
+        db.query(Layout)
+        .options(
+            joinedload(Layout.tables).joinedload(Table.seats).joinedload(Seat.guest),
+            joinedload(Layout.venue_features),
+        )
+        .filter(Layout.id == layout_id)
+        .first()
+    )
 
 
 @router.post("/generate", response_model=LayoutResponse)
@@ -67,17 +81,7 @@ def generate_venue_layout(
             detail=str(e),
         )
 
-    # Reload layout with all relationships
-    layout = (
-        db.query(Layout)
-        .options(
-            joinedload(Layout.tables).joinedload(Table.seats).joinedload(Seat.guest),
-            joinedload(Layout.venue_features),
-        )
-        .filter(Layout.id == layout.id)
-        .first()
-    )
-    return _layout_to_response(layout)
+    return _layout_to_response(_reload_layout(layout.id, db))
 
 
 @router.post("/modify", response_model=LayoutResponse)
@@ -114,14 +118,28 @@ def modify_venue_layout(
             detail=str(e),
         )
 
-    # Reload layout with all relationships
-    layout = (
-        db.query(Layout)
-        .options(
-            joinedload(Layout.tables).joinedload(Table.seats).joinedload(Seat.guest),
-            joinedload(Layout.venue_features),
-        )
-        .filter(Layout.id == layout.id)
-        .first()
+    return _layout_to_response(_reload_layout(layout.id, db))
+
+
+@router.post("/generate-config", response_model=LayoutResponse)
+def generate_layout_from_config_endpoint(
+    event_id: uuid.UUID,
+    payload: LayoutConfigRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Generate a venue layout from structured configuration (no AI).
+
+    Takes table count, shape, features etc. and computes positions
+    deterministically. Instant, reliable, zero-overlap results.
+    """
+    _get_user_event_or_404(event_id, current_user.id, db)
+    layout = _get_or_create_layout(event_id, db)
+
+    generate_layout_from_config(
+        config=payload.model_dump(),
+        layout=layout,
+        db=db,
     )
-    return _layout_to_response(layout)
+
+    return _layout_to_response(_reload_layout(layout.id, db))

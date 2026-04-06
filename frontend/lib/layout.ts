@@ -71,6 +71,30 @@ export async function updateLayout(
   return api.put<Layout>(`/api/events/${eventId}/layout`, data);
 }
 
+// ── Layout Config (Deterministic) ──────────────────────────
+
+export interface LayoutConfig {
+  table_count: number;
+  table_shape: "round" | "rectangle";
+  seats_per_table: number;
+  include_sweetheart: boolean;
+  include_dance_floor: boolean;
+  dance_floor_position: "center" | "front" | "left" | "right";
+  include_bar: boolean;
+  include_stage: boolean;
+  include_cake_table: boolean;
+}
+
+export async function generateLayoutFromConfig(
+  eventId: string,
+  config: LayoutConfig
+): Promise<Layout> {
+  return api.post<Layout>(
+    `/api/events/${eventId}/layout/generate-config`,
+    config
+  );
+}
+
 export async function generateLayout(
   eventId: string,
   description: string

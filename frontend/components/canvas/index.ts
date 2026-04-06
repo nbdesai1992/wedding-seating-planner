@@ -20,3 +20,4 @@ export {
   type TableDefaults,
   type FeatureDefaults,
 } from "./CreationToolbar";
+export { LayoutWizard } from "./LayoutWizard";

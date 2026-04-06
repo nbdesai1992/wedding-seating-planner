@@ -19,6 +19,20 @@ class LayoutGenerateRequest(BaseModel):
     )
 
 
+class LayoutConfigRequest(BaseModel):
+    """Structured layout configuration for deterministic generation."""
+
+    table_count: int = Field(..., ge=1, le=40)
+    table_shape: str = Field(default="round")
+    seats_per_table: int = Field(default=8, ge=2, le=20)
+    include_sweetheart: bool = Field(default=True)
+    include_dance_floor: bool = Field(default=True)
+    dance_floor_position: str = Field(default="center")
+    include_bar: bool = Field(default=False)
+    include_stage: bool = Field(default=False)
+    include_cake_table: bool = Field(default=False)
+
+
 class LayoutModifyRequest(BaseModel):
     """Request body for AI layout modification."""
 

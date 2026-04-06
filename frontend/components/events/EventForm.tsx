@@ -129,22 +129,6 @@ export function EventForm({
                 hint="You can set this later if you haven't decided yet"
               />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-warm-gray-700">
-                  Venue Description
-                </label>
-                <textarea
-                  placeholder="Describe the venue — e.g., 'Grand ballroom with 20 round tables, dance floor on the left, head table at the front'"
-                  value={venueDescription}
-                  onChange={(e) => setVenueDescription(e.target.value)}
-                  rows={4}
-                  className="w-full px-3 py-2 text-sm bg-white border rounded-soft text-warm-gray-800 placeholder:text-warm-gray-400 transition-all duration-150 ease-out border-cream-300 hover:border-rose-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 focus:ring-offset-1 focus:outline-none resize-none"
-                />
-                <p className="text-xs text-warm-gray-400 mt-0.5">
-                  This helps the AI generate your seating layout
-                </p>
-              </div>
-
               <div className="divider-gold my-1" />
 
               <div className="flex items-center gap-3 pt-1">

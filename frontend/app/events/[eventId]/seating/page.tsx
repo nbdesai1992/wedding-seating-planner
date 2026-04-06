@@ -13,6 +13,7 @@ import {
   SuggestionOverlay,
   ExportButton,
   CreationToolbar,
+  LayoutWizard,
   type CanvasTransform,
   type TableDefaults,
   type FeatureDefaults,
@@ -20,6 +21,7 @@ import {
 import {
   getLayout,
   generateLayout,
+  generateLayoutFromConfig,
   modifyLayout,
   createTable,
   updateTable,
@@ -30,115 +32,13 @@ import {
   assignSeat,
   unassignSeat,
   type Layout,
+  type LayoutConfig,
   type Table,
   type Feature,
   type SeatingSuggestion,
 } from "@/lib/layout";
-import { AlertCircle, Users, Sparkles, ArrowRight } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { getGuests } from "@/lib/guests";
-
-// ── Example Prompts ────────────────────────────────────────
-
-const EXAMPLE_PROMPTS = [
-  "A ballroom with 8 round tables, a dance floor in the center, and a head table at the front",
-  "An outdoor garden reception with 6 rectangular farm tables in two rows and a stage area",
-  "An intimate dinner with 4 round tables of 10 and a sweetheart table for the couple",
-  "A banquet hall with 12 round tables, a DJ booth, a bar, and a photo booth near the entrance",
-];
-
-// ── Empty State ────────────────────────────────────────────
-
-function EmptyCanvas({
-  guestCount,
-  eventId,
-  onPromptClick,
-}: {
-  guestCount: number;
-  eventId: string;
-  onPromptClick: (prompt: string) => void;
-}) {
-  const router = useRouter();
-
-  return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div className="text-center max-w-lg px-8 pointer-events-auto">
-        <div className="w-16 h-16 rounded-full bg-cream-100 border border-cream-200 mx-auto mb-4 flex items-center justify-center">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-gold-400"
-          >
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="3" y="14" width="7" height="7" rx="1" />
-            <rect x="14" y="14" width="7" height="7" rx="1" />
-          </svg>
-        </div>
-        <h3 className="font-serif text-lg text-warm-gray-700 mb-2">
-          Design Your Seating Layout
-        </h3>
-        <p className="text-sm text-warm-gray-400 leading-relaxed mb-5">
-          Describe your venue in the prompt bar, use the toolbar to add
-          elements manually, or pick an example to get started:
-        </p>
-
-        {/* No-guests warning */}
-        {guestCount === 0 && (
-          <div className="mb-5 mx-auto max-w-md flex items-center gap-3 px-4 py-3 rounded-card bg-amber-50 border border-amber-200">
-            <Users className="w-4 h-4 text-amber-500 shrink-0" />
-            <div className="text-left">
-              <p className="text-xs font-medium text-amber-700">
-                No guests added yet
-              </p>
-              <p className="text-[11px] text-amber-600/80 mt-0.5">
-                Add guests first so you can assign them to seats later.
-              </p>
-            </div>
-            <button
-              onClick={() =>
-                router.push(`/events/${eventId}/guests`)
-              }
-              className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-soft transition-colors"
-            >
-              Add Guests
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-        )}
-
-        {/* Clickable example prompts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
-          {EXAMPLE_PROMPTS.map((prompt, i) => (
-            <button
-              key={i}
-              onClick={() => onPromptClick(prompt)}
-              className="group text-left px-3.5 py-2.5 rounded-card border border-cream-200 bg-white/80 hover:border-gold-400/40 hover:shadow-card transition-all duration-200"
-            >
-              <div className="flex items-start gap-2">
-                <Sparkles className="w-3 h-3 text-gold-400 mt-0.5 shrink-0 group-hover:text-gold-500 transition-colors" />
-                <span className="text-xs text-warm-gray-500 leading-relaxed group-hover:text-warm-gray-700 transition-colors line-clamp-2">
-                  {prompt}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Tip */}
-        <p className="text-[11px] text-warm-gray-400 leading-relaxed max-w-sm mx-auto">
-          Tip: Add your guests from the Guests tab first, then come back here to
-          assign them to seats.
-        </p>
-      </div>
-    </div>
-  );
-}
 
 // ── Main Page ──────────────────────────────────────────────
 
@@ -235,12 +135,25 @@ export default function SeatingPage() {
     [eventId, transform]
   );
 
-  // ── Example prompt click → generate directly ──────────
-  const handleExamplePromptClick = useCallback(
-    (prompt: string) => {
-      handleGenerate(prompt);
+  // ── Generate layout from structured config (wizard) ────
+  const handleGenerateFromConfig = useCallback(
+    async (config: LayoutConfig) => {
+      setIsGenerating(true);
+      setError(null);
+      setSelectedElementId(null);
+      try {
+        const data = await generateLayoutFromConfig(eventId, config);
+        setLayout(data);
+        setTransform({ zoom: 0.65, panX: 80, panY: 80 });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to generate layout";
+        setError(message);
+      } finally {
+        setIsGenerating(false);
+      }
     },
-    [handleGenerate]
+    [eventId]
   );
 
   // ── Ref for viewport-center calculation ───────────────
@@ -665,12 +578,11 @@ export default function SeatingPage() {
           onTransformChange={setTransform}
           onCanvasClick={handleCanvasClick}
         >
-          {/* Empty state */}
+          {/* Empty state — guided wizard */}
           {!hasLayout && !isGenerating && (
-            <EmptyCanvas
-              guestCount={guestCount}
-              eventId={eventId}
-              onPromptClick={handleExamplePromptClick}
+            <LayoutWizard
+              onGenerate={handleGenerateFromConfig}
+              isLoading={isGenerating}
             />
           )}
 

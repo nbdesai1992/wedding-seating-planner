@@ -138,16 +138,18 @@ export function Canvas({
         return;
       }
 
-      // Left-click on empty space
-      if (e.button === 0 && e.target === e.currentTarget) {
-        // Determine if this is a click or start of a drag-to-pan
-        setIsPanning(true);
-        panStartRef.current = {
-          x: e.clientX,
-          y: e.clientY,
-          panX: transform.panX,
-          panY: transform.panY,
-        };
+      // Left-click on empty space (not on a table/feature element)
+      if (e.button === 0) {
+        const target = e.target as HTMLElement;
+        if (target === e.currentTarget || !target.closest("[data-element-wrapper]")) {
+          setIsPanning(true);
+          panStartRef.current = {
+            x: e.clientX,
+            y: e.clientY,
+            panX: transform.panX,
+            panY: transform.panY,
+          };
+        }
       }
     },
     [isSpaceDown, transform.panX, transform.panY]
@@ -229,7 +231,7 @@ export function Canvas({
   const offsetY = (transform.panY % gridSpacing + gridSpacing) % gridSpacing;
 
   const gridStyle: React.CSSProperties = {
-    backgroundImage: `radial-gradient(circle, rgba(212,165,116,0.28) ${dotSize}px, transparent ${dotSize}px)`,
+    backgroundImage: `radial-gradient(circle, rgba(212,165,116,0.45) ${dotSize}px, transparent ${dotSize}px)`,
     backgroundSize: `${gridSpacing}px ${gridSpacing}px`,
     backgroundPosition: `${offsetX}px ${offsetY}px`,
   };
