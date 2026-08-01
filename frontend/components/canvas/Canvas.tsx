@@ -241,7 +241,8 @@ export function Canvas({
       ref={containerRef}
       className={cn(
         "relative w-full h-full overflow-hidden select-none",
-        "bg-cream-50",
+        // Transparent so the page's warm gradient reads through the room
+        "bg-transparent",
         isPanning || isSpaceDown ? "cursor-grabbing" : "cursor-grab",
         className
       )}
@@ -260,7 +261,7 @@ export function Canvas({
       >
         {/* Canvas boundary indicator */}
         <div
-          className="absolute inset-0 border border-dashed border-cream-300/50 rounded-sm pointer-events-none"
+          className="absolute inset-0 border border-dashed border-gold-400/25 rounded-card pointer-events-none"
           style={{ width: `${width}px`, height: `${height}px` }}
         />
         {children}

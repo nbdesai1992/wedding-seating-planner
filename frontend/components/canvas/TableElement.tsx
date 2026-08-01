@@ -307,9 +307,9 @@ export function TableElement({
       <div
         className={cn(
           "w-full h-full",
-          "border-2 transition-all duration-150",
+          "border-2 transition-[border-color,box-shadow] duration-150 ease-out",
           isSelected
-            ? "border-rose-400 shadow-lg"
+            ? "border-rose-400 shadow-lifted"
             : "border-rose-200 shadow-card group-hover:shadow-card-hover group-hover:border-rose-300",
           "bg-white/90 backdrop-blur-sm",
           isRound ? "rounded-full" : isSweetheart ? "rounded-t-full rounded-b-none" : "rounded-card"

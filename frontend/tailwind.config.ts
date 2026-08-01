@@ -54,6 +54,7 @@ const config: Config = {
       borderRadius: {
         soft: "8px",
         card: "12px",
+        "card-lg": "20px",
         pill: "9999px",
       },
       boxShadow: {
@@ -62,6 +63,33 @@ const config: Config = {
         modal: "0 20px 60px -12px rgba(61, 53, 53, 0.2)",
         "rose-glow": "0 0 0 3px rgba(232, 180, 184, 0.25)",
         "gold-glow": "0 0 0 3px rgba(212, 165, 116, 0.2)",
+        /* Editorial warm-ink shadow system: tinted toward warm-gray ink, never black */
+        soft: "0 1px 2px rgba(61, 53, 53, 0.04), 0 10px 28px -10px rgba(61, 53, 53, 0.09)",
+        lifted:
+          "0 2px 6px rgba(61, 53, 53, 0.05), 0 22px 44px -14px rgba(61, 53, 53, 0.13)",
+        "btn-rose": "0 2px 10px rgba(168, 106, 112, 0.25)",
+        "btn-rose-hover": "0 8px 22px -4px rgba(168, 106, 112, 0.35)",
+        "btn-gold": "0 2px 10px rgba(156, 110, 72, 0.22)",
+        "btn-gold-hover": "0 8px 22px -4px rgba(156, 110, 72, 0.32)",
+      },
+      letterSpacing: {
+        eyebrow: "0.32em",
+        "eyebrow-wide": "0.55em",
+      },
+      fontSize: {
+        /* Half-pixel UI type tuning */
+        ui: ["13.5px", { lineHeight: "1.5" }],
+        "ui-sm": ["12.5px", { lineHeight: "1.45" }],
+        "ui-xs": ["11.5px", { lineHeight: "1.4" }],
+      },
+      keyframes: {
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "fade-up": "fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both",
       },
       spacing: {
         18: "4.5rem",

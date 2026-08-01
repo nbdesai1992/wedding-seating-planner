@@ -209,18 +209,19 @@ export function GuestSidebar({
         <button
           onClick={() => setIsCollapsed(false)}
           className={cn(
-            "flex items-center gap-1.5 px-2.5 py-2 rounded-l-lg",
-            "bg-white/95 backdrop-blur-sm border border-r-0 border-cream-200",
-            "text-warm-gray-500 hover:text-warm-gray-700 hover:bg-cream-50",
-            "shadow-card transition-all duration-200"
+            "flex items-center gap-1.5 pl-3 pr-2.5 py-2 rounded-l-pill",
+            "bg-white/70 backdrop-blur-md border border-r-0 border-white/70",
+            "text-warm-gray-500 hover:text-warm-gray-700 hover:bg-white/90",
+            "shadow-soft press",
+            "transition-[background-color,color] duration-200"
           )}
           title="Show guest panel"
         >
           <PanelRightOpen className="w-4 h-4" />
-          <span className="text-[10px] font-medium writing-mode-vertical">
+          <span className="text-[10px] font-medium uppercase tracking-eyebrow">
             Guests
           </span>
-          <span className="text-[9px] bg-rose-100 text-rose-600 px-1 py-0.5 rounded-full font-medium">
+          <span className="text-[9px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded-pill font-medium">
             {totalSeated}/{guests.length}
           </span>
         </button>
@@ -233,62 +234,65 @@ export function GuestSidebar({
     <div
       className={cn(
         "absolute right-0 top-0 bottom-0 z-20",
-        "w-72 bg-white/97 backdrop-blur-sm",
-        "border-l border-cream-200 shadow-[-4px_0_16px_rgba(0,0,0,0.04)]",
+        "w-72 bg-white/80 backdrop-blur-xl",
+        "border-l border-white/70 shadow-lifted",
         "flex flex-col",
-        "transition-all duration-300",
-        isDragOverSidebar && "ring-2 ring-inset ring-rose-300 bg-rose-50/30"
+        "transition-[background-color,box-shadow] duration-300",
+        isDragOverSidebar && "ring-2 ring-inset ring-rose-300 bg-rose-50/40"
       )}
       onDragOver={handleSidebarDragOver}
       onDragLeave={handleSidebarDragLeave}
       onDrop={handleSidebarDrop}
     >
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-cream-100">
-        <div className="flex items-center justify-between mb-3">
+      <div className="px-4 pt-4 pb-3 border-b border-cream-200/70">
+        <div className="flex items-center justify-between mb-1">
+          <p className="eyebrow eyebrow-rose text-[9.5px] leading-none">
+            The Guest List
+          </p>
+          <button
+            onClick={() => setIsCollapsed(true)}
+            className="p-1 rounded-pill hover:bg-cream-100 text-warm-gray-400 hover:text-warm-gray-600 transition-colors"
+            title="Hide guest panel"
+          >
+            <PanelRightClose className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        <div className="flex items-baseline justify-between mb-3">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-rose-400" />
-            <h3 className="text-sm font-serif font-semibold text-warm-gray-700">
+            <h3 className="font-serif text-[15px] font-medium text-warm-gray-800">
               Guests
             </h3>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-medium text-warm-gray-400">
-              <span className="text-rose-500">{totalSeated}</span>
-              <span className="mx-0.5">of</span>
-              <span>{guests.length}</span>
-              <span className="ml-0.5">seated</span>
-            </span>
-            <button
-              onClick={() => setIsCollapsed(true)}
-              className="p-1 rounded hover:bg-cream-100 text-warm-gray-400 hover:text-warm-gray-600 transition-colors"
-              title="Hide guest panel"
-            >
-              <PanelRightClose className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <span className="text-ui-xs font-medium text-warm-gray-400">
+            <span className="text-rose-600">{totalSeated}</span>
+            <span className="mx-0.5">of</span>
+            <span>{guests.length}</span>
+            <span className="ml-0.5">seated</span>
+          </span>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-warm-gray-300" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-warm-gray-300" />
           <input
             type="text"
             placeholder="Search guests..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
-              "w-full pl-8 pr-3 py-1.5 text-xs",
-              "bg-cream-50 border border-cream-200 rounded-lg",
+              "w-full pl-9 pr-3 py-1.5 text-ui-xs",
+              "bg-white/70 border border-cream-300 rounded-pill",
               "text-warm-gray-700 placeholder:text-warm-gray-300",
-              "focus:outline-none focus:border-rose-300 focus:ring-1 focus:ring-rose-200",
-              "transition-all duration-150"
+              "focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200/60",
+              "transition-[border-color,box-shadow] duration-150"
             )}
           />
         </div>
 
         {/* Progress bar */}
-        <div className="mt-2.5 h-1.5 bg-cream-100 rounded-full overflow-hidden">
+        <div className="mt-2.5 h-1.5 bg-cream-200/80 rounded-pill overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-rose-300 to-rose-400 rounded-full transition-all duration-500 ease-out"
             style={{
@@ -324,8 +328,8 @@ export function GuestSidebar({
             {unseatedGuests.length > 0 && (
               <div className="px-2 pt-3 pb-1">
                 <div className="px-2 mb-1.5 flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cream-300" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-warm-gray-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cream-400" />
+                  <span className="text-[10px] font-medium uppercase tracking-eyebrow text-warm-gray-400">
                     Unseated
                   </span>
                   <span className="text-[10px] text-warm-gray-300 ml-auto">
@@ -342,7 +346,7 @@ export function GuestSidebar({
 
             {/* Divider between sections */}
             {unseatedGuests.length > 0 && seatedByTable.size > 0 && (
-              <div className="mx-4 my-2 border-t border-cream-100" />
+              <div className="mx-4 my-2 hairline-full" />
             )}
 
             {/* Seated section (grouped by table) */}
@@ -350,7 +354,7 @@ export function GuestSidebar({
               <div className="px-2 pt-1 pb-3">
                 <div className="px-2 mb-1.5 flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-warm-gray-400">
+                  <span className="text-[10px] font-medium uppercase tracking-eyebrow text-warm-gray-400">
                     Seated
                   </span>
                   <span className="text-[10px] text-warm-gray-300 ml-auto">
@@ -420,7 +424,7 @@ export function GuestSidebar({
 
       {/* Drop hint when dragging seated guest back */}
       {isDragOverSidebar && (
-        <div className="absolute inset-x-4 bottom-4 py-3 rounded-lg bg-rose-100/80 border border-rose-200 text-center pointer-events-none">
+        <div className="absolute inset-x-4 bottom-4 py-3 rounded-card bg-rose-100/80 border border-rose-200 text-center pointer-events-none">
           <p className="text-xs font-medium text-rose-600">
             Drop here to unassign
           </p>

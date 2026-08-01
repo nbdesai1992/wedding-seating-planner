@@ -40,6 +40,89 @@ import {
 import { AlertCircle } from "lucide-react";
 import { getGuests } from "@/lib/guests";
 
+// ── Ghost placeholders (designed empty-canvas state) ───────
+// Faint, non-interactive sketches of a wedding room — dashed tables
+// with seat dots, a sweetheart table, and a dance floor — so the
+// blank canvas reads as an invitation rather than an empty panel.
+
+function GhostTable({
+  x,
+  y,
+  size = 120,
+  seats = 8,
+  label,
+}: {
+  x: number;
+  y: number;
+  size?: number;
+  seats?: number;
+  label?: string;
+}) {
+  const r = size / 2 + 14;
+  return (
+    <div
+      className="absolute pointer-events-none"
+      style={{ left: `${x}px`, top: `${y}px`, width: `${size}px`, height: `${size}px` }}
+      aria-hidden="true"
+    >
+      <div className="w-full h-full rounded-full border-2 border-dashed border-rose-300/45 flex items-center justify-center">
+        {label && (
+          <span className="font-serif italic text-[13px] text-rose-400/60 select-none">
+            {label}
+          </span>
+        )}
+      </div>
+      {Array.from({ length: seats }).map((_, i) => {
+        const angle = ((2 * Math.PI) / seats) * i - Math.PI / 2;
+        return (
+          <div
+            key={i}
+            className="absolute w-3 h-3 rounded-full border border-dashed border-rose-300/40"
+            style={{
+              left: `${size / 2 + r * Math.cos(angle) - 6}px`,
+              top: `${size / 2 + r * Math.sin(angle) - 6}px`,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function GhostPlaceholders() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+      {/* Sweetheart table at the head of the room */}
+      <div
+        className="absolute rounded-t-full border-2 border-dashed border-gold-400/40"
+        style={{ left: "560px", top: "120px", width: "170px", height: "95px" }}
+      >
+        <span className="absolute inset-0 flex items-center justify-center pt-4 font-serif italic text-[13px] text-gold-600/50 select-none">
+          the two of you
+        </span>
+      </div>
+
+      {/* Dance floor sketch */}
+      <div
+        className="absolute border-2 border-dashed border-gold-400/35 rounded-card flex items-center justify-center"
+        style={{ left: "520px", top: "540px", width: "250px", height: "220px" }}
+      >
+        <span className="font-serif italic text-[14px] text-gold-600/45 select-none">
+          dance floor
+        </span>
+      </div>
+
+      {/* Ghost guest tables ringing the room */}
+      <GhostTable x={220} y={300} label="family" />
+      <GhostTable x={950} y={280} label="friends" />
+      <GhostTable x={180} y={640} seats={6} size={100} />
+      <GhostTable x={990} y={620} seats={6} size={100} />
+      <GhostTable x={340} y={920} label="&hellip;" />
+      <GhostTable x={860} y={940} seats={6} size={100} />
+    </div>
+  );
+}
+
 // ── Main Page ──────────────────────────────────────────────
 
 export default function SeatingPage() {
@@ -516,7 +599,7 @@ export default function SeatingPage() {
       <div className="flex items-center justify-center h-[calc(100vh-120px)]">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-2 border-rose-400 border-t-transparent rounded-full mx-auto mb-3" />
-          <p className="text-sm text-warm-gray-400">Loading layout...</p>
+          <p className="text-ui-sm text-warm-gray-400">Preparing your room&hellip;</p>
         </div>
       </div>
     );
@@ -556,12 +639,12 @@ export default function SeatingPage() {
 
         {/* Error message */}
         {error && (
-          <div className="mt-3 flex items-center gap-2 px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-soft">
+          <div className="mt-3 flex items-center gap-2.5 px-5 py-2.5 bg-rose-50/80 border border-rose-200 rounded-pill shadow-soft animate-fade-up">
             <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
-            <p className="text-xs text-rose-600">{error}</p>
+            <p className="text-ui-xs text-rose-600">{error}</p>
             <button
               onClick={() => setError(null)}
-              className="ml-auto text-xs text-rose-400 hover:text-rose-600"
+              className="ml-auto text-ui-xs text-rose-400 hover:text-rose-600 transition-colors duration-150"
             >
               Dismiss
             </button>
@@ -570,7 +653,11 @@ export default function SeatingPage() {
       </div>
 
       {/* Canvas area */}
-      <div ref={canvasContainerRef} className="flex-1 relative mx-3 mb-3 rounded-card overflow-hidden border border-cream-200 bg-cream-50">
+      {/* Feathered translucent wash — the page gradient reads through the room */}
+      <div
+        ref={canvasContainerRef}
+        className="flex-1 relative mx-3 mb-3 rounded-card-lg overflow-hidden border border-white/70 bg-white/40 shadow-soft"
+      >
         <Canvas
           width={layout?.canvas_width || 2000}
           height={layout?.canvas_height || 1500}
@@ -578,13 +665,8 @@ export default function SeatingPage() {
           onTransformChange={setTransform}
           onCanvasClick={handleCanvasClick}
         >
-          {/* Empty state — guided wizard */}
-          {!hasLayout && !isGenerating && (
-            <LayoutWizard
-              onGenerate={handleGenerateFromConfig}
-              isLoading={isGenerating}
-            />
-          )}
+          {/* Empty state — ghost room sketch (pans/zooms with the canvas) */}
+          {!hasLayout && !isGenerating && <GhostPlaceholders />}
 
           {/* Tables */}
           {layout?.tables.map((table) => (
@@ -614,6 +696,14 @@ export default function SeatingPage() {
           ))}
         </Canvas>
 
+        {/* Empty state — guided wizard, fixed to the viewport (not the zoom transform) */}
+        {!hasLayout && !isGenerating && (
+          <LayoutWizard
+            onGenerate={handleGenerateFromConfig}
+            isLoading={isGenerating}
+          />
+        )}
+
         {/* Zoom controls */}
         <ZoomControls
           transform={transform}
@@ -623,9 +713,9 @@ export default function SeatingPage() {
 
         {/* Generating overlay */}
         {isGenerating && (
-          <div className="absolute inset-0 bg-cream-50/60 backdrop-blur-sm flex items-center justify-center z-30 rounded-card">
-            <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-white border border-cream-200 shadow-card mx-auto mb-4 flex items-center justify-center">
+          <div className="absolute inset-0 bg-cream-50/60 backdrop-blur-sm flex items-center justify-center z-30 rounded-card-lg">
+            <div className="text-center animate-fade-up">
+              <div className="w-14 h-14 rounded-full bg-white/90 border border-white/70 shadow-soft mx-auto mb-4 flex items-center justify-center">
                 <svg
                   className="animate-spin h-6 w-6 text-gold-400"
                   xmlns="http://www.w3.org/2000/svg"
@@ -647,13 +737,13 @@ export default function SeatingPage() {
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-warm-gray-700">
-                {hasLayout ? "Modifying your layout..." : "Designing your layout..."}
+              <p className="font-serif text-[16px] font-medium text-warm-gray-800">
+                {hasLayout ? "Refining your room..." : "Arranging your room..."}
               </p>
-              <p className="text-xs text-warm-gray-400 mt-1">
+              <p className="text-ui-xs text-warm-gray-400 mt-1">
                 {hasLayout
-                  ? "Our AI is applying your changes"
-                  : "Our AI is arranging tables and features"}
+                  ? "Applying your changes to the layout"
+                  : "Placing tables, seats, and features"}
               </p>
             </div>
           </div>

@@ -15,17 +15,17 @@ export function Navbar({ className }: NavbarProps) {
       className={cn(
         "sticky top-0 z-40",
         "h-14 px-6 flex items-center justify-between",
-        "bg-white/80 backdrop-blur-md",
-        "border-b border-cream-200",
+        "bg-white/70 backdrop-blur-md",
+        "border-b border-cream-200/80",
         className
       )}
     >
       {/* Logo / App Name */}
       <div className="flex items-center gap-2.5">
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-100">
+        <div className="flex items-center justify-center w-8 h-8 rounded-pill bg-rose-100 shadow-soft">
           <Heart size={16} className="text-rose-400 fill-rose-400" />
         </div>
-        <span className="font-serif text-lg font-semibold text-warm-gray-800 tracking-tight">
+        <span className="font-serif text-lg font-medium text-warm-gray-800 tracking-[0.02em]">
           Seated
         </span>
       </div>
@@ -36,7 +36,7 @@ export function Navbar({ className }: NavbarProps) {
           elements: {
             avatarBox: "w-8 h-8 ring-2 ring-rose-100",
             userButtonPopoverCard:
-              "shadow-card-hover border border-cream-200 rounded-card",
+              "shadow-lifted border border-cream-200 rounded-card-lg",
             userButtonPopoverActionButton:
               "text-warm-gray-600 hover:bg-cream-50",
             userButtonPopoverActionButtonText: "text-warm-gray-600 text-sm",

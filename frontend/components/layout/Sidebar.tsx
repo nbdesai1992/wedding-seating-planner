@@ -37,21 +37,19 @@ export function Sidebar({
     <aside
       className={cn(
         "w-60 shrink-0 h-full",
-        "bg-cream-100 border-r border-cream-200",
+        "bg-white/40 backdrop-blur-md border-r border-cream-200/80",
         "flex flex-col",
         className
       )}
     >
       {/* Event context header */}
       <div className="px-5 pt-6 pb-4">
-        <p className="text-xs font-medium text-warm-gray-400 uppercase tracking-wider mb-1">
-          Event
-        </p>
+        <p className="eyebrow mb-1.5">Event</p>
         <h3 className="font-serif text-base font-semibold text-warm-gray-800 truncate">
           {eventName}
         </h3>
         {eventDate && (
-          <p className="text-xs text-warm-gray-400 mt-0.5">{eventDate}</p>
+          <p className="text-ui-xs text-warm-gray-400 mt-0.5">{eventDate}</p>
         )}
         <div className="divider-gold mt-4" />
       </div>
@@ -64,10 +62,10 @@ export function Sidebar({
             <button
               key={item.label}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-soft",
-                "text-sm transition-all duration-150",
+                "w-full flex items-center gap-3 px-3.5 py-2 rounded-pill",
+                "text-ui transition-[background-color,color,box-shadow] duration-150",
                 isActive
-                  ? "bg-white text-warm-gray-800 shadow-card font-medium"
+                  ? "bg-white text-warm-gray-800 shadow-soft font-medium"
                   : "text-warm-gray-500 hover:bg-white/60 hover:text-warm-gray-700"
               )}
             >
@@ -91,7 +89,7 @@ export function Sidebar({
       {/* Footer */}
       <div className="px-5 py-4">
         <div className="divider-gold mb-3" />
-        <p className="text-[11px] text-warm-gray-400 text-center">
+        <p className="text-ui-xs text-warm-gray-400 text-center tracking-[0.08em]">
           Seated &middot; Wedding Planner
         </p>
       </div>

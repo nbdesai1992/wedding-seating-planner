@@ -124,7 +124,7 @@ export function PromptBar({
         {/* Outer glow on focus */}
         <div
           className={cn(
-            "absolute -inset-px rounded-card transition-shadow duration-300",
+            "absolute -inset-px rounded-pill transition-shadow duration-300 pointer-events-none",
             isFocused
               ? "shadow-[0_0_0_3px_rgba(212,165,116,0.15)]"
               : ""
@@ -134,13 +134,13 @@ export function PromptBar({
         <div
           className={cn(
             "relative flex items-center gap-3",
-            "bg-white/95 backdrop-blur-sm",
-            "border rounded-card",
-            "pl-4 pr-3 py-3",
-            "transition-all duration-200",
+            "bg-white/80 backdrop-blur-md",
+            "border rounded-pill",
+            "pl-2.5 pr-2.5 py-2",
+            "transition-[border-color,box-shadow,background-color] duration-200 ease-out",
             isFocused
-              ? "border-gold-400/60 shadow-card-hover"
-              : "border-cream-200 shadow-card hover:border-cream-300"
+              ? "border-gold-400/60 shadow-lifted bg-white/90"
+              : "border-white/70 shadow-soft hover:border-cream-300"
           )}
         >
           {/* Mode indicator + icon */}
@@ -178,11 +178,11 @@ export function PromptBar({
             {/* Mode badge */}
             <span
               className={cn(
-                "text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full",
+                "text-[9.5px] font-medium uppercase tracking-eyebrow px-2.5 py-1 rounded-pill leading-none",
                 "transition-colors duration-200",
                 mode === "modify"
-                  ? "bg-rose-400/10 text-rose-500"
-                  : "bg-gold-400/10 text-gold-500"
+                  ? "bg-rose-400/10 text-rose-600"
+                  : "bg-gold-400/10 text-gold-600"
               )}
             >
               {mode === "modify" ? "Modify" : "Generate"}
@@ -213,7 +213,7 @@ export function PromptBar({
             disabled={isLoading}
             className={cn(
               "flex-1 bg-transparent",
-              "text-sm text-warm-gray-700 placeholder:text-warm-gray-400/70",
+              "text-ui text-warm-gray-700 placeholder:text-warm-gray-400/70",
               "outline-none border-none",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
@@ -231,9 +231,9 @@ export function PromptBar({
                 inputRef.current?.focus();
               }}
               className={cn(
-                "shrink-0 w-8 h-8 rounded-full",
+                "shrink-0 w-8 h-8 rounded-pill press",
                 "flex items-center justify-center",
-                "transition-all duration-200",
+                "transition-colors duration-200 ease-out",
                 showHistory
                   ? "bg-gold-400/15 text-gold-500"
                   : "bg-cream-50 text-warm-gray-400 hover:bg-cream-100 hover:text-warm-gray-500"
@@ -249,11 +249,11 @@ export function PromptBar({
             type="submit"
             disabled={!value.trim() || isLoading}
             className={cn(
-              "shrink-0 w-8 h-8 rounded-full",
+              "shrink-0 w-8 h-8 rounded-pill press",
               "flex items-center justify-center",
-              "transition-all duration-200",
+              "transition-[background-color,box-shadow] duration-200 ease-out",
               value.trim() && !isLoading
-                ? "bg-rose-500 text-white hover:bg-rose-600 shadow-sm active:scale-95"
+                ? "bg-rose-500 text-white hover:bg-rose-600 shadow-btn-rose hover:shadow-btn-rose-hover"
                 : "bg-cream-100 text-warm-gray-300 cursor-not-allowed"
             )}
             aria-label={mode === "modify" ? "Modify layout" : "Generate layout"}
@@ -264,8 +264,8 @@ export function PromptBar({
 
         {/* Loading status text */}
         {isLoading && (
-          <div className="absolute -bottom-6 left-4 flex items-center gap-2">
-            <span className="text-xs text-gold-500 font-medium animate-pulse">
+          <div className="absolute -bottom-6 left-5 flex items-center gap-2">
+            <span className="text-ui-xs text-gold-600 font-medium animate-pulse">
               {loadingText}
             </span>
           </div>
@@ -275,17 +275,17 @@ export function PromptBar({
       {/* Prompt history dropdown */}
       {showHistory && history.length > 0 && !isLoading && (
         <div className="absolute top-full left-0 right-0 mt-2 z-50">
-          <div className="bg-white border border-cream-200 rounded-card shadow-lg overflow-hidden">
+          <div className="bg-white/90 backdrop-blur-md border border-white/70 rounded-card-lg shadow-lifted overflow-hidden animate-fade-up">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-cream-100">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-warm-gray-400">
+            <div className="flex items-center justify-between px-5 py-2.5 border-b border-cream-200/70">
+              <span className="text-[9.5px] font-medium uppercase tracking-eyebrow text-warm-gray-400">
                 Recent prompts
               </span>
               <button
                 type="button"
                 onMouseDown={() => { ignoreBlurRef.current = true; }}
                 onClick={clearHistory}
-                className="text-[10px] text-warm-gray-400 hover:text-rose-500 transition-colors"
+                className="text-[10px] text-warm-gray-400 hover:text-rose-500 transition-colors duration-150"
               >
                 Clear
               </button>
@@ -300,9 +300,9 @@ export function PromptBar({
                   onMouseDown={() => { ignoreBlurRef.current = true; }}
                   onClick={() => handleHistoryClick(prompt)}
                   className={cn(
-                    "w-full text-left px-4 py-2.5",
-                    "text-sm text-warm-gray-600",
-                    "hover:bg-cream-50 transition-colors",
+                    "w-full text-left px-5 py-2.5",
+                    "text-ui-sm text-warm-gray-600",
+                    "hover:bg-cream-50 transition-colors duration-150",
                     "flex items-center gap-3"
                   )}
                 >

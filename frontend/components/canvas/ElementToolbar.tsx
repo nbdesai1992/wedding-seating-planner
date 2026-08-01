@@ -100,7 +100,7 @@ export function ElementToolbar({
       onPointerDown={(e) => e.stopPropagation()}
     >
       {/* Main toolbar */}
-      <div className="flex items-center gap-0.5 bg-white rounded-lg shadow-lg border border-cream-200 px-1 py-0.5">
+      <div className="flex items-center gap-0.5 bg-white rounded-pill shadow-lifted border border-cream-200/80 px-1.5 py-1">
         {/* Rename */}
         <ToolbarButton
           icon={Type}
@@ -139,7 +139,7 @@ export function ElementToolbar({
               Delete?
             </span>
             <button
-              className="text-[10px] px-1.5 py-0.5 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors"
+              className="text-[10px] px-2 py-0.5 bg-rose-500 text-white rounded-pill press hover:bg-rose-600 transition-colors duration-150"
               onClick={() => {
                 onDelete();
                 setShowDeleteConfirm(false);
@@ -148,7 +148,7 @@ export function ElementToolbar({
               Yes
             </button>
             <button
-              className="text-[10px] px-1.5 py-0.5 bg-cream-100 text-warm-gray-600 rounded hover:bg-cream-200 transition-colors"
+              className="text-[10px] px-2 py-0.5 bg-cream-100 text-warm-gray-600 rounded-pill press hover:bg-cream-200 transition-colors duration-150"
               onClick={() => setShowDeleteConfirm(false)}
             >
               No
@@ -167,18 +167,18 @@ export function ElementToolbar({
 
       {/* Sub-panels */}
       {activePanel === "rename" && (
-        <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 bg-white rounded-lg shadow-lg border border-cream-200 p-2 min-w-[160px]">
+        <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 bg-white rounded-card shadow-lifted border border-cream-200/80 p-2 min-w-[160px]">
           <form onSubmit={handleRenameSubmit} className="flex gap-1.5">
             <input
               autoFocus
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="flex-1 text-xs px-2 py-1 border border-cream-200 rounded-md bg-cream-50 text-warm-gray-700 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30"
+              className="flex-1 text-xs px-2.5 py-1 border border-cream-300 rounded-pill bg-cream-50 text-warm-gray-700 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30 transition-[border-color,box-shadow] duration-150"
               placeholder="Enter name..."
             />
             <button
               type="submit"
-              className="text-xs px-2 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors"
+              className="text-xs px-2.5 py-1 bg-rose-500 text-white rounded-pill press hover:bg-rose-600 transition-colors duration-150"
             >
               Save
             </button>
@@ -187,7 +187,7 @@ export function ElementToolbar({
       )}
 
       {activePanel === "shape" && (
-        <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 bg-white rounded-lg shadow-lg border border-cream-200 p-1.5 min-w-[140px]">
+        <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 bg-white rounded-card shadow-lifted border border-cream-200/80 p-1.5 min-w-[140px]">
           {shapeOptions.map((opt) => (
             <button
               key={opt.value}
@@ -196,7 +196,7 @@ export function ElementToolbar({
                 setActivePanel(null);
               }}
               className={cn(
-                "flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md text-xs transition-colors",
+                "flex items-center gap-2 w-full text-left px-2.5 py-1.5 rounded-pill text-xs transition-colors duration-150",
                 shape === opt.value
                   ? "bg-rose-50 text-rose-600"
                   : "text-warm-gray-600 hover:bg-cream-50"
@@ -210,7 +210,7 @@ export function ElementToolbar({
       )}
 
       {activePanel === "seats" && (
-        <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 bg-white rounded-lg shadow-lg border border-cream-200 p-2 min-w-[140px]">
+        <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 bg-white rounded-card shadow-lifted border border-cream-200/80 p-2 min-w-[140px]">
           <form onSubmit={handleSeatSubmit} className="flex gap-1.5">
             <input
               autoFocus
@@ -219,11 +219,11 @@ export function ElementToolbar({
               max="20"
               value={editSeats}
               onChange={(e) => setEditSeats(e.target.value)}
-              className="w-14 text-xs px-2 py-1 border border-cream-200 rounded-md bg-cream-50 text-warm-gray-700 text-center focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30"
+              className="w-14 text-xs px-2 py-1 border border-cream-300 rounded-pill bg-cream-50 text-warm-gray-700 text-center focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30 transition-[border-color,box-shadow] duration-150"
             />
             <button
               type="submit"
-              className="text-xs px-2 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors flex-1"
+              className="text-xs px-2 py-1 bg-rose-500 text-white rounded-pill press hover:bg-rose-600 transition-colors duration-150 flex-1"
             >
               Update
             </button>
@@ -257,7 +257,7 @@ function ToolbarButton({
       onClick={onClick}
       title={label}
       className={cn(
-        "p-1.5 rounded-md transition-colors",
+        "p-1.5 rounded-pill press transition-colors duration-150",
         isActive
           ? "bg-rose-50 text-rose-500"
           : variant === "danger"

@@ -218,7 +218,7 @@ export function ProductPreview() {
 
       {/* Browser frame */}
       <div
-        className="relative rounded-xl overflow-hidden"
+        className="relative rounded-card-lg overflow-hidden"
         style={{
           boxShadow:
             "0 25px 60px -12px rgba(61, 53, 53, 0.18), 0 12px 28px -8px rgba(61, 53, 53, 0.1)",

@@ -34,10 +34,10 @@ const testimonials = [
 
 export function Testimonials() {
   return (
+    // Transparent section — sits directly on the global gradient
     <section
       id="testimonials"
       className="relative py-24 sm:py-32 overflow-hidden"
-      style={{ background: "#FFFCF8" }}
     >
       {/* Decorative background */}
       <div
@@ -56,13 +56,16 @@ export function Testimonials() {
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Section header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-warm-gray-900 mb-4">
+          <p className="eyebrow eyebrow-gold mb-4">Kind Words</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-warm-gray-900 mb-4">
             Loved by Brides Everywhere
           </h2>
           <p className="text-warm-gray-400 max-w-md mx-auto text-base">
             Real stories from couples who planned their perfect day with Seated
           </p>
-          <div className="divider-gold mx-auto max-w-[160px] mt-6" />
+          <div className="ornament-divider mx-auto max-w-[220px] mt-7">
+            <span className="ornament-dot" />
+          </div>
         </div>
 
         {/* Testimonial cards — staggered */}
@@ -73,11 +76,12 @@ export function Testimonials() {
               className={`landing-fade-in relative ${i === 1 ? "md:-mt-4" : i === 2 ? "md:mt-4" : ""}`}
             >
               <div
-                className="relative rounded-xl p-8 transition-all duration-300 hover:-translate-y-1 h-full"
+                className="relative rounded-card-lg p-8 h-full shadow-soft hover:shadow-lifted hover:-translate-y-[3px] transition-[box-shadow,transform] duration-300 ease-out"
                 style={{
-                  background: "linear-gradient(155deg, #FFFCF8 0%, #FDF2F2 100%)",
-                  border: "1px solid rgba(240, 208, 212, 0.5)",
-                  boxShadow: "0 4px 20px rgba(107, 91, 91, 0.06)",
+                  background: "rgba(255, 255, 255, 0.7)",
+                  border: "1px solid rgba(255, 255, 255, 0.75)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
                 }}
               >
                 {/* Large decorative quote mark */}
@@ -121,7 +125,7 @@ export function Testimonials() {
                     {t.initials}
                   </div>
                   <div>
-                    <p className="font-serif font-bold text-sm text-warm-gray-900">
+                    <p className="font-serif font-semibold text-sm text-warm-gray-900">
                       {t.name}
                     </p>
                     <p className="text-xs" style={{ color: "#8B7D7D" }}>

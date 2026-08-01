@@ -6,12 +6,12 @@ import Link from "next/link";
 export function FinalCTA() {
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
-      {/* Rich gradient background */}
+      {/* Translucent rose wash — the global gradient reads through */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(155deg, #FDF2F2 0%, #F9E8E8 30%, #FFF8F0 60%, #FDF2F2 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(249, 232, 232, 0.5) 32%, rgba(255, 248, 240, 0.4) 68%, transparent 100%)",
         }}
       />
 
@@ -70,8 +70,13 @@ export function FinalCTA() {
           <circle cx="24" cy="24" r="3" fill="#D4A574" opacity="0.25" />
         </svg>
 
+        {/* Eyebrow */}
+        <p className="eyebrow-gold mb-5 font-sans font-medium uppercase text-ui-xs tracking-eyebrow-wide">
+          Begin Today
+        </p>
+
         {/* Headline */}
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-warm-gray-900 mb-5 leading-tight">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-warm-gray-900 mb-5 leading-tight">
           Your Perfect Day Deserves
           <span className="block" style={{ color: "#C4848A" }}>
             Perfect Seating
@@ -86,10 +91,9 @@ export function FinalCTA() {
         {/* CTA button */}
         <Link
           href="/sign-up"
-          className="inline-flex items-center justify-center px-10 py-4 rounded-soft text-white font-medium text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.03] active:scale-[0.97]"
+          className="press inline-flex items-center justify-center px-10 py-4 rounded-pill text-white font-medium text-base shadow-btn-gold hover:shadow-btn-gold-hover hover:-translate-y-px transition-[box-shadow,transform,background-color] duration-200 ease-out"
           style={{
             background: "linear-gradient(135deg, #D4A574 0%, #C9956B 100%)",
-            boxShadow: "0 6px 24px rgba(212, 165, 116, 0.35)",
           }}
         >
           Get Started Free

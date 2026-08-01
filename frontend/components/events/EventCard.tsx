@@ -53,34 +53,32 @@ export function EventCard({ event, onDelete }: EventCardProps) {
   return (
     <Card
       hover
+      padding="none"
       className="group relative overflow-hidden"
       onClick={() => router.push(`/events/${event.id}`)}
     >
-      {/* Top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-200 via-gold-400 to-rose-200 opacity-60 group-hover:opacity-100 transition-opacity" />
+      <div className="p-7">
+        {/* Countdown eyebrow pill */}
+        {countdown && (
+          <span className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-pill border border-gold-400/40 bg-gold-400/10 text-gold-600 text-ui-xs font-medium uppercase tracking-[0.14em]">
+            {countdown}
+          </span>
+        )}
 
-      <div className="p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1 min-w-0 pr-3">
-            <h3 className="font-serif text-lg font-semibold text-warm-gray-800 truncate">
-              {event.name}
-            </h3>
-            {countdown && (
-              <span className="inline-block mt-1.5 text-xs font-medium text-gold-500 bg-gold-400/10 px-2 py-0.5 rounded-pill">
-                {countdown}
-              </span>
-            )}
-          </div>
+        <div className="flex items-start justify-between mb-5">
+          <h3 className="font-serif text-xl font-medium text-warm-gray-800 truncate flex-1 min-w-0 pr-3">
+            {event.name}
+          </h3>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(`/events/${event.id}/edit`);
               }}
-              className="p-1.5 rounded-soft text-warm-gray-400 hover:text-warm-gray-600 hover:bg-cream-100 transition-colors"
+              className="p-1.5 rounded-pill text-warm-gray-400 hover:text-warm-gray-600 hover:bg-cream-100 transition-colors duration-150"
               title="Edit event"
             >
               <Pencil className="w-3.5 h-3.5" />
@@ -88,7 +86,7 @@ export function EventCard({ event, onDelete }: EventCardProps) {
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className={`p-1.5 rounded-soft transition-colors ${
+              className={`p-1.5 rounded-pill transition-colors duration-150 ${
                 showConfirm
                   ? "text-red-500 bg-red-50 hover:bg-red-100"
                   : "text-warm-gray-400 hover:text-red-500 hover:bg-red-50"
@@ -101,17 +99,17 @@ export function EventCard({ event, onDelete }: EventCardProps) {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="divider-gold mb-4" />
+        {/* Signature gold rule */}
+        <div className="divider-gold mb-5" />
 
         {/* Details */}
         <div className="space-y-2.5">
-          <div className="flex items-center gap-2.5 text-sm text-warm-gray-500">
+          <div className="flex items-center gap-2.5 text-ui text-warm-gray-500">
             <Calendar className="w-4 h-4 text-gold-400 shrink-0" />
             <span>{formatDate(event.date)}</span>
           </div>
 
-          <div className="flex items-center gap-2.5 text-sm text-warm-gray-500">
+          <div className="flex items-center gap-2.5 text-ui text-warm-gray-500">
             <Users className="w-4 h-4 text-gold-400 shrink-0" />
             <span>
               {event.guest_count === 0
@@ -121,7 +119,7 @@ export function EventCard({ event, onDelete }: EventCardProps) {
           </div>
 
           {event.venue_description && (
-            <div className="flex items-start gap-2.5 text-sm text-warm-gray-500">
+            <div className="flex items-start gap-2.5 text-ui text-warm-gray-500">
               <MapPin className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
               <span className="line-clamp-2">{event.venue_description}</span>
             </div>
@@ -131,11 +129,11 @@ export function EventCard({ event, onDelete }: EventCardProps) {
         {/* Confirm delete overlay */}
         {showConfirm && (
           <div
-            className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-card"
+            className="absolute inset-0 bg-white/85 backdrop-blur-sm flex items-center justify-center rounded-card-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center px-6">
-              <p className="text-sm font-medium text-warm-gray-700 mb-3">
+              <p className="text-ui font-medium text-warm-gray-700 mb-3">
                 Delete &ldquo;{event.name}&rdquo;?
               </p>
               <div className="flex items-center gap-2 justify-center">
@@ -152,7 +150,7 @@ export function EventCard({ event, onDelete }: EventCardProps) {
                 <Button
                   size="sm"
                   loading={isDeleting}
-                  className="!bg-red-500 hover:!bg-red-600 text-white"
+                  className="!bg-red-500 hover:!bg-red-600 !shadow-none text-white"
                   onClick={handleDelete}
                 >
                   Delete

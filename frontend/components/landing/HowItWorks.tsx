@@ -32,7 +32,9 @@ export function HowItWorks() {
       id="how-it-works"
       className="relative py-24 sm:py-32 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #FFF8F0 0%, #FFFCF8 50%, #FDF2F2 100%)",
+        /* Feathered translucent wash — global gradient reads through, no band edges */
+        background:
+          "linear-gradient(180deg, transparent 0%, rgba(255, 248, 240, 0.4) 35%, rgba(253, 242, 242, 0.35) 65%, transparent 100%)",
       }}
     >
       {/* Decorative background elements */}
@@ -54,13 +56,16 @@ export function HowItWorks() {
       <div className="relative z-10 max-w-5xl mx-auto px-6">
         {/* Section header */}
         <div className="text-center mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-warm-gray-900 mb-4">
+          <p className="eyebrow eyebrow-gold mb-4">The Process</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-warm-gray-900 mb-4">
             Three Simple Steps
           </h2>
           <p className="text-warm-gray-400 max-w-md mx-auto text-base">
             From your guest list to a finished seating chart in minutes, not hours.
           </p>
-          <div className="divider-gold mx-auto max-w-[160px] mt-6" />
+          <div className="ornament-divider mx-auto max-w-[220px] mt-7">
+            <span className="ornament-dot" />
+          </div>
         </div>
 
         {/* Steps with flowing connection */}
@@ -100,7 +105,7 @@ export function HowItWorks() {
                 {/* Large serif step number */}
                 <div className="relative mb-6">
                   <span
-                    className="text-6xl sm:text-7xl font-serif font-bold leading-none"
+                    className="text-6xl sm:text-7xl font-serif font-semibold leading-none"
                     style={{
                       background: `linear-gradient(135deg, ${step.accent}, ${step.accent}88)`,
                       WebkitBackgroundClip: "text",
@@ -119,15 +124,15 @@ export function HowItWorks() {
 
                 {/* Card */}
                 <div
-                  className="rounded-xl p-7 w-full transition-all duration-300 hover:-translate-y-1"
+                  className="rounded-card-lg p-7 w-full shadow-soft hover:shadow-lifted hover:-translate-y-[3px] transition-[box-shadow,transform] duration-300 ease-out"
                   style={{
-                    background: "rgba(255, 252, 248, 0.8)",
-                    border: "1px solid rgba(240, 208, 212, 0.4)",
-                    backdropFilter: "blur(8px)",
-                    boxShadow: "0 4px 20px rgba(107, 91, 91, 0.05)",
+                    background: "rgba(255, 255, 255, 0.65)",
+                    border: "1px solid rgba(255, 255, 255, 0.7)",
+                    backdropFilter: "blur(14px)",
+                    WebkitBackdropFilter: "blur(14px)",
                   }}
                 >
-                  <h3 className="text-xl font-serif font-bold text-warm-gray-900 mb-3">
+                  <h3 className="text-xl font-serif font-semibold text-warm-gray-900 mb-3">
                     {step.title}
                   </h3>
                   <p className="text-sm leading-relaxed" style={{ color: "#8B7D7D" }}>

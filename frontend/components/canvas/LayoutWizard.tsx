@@ -40,13 +40,14 @@ function Stepper({
 }) {
   return (
     <div className="flex flex-col items-center gap-1.5">
-      <span className="text-xs text-warm-gray-400 font-medium">{label}</span>
+      <span className="text-ui-xs text-warm-gray-400 font-medium">{label}</span>
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
           disabled={value <= min}
-          className="w-7 h-7 rounded-full border border-cream-300 flex items-center justify-center text-warm-gray-500 hover:bg-cream-100 disabled:opacity-30 transition-colors"
+          aria-label={`Decrease ${label.toLowerCase()}`}
+          className="w-7 h-7 rounded-pill border border-cream-300 flex items-center justify-center text-warm-gray-500 hover:bg-cream-100 disabled:opacity-30 transition-colors duration-150 press"
         >
           <Minus className="w-3 h-3" />
         </button>
@@ -57,7 +58,8 @@ function Stepper({
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
-          className="w-7 h-7 rounded-full border border-cream-300 flex items-center justify-center text-warm-gray-500 hover:bg-cream-100 disabled:opacity-30 transition-colors"
+          aria-label={`Increase ${label.toLowerCase()}`}
+          className="w-7 h-7 rounded-pill border border-cream-300 flex items-center justify-center text-warm-gray-500 hover:bg-cream-100 disabled:opacity-30 transition-colors duration-150 press"
         >
           <Plus className="w-3 h-3" />
         </button>
@@ -84,21 +86,22 @@ function Toggle({
       type="button"
       onClick={() => onChange(!checked)}
       className={cn(
-        "flex items-center gap-2.5 px-3.5 py-2.5 rounded-card border transition-all duration-150",
+        "flex w-full items-center gap-2.5 px-3.5 py-1.5 rounded-pill border press",
+        "transition-[border-color,background-color,box-shadow] duration-150 ease-out",
         checked
-          ? "border-rose-300 bg-rose-50/60 shadow-sm"
+          ? "border-rose-300 bg-rose-50/60 shadow-soft"
           : "border-cream-200 bg-white/60 hover:border-cream-300"
       )}
     >
       <Icon
         className={cn(
-          "w-4 h-4 transition-colors",
+          "w-4 h-4 transition-colors duration-150",
           checked ? "text-rose-400" : "text-warm-gray-400"
         )}
       />
       <span
         className={cn(
-          "text-sm font-medium transition-colors",
+          "text-ui-sm font-medium transition-colors duration-150",
           checked ? "text-warm-gray-700" : "text-warm-gray-400"
         )}
       >
@@ -106,13 +109,13 @@ function Toggle({
       </span>
       <div
         className={cn(
-          "ml-auto w-8 h-5 rounded-full transition-colors relative",
+          "ml-auto w-8 h-5 rounded-pill transition-colors duration-150 relative",
           checked ? "bg-rose-400" : "bg-cream-300"
         )}
       >
         <div
           className={cn(
-            "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform",
+            "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-150",
             checked ? "translate-x-3.5" : "translate-x-0.5"
           )}
         />
@@ -145,15 +148,29 @@ function PositionPicker({
           type="button"
           onClick={() => onChange(pos.value)}
           className={cn(
-            "px-2.5 py-1 rounded-soft text-xs font-medium transition-all duration-150",
+            "px-2.5 py-1 rounded-pill text-ui-xs font-medium press",
+            "transition-[background-color,color,box-shadow] duration-150 ease-out",
             value === pos.value
-              ? "bg-rose-400 text-white shadow-sm"
+              ? "bg-rose-400 text-white shadow-btn-rose"
               : "bg-cream-100 text-warm-gray-500 hover:bg-cream-200"
           )}
         >
           {pos.label}
         </button>
       ))}
+    </div>
+  );
+}
+
+// ── Section header: eyebrow + hairline rule ────────────────
+
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-3">
+      <span className="text-[9.5px] uppercase tracking-eyebrow text-gold-600 font-medium leading-none">
+        {label}
+      </span>
+      <div className="hairline" />
     </div>
   );
 }
@@ -189,26 +206,27 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
 
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-      <div className="pointer-events-auto w-full max-w-md px-6">
-        <div className="bg-white/95 backdrop-blur-sm border border-cream-200 rounded-card shadow-card p-6">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-full bg-cream-100 border border-cream-200 mx-auto mb-3 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-gold-400" />
-            </div>
-            <h3 className="font-serif text-lg font-semibold text-warm-gray-700">
-              Design Your Layout
+      <div className="pointer-events-auto w-full max-w-md px-6 max-h-full overflow-y-auto py-4">
+        <div className="frosted-card px-7 py-5 animate-fade-up">
+          {/* Header — warm invitation */}
+          <div className="text-center mb-4">
+            <p className="eyebrow eyebrow-gold mb-2.5">The Room Awaits</p>
+            <h3 className="font-serif text-[20px] font-medium text-warm-gray-800 leading-snug">
+              Set the scene for your celebration
             </h3>
-            <p className="text-xs text-warm-gray-400 mt-1">
-              Set up your tables and features to get started
+            <p className="text-ui-sm text-warm-gray-400 mt-1.5">
+              Choose your tables and touches — we&rsquo;ll arrange the room.
             </p>
           </div>
 
+          {/* Gold ornament divider */}
+          <div className="ornament-divider mb-4">
+            <span className="ornament-dot" />
+          </div>
+
           {/* Tables section */}
-          <div className="mb-5">
-            <h4 className="text-xs uppercase tracking-wider text-warm-gray-400 font-medium mb-3">
-              Tables
-            </h4>
+          <div className="mb-4">
+            <SectionHeader label="Tables" />
             <div className="flex items-end justify-between gap-4">
               <Stepper
                 value={tableCount}
@@ -220,17 +238,18 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
 
               {/* Shape toggle */}
               <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs text-warm-gray-400 font-medium">
+                <span className="text-ui-xs text-warm-gray-400 font-medium">
                   Shape
                 </span>
-                <div className="flex gap-1 bg-cream-100 rounded-lg p-0.5">
+                <div className="flex gap-1 bg-cream-100 rounded-pill p-0.5">
                   <button
                     type="button"
                     onClick={() => setTableShape("round")}
                     className={cn(
-                      "flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                      "flex items-center gap-1 px-2.5 py-1.5 rounded-pill text-ui-xs font-medium press",
+                      "transition-[background-color,color,box-shadow] duration-150 ease-out",
                       tableShape === "round"
-                        ? "bg-white text-warm-gray-700 shadow-sm"
+                        ? "bg-white text-warm-gray-700 shadow-soft"
                         : "text-warm-gray-400 hover:text-warm-gray-600"
                     )}
                   >
@@ -241,9 +260,10 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
                     type="button"
                     onClick={() => setTableShape("rectangle")}
                     className={cn(
-                      "flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                      "flex items-center gap-1 px-2.5 py-1.5 rounded-pill text-ui-xs font-medium press",
+                      "transition-[background-color,color,box-shadow] duration-150 ease-out",
                       tableShape === "rectangle"
-                        ? "bg-white text-warm-gray-700 shadow-sm"
+                        ? "bg-white text-warm-gray-700 shadow-soft"
                         : "text-warm-gray-400 hover:text-warm-gray-600"
                     )}
                   >
@@ -273,14 +293,10 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
             </div>
           </div>
 
-          <div className="divider-gold mb-5" />
-
           {/* Features section */}
-          <div className="mb-6">
-            <h4 className="text-xs uppercase tracking-wider text-warm-gray-400 font-medium mb-3">
-              Features
-            </h4>
-            <div className="space-y-2">
+          <div className="mb-4">
+            <SectionHeader label="Features" />
+            <div className="space-y-1.5">
               <div>
                 <Toggle
                   checked={includeDanceFloor}
@@ -290,7 +306,7 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
                 />
                 {includeDanceFloor && (
                   <div className="mt-2 ml-9 flex items-center gap-2">
-                    <span className="text-xs text-warm-gray-400">
+                    <span className="text-ui-xs text-warm-gray-400">
                       Position:
                     </span>
                     <PositionPicker
@@ -327,8 +343,11 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
             onClick={handleGenerate}
             disabled={isLoading}
             className={cn(
-              "w-full py-3 rounded-card text-sm font-medium transition-all duration-200",
-              "bg-rose-400 text-white hover:bg-rose-500 shadow-sm hover:shadow-md",
+              "w-full py-2.5 rounded-pill text-ui font-medium",
+              "bg-gradient-to-br from-rose-600 to-rose-700 text-white",
+              "shadow-btn-rose hover:shadow-btn-rose-hover hover:-translate-y-px",
+              "transition-[background-color,box-shadow,transform] duration-200 ease-out",
+              "active:translate-y-px",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "flex items-center justify-center gap-2"
             )}
@@ -336,15 +355,19 @@ export function LayoutWizard({ onGenerate, isLoading }: LayoutWizardProps) {
             {isLoading ? (
               <>
                 <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                Generating...
+                Arranging the room...
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Generate Layout
+                Arrange My Room
               </>
             )}
           </button>
+
+          <p className="text-center text-[10.5px] text-warm-gray-400 mt-2.5">
+            Prefer words? Describe your venue in the bar above.
+          </p>
         </div>
       </div>
     </div>

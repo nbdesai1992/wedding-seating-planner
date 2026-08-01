@@ -45,26 +45,24 @@ export function ExportButton({ eventId }: ExportButtonProps) {
       onClick={handleExport}
       disabled={state === "loading"}
       className={cn(
-        "inline-flex items-center gap-2 px-4 py-2 rounded-lg",
-        "text-xs font-medium transition-all duration-200",
-        "shadow-sm hover:shadow-md",
+        "inline-flex items-center gap-2 px-4 py-2 rounded-pill",
+        "text-ui-xs font-medium tracking-[0.01em]",
+        "transition-[background-color,box-shadow,transform] duration-200 ease-out",
+        "active:translate-y-px",
         state === "idle" && [
-          "bg-gradient-to-b from-gold-400 to-gold-500",
-          "text-white",
-          "hover:from-gold-500 hover:to-gold-600",
-          "border border-gold-500/20",
+          "bg-gold-400 text-white",
+          "hover:bg-gold-500 hover:-translate-y-px",
+          "shadow-btn-gold hover:shadow-btn-gold-hover",
         ],
         state === "loading" && [
           "bg-gold-400/80 text-white/90 cursor-wait",
-          "border border-gold-400/30",
+          "shadow-btn-gold",
         ],
         state === "success" && [
-          "bg-emerald-500 text-white",
-          "border border-emerald-600/20",
+          "bg-gold-600 text-white shadow-btn-gold",
         ],
         state === "error" && [
-          "bg-rose-500 text-white",
-          "border border-rose-600/20",
+          "bg-rose-500 text-white shadow-btn-rose",
         ]
       )}
       title="Export seating chart as PDF"

@@ -82,9 +82,9 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     <div
       role="alert"
       className={cn(
-        "flex items-start gap-3 px-4 py-3 rounded-card border shadow-card-hover",
+        "flex items-start gap-3 px-5 py-3 rounded-pill border shadow-lifted",
         "min-w-[280px] max-w-[380px]",
-        "transition-all duration-300 ease-out",
+        "transition-[opacity,transform] duration-300 ease-out",
         config.bg,
         config.border,
         isExiting
@@ -101,13 +101,13 @@ export function Toast({ toast, onDismiss }: ToastProps) {
         <Icon className={cn("w-3.5 h-3.5", config.icon)} />
       </div>
 
-      <p className={cn("text-sm leading-snug flex-1 pt-0.5", config.text)}>
+      <p className={cn("text-ui-sm leading-snug flex-1 pt-0.5", config.text)}>
         {toast.message}
       </p>
 
       <button
         onClick={handleDismiss}
-        className="shrink-0 p-0.5 rounded-soft text-warm-gray-400 hover:text-warm-gray-600 hover:bg-warm-gray-100/50 transition-colors"
+        className="shrink-0 p-0.5 rounded-pill text-warm-gray-400 hover:text-warm-gray-600 hover:bg-warm-gray-100/50 transition-colors"
         aria-label="Dismiss notification"
       >
         <X className="w-3.5 h-3.5" />

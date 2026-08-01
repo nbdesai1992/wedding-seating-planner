@@ -5,7 +5,7 @@ import { Heart } from "lucide-react";
 
 export default function SignUpPage() {
   return (
-    <div className="auth-page min-h-screen flex flex-col bg-cream-100 relative overflow-hidden">
+    <div className="auth-page min-h-screen flex flex-col relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-rose-50 opacity-60 blur-3xl -translate-y-1/2" />
@@ -18,12 +18,13 @@ export default function SignUpPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10">
         <div className="w-full max-w-[420px]">
           {/* Unified auth card */}
-          <div className="bg-white rounded-2xl shadow-card-hover px-8 pt-10 pb-8">
+          <div className="frosted-card shadow-lifted px-8 pt-10 pb-8 animate-fade-up">
             {/* Logo + Header */}
             <div className="text-center mb-4">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 mb-4 shadow-rose-glow">
                 <Heart className="w-6 h-6 text-rose-500" fill="currentColor" />
               </div>
+              <p className="eyebrow eyebrow-gold mb-2.5">Seated</p>
               <h1 className="text-2xl font-serif font-semibold text-warm-gray-800 mb-1.5">
                 Begin Your Journey
               </h1>
@@ -32,8 +33,10 @@ export default function SignUpPage() {
               </p>
             </div>
 
-            {/* Divider */}
-            <div className="divider-gold mb-4" />
+            {/* Gold ornament divider */}
+            <div className="ornament-divider mb-5">
+              <span className="ornament-dot" />
+            </div>
 
             {/* Clerk SignUp component */}
             <div className="w-full">

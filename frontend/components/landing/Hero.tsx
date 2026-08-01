@@ -73,12 +73,12 @@ function GoldSparkles() {
 export function Hero() {
   return (
     <section className="relative min-h-screen overflow-hidden pt-16">
-      {/* Layered background gradient */}
+      {/* Translucent rose wash — lets the global layered gradient read through */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(165deg, #FFFCF8 0%, #FFF8F0 25%, #FDF2F2 50%, #F9E8E8 75%, #FFF8F0 100%)",
+            "linear-gradient(165deg, rgba(255, 248, 240, 0.35) 0%, rgba(253, 242, 242, 0.45) 50%, rgba(249, 232, 232, 0.4) 78%, transparent 100%)",
         }}
       />
 
@@ -110,26 +110,27 @@ export function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-10rem)]">
           {/* Left: copy */}
           <div className="max-w-xl">
-            {/* Small badge */}
+            {/* Eyebrow badge — letter-spacing as ornament */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-pill mb-8"
+              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-pill mb-8 shadow-soft"
               style={{
                 background: "rgba(255, 255, 255, 0.6)",
-                border: "1px solid rgba(237, 229, 221, 0.6)",
+                border: "1px solid rgba(255, 255, 255, 0.7)",
                 backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
               }}
             >
               <span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ background: "#D4A574" }}
+                className="w-[5px] h-[5px] rotate-45"
+                style={{ background: "#D4A574", opacity: 0.75 }}
               />
-              <span className="text-xs font-medium tracking-wide uppercase" style={{ color: "#8B7D7D" }}>
+              <span className="text-ui-xs font-medium tracking-eyebrow uppercase text-gold-600">
                 Wedding Seating Made Beautiful
               </span>
             </div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-[1.08] tracking-tight mb-6">
+            {/* Headline — serif w600, editorial discipline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-semibold leading-[1.08] tracking-tight mb-6">
               <span className="text-warm-gray-900">Every Guest</span>
               <br />
               <span className="text-warm-gray-900">in the </span>
@@ -167,10 +168,9 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Link
                 href="/sign-up"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-soft text-white font-medium text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.03] active:scale-[0.97]"
+                className="press inline-flex items-center justify-center px-8 py-3.5 rounded-pill text-white font-medium text-base shadow-btn-gold hover:shadow-btn-gold-hover hover:-translate-y-px transition-[box-shadow,transform,background-color] duration-200 ease-out"
                 style={{
                   background: "linear-gradient(135deg, #D4A574 0%, #C9956B 100%)",
-                  boxShadow: "0 4px 20px rgba(212, 165, 116, 0.35)",
                 }}
               >
                 Start Planning Free
@@ -191,11 +191,12 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Bottom gradient fade into next section */}
+      {/* Bottom fade — translucent so the global gradient stays continuous */}
       <div
         className="absolute bottom-0 left-0 right-0 h-32"
         style={{
-          background: "linear-gradient(to top, #FFF8F0 0%, transparent 100%)",
+          background:
+            "linear-gradient(to top, rgba(255, 248, 240, 0.5) 0%, transparent 100%)",
         }}
       />
     </section>

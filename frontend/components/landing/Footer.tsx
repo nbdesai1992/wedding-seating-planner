@@ -5,9 +5,11 @@ import { Heart } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="relative pt-12 pb-10" style={{ background: "#FFFCF8" }}>
-      {/* Gold divider */}
-      <div className="divider-gold mb-10" />
+    <footer className="relative pt-12 pb-10">
+      {/* Gold ornament divider — signature separator */}
+      <div className="ornament-divider mb-10 px-6">
+        <span className="ornament-dot" />
+      </div>
 
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">

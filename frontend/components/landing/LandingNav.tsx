@@ -76,10 +76,9 @@ export function LandingNav() {
           </Link>
           <Link
             href="/sign-up"
-            className="hidden sm:inline-flex items-center px-5 py-2 rounded-pill text-sm font-medium text-white transition-all duration-200 hover:shadow-lg hover:scale-[1.03] active:scale-[0.97]"
+            className="press hidden sm:inline-flex items-center px-5 py-2 rounded-pill text-sm font-medium text-white shadow-btn-gold hover:shadow-btn-gold-hover hover:-translate-y-px transition-[box-shadow,transform,background-color] duration-200 ease-out"
             style={{
               background: "linear-gradient(135deg, #D4A574 0%, #C9956B 100%)",
-              boxShadow: "0 2px 10px rgba(212, 165, 116, 0.3)",
             }}
           >
             Get Started

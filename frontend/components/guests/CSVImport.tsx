@@ -162,7 +162,7 @@ export function CSVImport({ open, onClose, onImport }: CSVImportProps) {
       ) : (
         <>
           {error && (
-            <div className="mb-5 px-4 py-3 rounded-soft bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
+            <div className="mb-5 px-4 py-3 rounded-card bg-red-50/80 border border-red-200 text-red-700 text-ui flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -176,10 +176,11 @@ export function CSVImport({ open, onClose, onImport }: CSVImportProps) {
               onDragLeave={handleDragLeave}
               onClick={() => fileInputRef.current?.click()}
               className={cn(
-                "border-2 border-dashed rounded-card p-10 text-center cursor-pointer transition-all duration-200",
+                "border border-dashed rounded-card-lg p-10 text-center cursor-pointer",
+                "transition-[border-color,background-color] duration-200 ease-out",
                 isDragging
                   ? "border-rose-400 bg-rose-50/50"
-                  : "border-cream-300 bg-cream-50/50 hover:border-rose-200 hover:bg-cream-100/50"
+                  : "border-gold-400/50 bg-cream-50/50 hover:border-gold-500/70 hover:bg-cream-100/50"
               )}
             >
               <input
@@ -192,13 +193,13 @@ export function CSVImport({ open, onClose, onImport }: CSVImportProps) {
                   if (f) handleFile(f);
                 }}
               />
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-cream-100 flex items-center justify-center">
-                <Upload className="w-6 h-6 text-gold-400" />
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gold-400/10 border border-gold-400/40 flex items-center justify-center">
+                <Upload className="w-5 h-5 text-gold-500" />
               </div>
-              <p className="text-sm font-medium text-warm-gray-700 mb-1">
+              <p className="font-serif text-lg font-medium text-warm-gray-800 mb-1">
                 Drop your CSV file here
               </p>
-              <p className="text-xs text-warm-gray-400">
+              <p className="text-ui-xs text-warm-gray-400">
                 or click to browse. Required column:{" "}
                 <span className="font-medium">name</span>. Optional: email,
                 meal_preference, group_tag, notes
@@ -207,20 +208,20 @@ export function CSVImport({ open, onClose, onImport }: CSVImportProps) {
           ) : (
             <div className="space-y-4">
               {/* File info */}
-              <div className="flex items-center gap-3 px-4 py-3 rounded-soft bg-cream-50 border border-cream-200">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-card bg-cream-50 border border-cream-200">
                 <FileText className="w-5 h-5 text-gold-400 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-warm-gray-700 truncate">
+                  <p className="text-ui font-medium text-warm-gray-700 truncate">
                     {file?.name}
                   </p>
-                  <p className="text-xs text-warm-gray-400">
+                  <p className="text-ui-xs text-warm-gray-400">
                     {preview.totalRows} row{preview.totalRows !== 1 ? "s" : ""}{" "}
                     found
                   </p>
                 </div>
                 <button
                   onClick={reset}
-                  className="p-1 rounded-soft text-warm-gray-400 hover:text-warm-gray-600 hover:bg-cream-200 transition-colors"
+                  className="p-1 rounded-pill text-warm-gray-400 hover:text-warm-gray-600 hover:bg-cream-200 transition-colors duration-150"
                   title="Remove file"
                 >
                   <X className="w-4 h-4" />
@@ -228,22 +229,22 @@ export function CSVImport({ open, onClose, onImport }: CSVImportProps) {
               </div>
 
               {/* Preview table */}
-              <div className="border border-cream-200 rounded-soft overflow-hidden">
+              <div className="border border-cream-200 rounded-card overflow-hidden">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
+                  <table className="w-full text-ui-xs">
                     <thead>
-                      <tr className="bg-cream-50/80 border-b border-cream-200">
+                      <tr className="border-b border-cream-200">
                         {preview.headers.map((h) => (
                           <th
                             key={h}
-                            className="px-3 py-2 text-left font-medium text-warm-gray-600"
+                            className="px-3 py-2 text-left font-medium uppercase tracking-[0.14em] text-warm-gray-400"
                           >
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-cream-100">
+                    <tbody className="divide-y divide-cream-200/70">
                       {preview.rows.map((row, i) => (
                         <tr key={i}>
                           {row.map((cell, j) => (
@@ -264,7 +265,7 @@ export function CSVImport({ open, onClose, onImport }: CSVImportProps) {
                   </table>
                 </div>
                 {preview.totalRows > 5 && (
-                  <div className="px-3 py-2 border-t border-cream-200 bg-cream-50/50 text-xs text-warm-gray-400 text-center">
+                  <div className="px-3 py-2 border-t border-cream-200 bg-cream-50/50 text-ui-xs text-warm-gray-400 text-center">
                     Showing first 5 of {preview.totalRows} rows
                   </div>
                 )}

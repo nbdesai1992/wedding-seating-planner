@@ -53,10 +53,10 @@ export function ZoomControls({
   };
 
   const btnBase = cn(
-    "w-8 h-8 flex items-center justify-center rounded-soft",
-    "transition-all duration-150 ease-out",
+    "w-8 h-8 flex items-center justify-center rounded-pill",
+    "transition-colors duration-150 ease-out press",
     "text-warm-gray-500 hover:text-warm-gray-700",
-    "hover:bg-cream-200 active:bg-cream-300",
+    "hover:bg-cream-100 active:bg-cream-200",
     "focus-visible:focus-ring-rose"
   );
 
@@ -64,10 +64,10 @@ export function ZoomControls({
     <div
       className={cn(
         "absolute bottom-4 right-4 z-20",
-        "flex items-center gap-1",
-        "bg-white/90 backdrop-blur-sm",
-        "border border-cream-200 rounded-card",
-        "shadow-card px-1.5 py-1.5",
+        "flex items-center gap-0.5",
+        "bg-white/70 backdrop-blur-md",
+        "border border-white/70 rounded-pill",
+        "shadow-soft px-1.5 py-1.5",
         className
       )}
     >
@@ -87,8 +87,8 @@ export function ZoomControls({
         className={cn(
           "min-w-[3.25rem] h-8 px-2",
           "flex items-center justify-center",
-          "text-xs font-medium text-warm-gray-600 tabular-nums",
-          "rounded-soft hover:bg-cream-200 transition-colors",
+          "text-ui-xs font-medium text-warm-gray-600 tabular-nums",
+          "rounded-pill hover:bg-cream-100 transition-colors press",
           "focus-visible:focus-ring-rose"
         )}
         onClick={resetZoom}
@@ -110,7 +110,7 @@ export function ZoomControls({
       </button>
 
       {/* Divider */}
-      <div className="w-px h-5 bg-cream-200 mx-0.5" />
+      <div className="w-px h-5 bg-cream-300/80 mx-0.5" />
 
       {/* Fit to content */}
       <button

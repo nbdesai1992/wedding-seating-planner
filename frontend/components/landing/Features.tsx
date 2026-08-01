@@ -8,11 +8,10 @@ function VenueVisual() {
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div
-        className="rounded-xl p-5 overflow-hidden"
+        className="rounded-card-lg p-5 overflow-hidden shadow-soft"
         style={{
           background: "linear-gradient(145deg, #FFFCF8, #FDF2F2)",
           border: "1px solid #F0D0D4",
-          boxShadow: "0 8px 32px rgba(107, 91, 91, 0.08)",
         }}
       >
         {/* Prompt bar mock */}
@@ -84,11 +83,10 @@ function DragDropVisual() {
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div
-        className="rounded-xl p-5 overflow-hidden"
+        className="rounded-card-lg p-5 overflow-hidden shadow-soft"
         style={{
           background: "linear-gradient(145deg, #FFFCF8, #FFF8F0)",
           border: "1px solid #EDE5DD",
-          boxShadow: "0 8px 32px rgba(107, 91, 91, 0.08)",
         }}
       >
         {/* A table with a guest being dragged */}
@@ -159,11 +157,10 @@ function GuestListVisual() {
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div
-        className="rounded-xl overflow-hidden"
+        className="rounded-card-lg overflow-hidden shadow-soft"
         style={{
           background: "white",
           border: "1px solid #F0D0D4",
-          boxShadow: "0 8px 32px rgba(107, 91, 91, 0.08)",
         }}
       >
         {/* Header */}
@@ -214,11 +211,10 @@ function ExportVisual() {
   return (
     <div className="relative w-full max-w-sm mx-auto">
       <div
-        className="rounded-xl p-6 flex items-center justify-center"
+        className="rounded-card-lg p-6 flex items-center justify-center shadow-soft"
         style={{
           background: "linear-gradient(145deg, #FFFCF8, #FDF2F2)",
           border: "1px solid #F0D0D4",
-          boxShadow: "0 8px 32px rgba(107, 91, 91, 0.08)",
         }}
       >
         {/* PDF document mock */}
@@ -240,7 +236,7 @@ function ExportVisual() {
           >
             {/* Title */}
             <div className="text-center mb-3">
-              <p className="font-serif text-[8px] font-bold" style={{ color: "#3D3535" }}>
+              <p className="font-serif text-[8px] font-semibold" style={{ color: "#3D3535" }}>
                 Sarah & James Wedding
               </p>
               <p className="text-[6px] mt-0.5" style={{ color: "#8B7D7D" }}>Seating Chart</p>
@@ -331,25 +327,30 @@ const features = [
   },
 ];
 
+/* Translucent alternating washes, feathered to transparent at both edges
+   so no hard band lines appear — the global gradient always reads through */
 const sectionBgs = [
-  "linear-gradient(180deg, #FFF8F0 0%, #FFFCF8 100%)",
-  "linear-gradient(180deg, #FFFCF8 0%, #FDF2F2 100%)",
-  "linear-gradient(180deg, #FDF2F2 0%, #FFFCF8 100%)",
-  "linear-gradient(180deg, #FFFCF8 0%, #FFF8F0 100%)",
+  "linear-gradient(180deg, transparent 0%, rgba(255, 248, 240, 0.45) 30%, rgba(255, 248, 240, 0.45) 70%, transparent 100%)",
+  "transparent",
+  "linear-gradient(180deg, transparent 0%, rgba(253, 242, 242, 0.45) 30%, rgba(253, 242, 242, 0.45) 70%, transparent 100%)",
+  "transparent",
 ];
 
 export function Features() {
   return (
     <section id="features">
-      {/* Section header */}
-      <div className="py-16 text-center" style={{ background: "linear-gradient(180deg, #FFF8F0, #FFFCF8)" }}>
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-warm-gray-900 mb-4">
+      {/* Section header — eyebrow, serif w600, gold ornament */}
+      <div className="py-16 text-center">
+        <p className="eyebrow eyebrow-gold mb-4">The Features</p>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-warm-gray-900 mb-4">
           Everything You Need
         </h2>
         <p className="text-warm-gray-400 max-w-lg mx-auto text-base">
           Powerful features wrapped in a beautiful, intuitive experience
         </p>
-        <div className="divider-gold mx-auto max-w-[160px] mt-6" />
+        <div className="ornament-divider mx-auto max-w-[220px] mt-7">
+          <span className="ornament-dot" />
+        </div>
       </div>
 
       {/* Alternating feature sections */}
@@ -376,15 +377,15 @@ export function Features() {
 
                 {/* Text */}
                 <div className={`${isImageFirst ? "lg:order-2" : "lg:order-1"}`}>
-                  {/* Feature number */}
-                  <span
-                    className="inline-block text-sm font-semibold mb-3 tracking-wide"
-                    style={{ color: "#D4A574" }}
-                  >
-                    0{i + 1}
+                  {/* Feature number — letter-spaced eyebrow beside a hairline */}
+                  <span className="flex items-center gap-4 mb-4">
+                    <span className="eyebrow eyebrow-gold shrink-0">
+                      0{i + 1}
+                    </span>
+                    <span className="hairline max-w-[72px]" aria-hidden="true" />
                   </span>
 
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-warm-gray-900 mb-4 leading-tight">
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-semibold text-warm-gray-900 mb-4 leading-tight">
                     {feature.title}
                   </h3>
 

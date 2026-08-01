@@ -95,7 +95,7 @@ export function GuestForm({ open, onClose, onSubmit, guest }: GuestFormProps) {
       size="md"
     >
       {error && (
-        <div className="mb-5 px-4 py-3 rounded-soft bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-5 px-4 py-3 rounded-card bg-red-50/80 border border-red-200 text-red-700 text-ui">
           {error}
         </div>
       )}
@@ -121,14 +121,14 @@ export function GuestForm({ open, onClose, onSubmit, guest }: GuestFormProps) {
         />
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-warm-gray-700">
+          <label className="text-ui-sm font-medium text-warm-gray-700">
             Meal Preference
           </label>
           <div className="relative">
             <select
               value={mealPreference}
               onChange={(e) => setMealPreference(e.target.value)}
-              className="w-full px-3 py-2 pr-8 text-sm bg-white border border-cream-300 rounded-soft text-warm-gray-800 hover:border-rose-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 focus:ring-offset-1 focus:outline-none transition-all duration-150 appearance-none cursor-pointer"
+              className="w-full px-3.5 py-2 pr-8 text-ui bg-white border border-cream-300 rounded-[10px] text-warm-gray-800 hover:border-rose-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 focus:ring-offset-1 focus:outline-none transition-[border-color,box-shadow] duration-150 ease-out appearance-none cursor-pointer"
             >
               {MEAL_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
@@ -145,7 +145,7 @@ export function GuestForm({ open, onClose, onSubmit, guest }: GuestFormProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-warm-gray-700">
+          <label className="text-ui-sm font-medium text-warm-gray-700">
             Group / Tag
           </label>
           <Input
@@ -167,11 +167,11 @@ export function GuestForm({ open, onClose, onSubmit, guest }: GuestFormProps) {
             />
             <div className="w-9 h-5 bg-cream-200 rounded-pill peer peer-checked:bg-rose-400 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full" />
           </label>
-          <span className="text-sm text-warm-gray-700">Plus one</span>
+          <span className="text-ui text-warm-gray-700">Plus one</span>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-warm-gray-700">
+          <label className="text-ui-sm font-medium text-warm-gray-700">
             Notes
           </label>
           <textarea
@@ -179,7 +179,7 @@ export function GuestForm({ open, onClose, onSubmit, guest }: GuestFormProps) {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 text-sm bg-white border border-cream-300 rounded-soft text-warm-gray-800 placeholder:text-warm-gray-400 hover:border-rose-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 focus:ring-offset-1 focus:outline-none transition-all duration-150 resize-none"
+            className="w-full px-3.5 py-2 text-ui bg-white border border-cream-300 rounded-[10px] text-warm-gray-800 placeholder:text-warm-gray-400 hover:border-rose-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 focus:ring-offset-1 focus:outline-none transition-[border-color,box-shadow] duration-150 ease-out resize-none"
           />
         </div>
 

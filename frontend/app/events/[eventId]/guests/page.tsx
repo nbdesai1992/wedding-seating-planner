@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { Users } from "lucide-react";
 import {
   getGuests,
   createGuest,
@@ -172,30 +171,29 @@ function GuestsContent() {
   }
 
   return (
-    <div className="max-w-5xl animate-fade-in">
-      {/* Page header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center">
-              <Users className="w-4 h-4 text-rose-400" />
-            </div>
-            <h1 className="text-2xl font-serif font-semibold text-warm-gray-800">
-              Guest List
-            </h1>
-          </div>
-          <p className="text-sm text-warm-gray-400 ml-[42px]">
-            Manage your guest list, meal preferences, and groups
-          </p>
+    <div className="max-w-5xl animate-fade-up">
+      {/* Page header — eyebrow + serif + hairline */}
+      <div className="mb-8">
+        <p className="eyebrow eyebrow-gold mb-2">Who&apos;s Coming</p>
+        <div className="flex items-center gap-5">
+          <h1 className="font-serif text-2xl font-semibold tracking-tight text-warm-gray-800 shrink-0">
+            Guest List
+          </h1>
+          <div className="hairline" aria-hidden="true" />
         </div>
+        <p className="text-ui text-warm-gray-400 mt-2">
+          Manage your guest list, meal preferences, and groups
+        </p>
       </div>
-
-      <div className="divider-gold mb-6" />
 
       {/* Error banner */}
       {error && (
-        <div className="mb-4 px-4 py-3 rounded-soft bg-red-50 border border-red-200 text-red-700 text-sm">
-          {error}
+        <div className="mb-6 frosted-card !border-rose-200/80 px-5 py-3.5 flex items-center gap-3">
+          <span
+            className="w-1.5 h-1.5 rotate-45 bg-rose-500 shrink-0"
+            aria-hidden="true"
+          />
+          <p className="text-ui text-warm-gray-600">{error}</p>
         </div>
       )}
 
@@ -234,11 +232,12 @@ function GuestsContent() {
             className="absolute inset-0 bg-warm-gray-900/30 backdrop-blur-modal animate-fade-in"
             onClick={() => setShowDeleteConfirm(null)}
           />
-          <div className="relative w-full max-w-sm bg-white rounded-card shadow-modal border border-cream-200 animate-fade-in p-6">
-            <h3 className="font-serif text-lg font-semibold text-warm-gray-800 mb-2">
+          <div className="relative w-full max-w-sm bg-white rounded-card-lg shadow-modal border border-cream-200/80 animate-fade-in p-7">
+            <h3 className="font-serif text-lg font-medium text-warm-gray-800 mb-2">
               Delete Guest
             </h3>
-            <p className="text-sm text-warm-gray-500 mb-5">
+            <div className="divider-gold mb-4" />
+            <p className="text-ui text-warm-gray-500 mb-6">
               Are you sure you want to delete{" "}
               <span className="font-medium text-warm-gray-700">
                 {showDeleteConfirm.name}
@@ -248,13 +247,13 @@ function GuestsContent() {
             <div className="flex items-center gap-3">
               <button
                 onClick={confirmDelete}
-                className="flex-1 px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-soft hover:bg-red-600 transition-colors"
+                className="press flex-1 px-4 py-2 text-ui-sm font-medium bg-red-500 text-white rounded-pill hover:bg-red-600 transition-[background-color,transform] duration-200 ease-out"
               >
                 Delete
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 px-4 py-2 text-sm font-medium bg-cream-100 text-warm-gray-700 border border-cream-300 rounded-soft hover:bg-cream-200 transition-colors"
+                className="press flex-1 px-4 py-2 text-ui-sm font-medium bg-white text-warm-gray-700 border border-cream-300 rounded-pill hover:bg-cream-100 transition-[background-color,transform] duration-200 ease-out"
               >
                 Cancel
               </button>

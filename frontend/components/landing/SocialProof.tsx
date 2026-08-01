@@ -13,12 +13,8 @@ const avatars = [
 
 export function SocialProof() {
   return (
-    <section
-      className="relative py-8"
-      style={{
-        background: "linear-gradient(180deg, #FFFCF8 0%, #FFF8F0 100%)",
-      }}
-    >
+    // Transparent — sits directly on the global gradient
+    <section className="relative py-10">
       <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-center gap-5">
         {/* Overlapping avatars */}
         <div className="flex items-center -space-x-2.5">

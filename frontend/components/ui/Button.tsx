@@ -18,12 +18,14 @@ const variantStyles: Record<ButtonVariant, string> = {
   primary: [
     "bg-rose-500 text-white",
     "hover:bg-rose-600 active:bg-rose-700",
-    "shadow-sm hover:shadow-md",
+    "shadow-btn-rose hover:shadow-btn-rose-hover",
+    "hover:-translate-y-px",
     "focus-visible:focus-ring-rose",
   ].join(" "),
   secondary: [
-    "bg-cream-100 text-warm-gray-700 border border-cream-300",
-    "hover:bg-cream-200 active:bg-cream-300",
+    "bg-white/80 text-warm-gray-700 border border-cream-300",
+    "hover:bg-cream-100 hover:border-cream-400 active:bg-cream-200",
+    "shadow-soft hover:shadow-lifted hover:-translate-y-px",
     "focus-visible:focus-ring-rose",
   ].join(" "),
   ghost: [
@@ -34,15 +36,16 @@ const variantStyles: Record<ButtonVariant, string> = {
   gold: [
     "bg-gold-400 text-white",
     "hover:bg-gold-500 active:bg-gold-600",
-    "shadow-sm hover:shadow-md",
+    "shadow-btn-gold hover:shadow-btn-gold-hover",
+    "hover:-translate-y-px",
     "focus-visible:focus-ring-gold",
   ].join(" "),
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-xs rounded-soft",
-  md: "px-4 py-2 text-sm rounded-soft",
-  lg: "px-6 py-2.5 text-sm rounded-card",
+  sm: "px-3.5 py-1.5 text-ui-xs rounded-pill",
+  md: "px-5 py-2 text-ui-sm rounded-pill",
+  lg: "px-7 py-2.5 text-ui rounded-pill",
 };
 
 export function Button({
@@ -59,7 +62,9 @@ export function Button({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-2",
-        "font-medium transition-all duration-150 ease-out",
+        "font-medium tracking-[0.01em]",
+        "transition-[background-color,border-color,box-shadow,transform] duration-200 ease-out",
+        "active:translate-y-px",
         "select-none whitespace-nowrap",
         variantStyles[variant],
         sizeStyles[size],

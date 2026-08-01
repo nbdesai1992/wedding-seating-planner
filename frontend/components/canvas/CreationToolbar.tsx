@@ -62,15 +62,24 @@ export function CreationToolbar({
   onCreateFeature,
   disabled = false,
 }: CreationToolbarProps) {
+  const itemBtn = cn(
+    "w-8 h-8 rounded-pill flex items-center justify-center press",
+    "text-warm-gray-400 hover:bg-rose-50 hover:text-rose-600",
+    "transition-colors duration-150 ease-out",
+    "focus-visible:focus-ring-rose"
+  );
+
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 px-3 py-2 bg-white/80 backdrop-blur-sm border border-cream-200 rounded-card",
+        "inline-flex items-center gap-1.5 pl-4 pr-2 py-1.5",
+        "bg-white/70 backdrop-blur-md border border-white/70 rounded-pill shadow-soft",
+        "transition-opacity duration-200",
         disabled && "opacity-50 pointer-events-none"
       )}
     >
       {/* Tables group */}
-      <span className="text-[10px] uppercase tracking-wider text-warm-gray-400 font-medium mr-0.5">
+      <span className="text-[9.5px] uppercase tracking-eyebrow text-warm-gray-400 font-medium mr-1 leading-none">
         Tables
       </span>
       {Object.entries(TABLE_CATALOG).map(([shape, spec]) => {
@@ -81,7 +90,8 @@ export function CreationToolbar({
             onClick={() => onCreateTable(shape, spec)}
             disabled={disabled}
             title={spec.label}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-warm-gray-400 hover:bg-cream-100 hover:text-warm-gray-600 transition-colors"
+            aria-label={`Add ${spec.label.toLowerCase()} table`}
+            className={itemBtn}
           >
             <Icon className="w-4 h-4" />
           </button>
@@ -89,10 +99,10 @@ export function CreationToolbar({
       })}
 
       {/* Divider */}
-      <div className="w-px h-6 bg-cream-200 mx-1" />
+      <div className="w-px h-5 bg-cream-300/80 mx-1.5" />
 
       {/* Features group */}
-      <span className="text-[10px] uppercase tracking-wider text-warm-gray-400 font-medium mr-0.5">
+      <span className="text-[9.5px] uppercase tracking-eyebrow text-warm-gray-400 font-medium mr-1 leading-none">
         Features
       </span>
       {Object.entries(FEATURE_CATALOG).map(([type, spec]) => {
@@ -103,7 +113,8 @@ export function CreationToolbar({
             onClick={() => onCreateFeature(type, spec)}
             disabled={disabled}
             title={spec.label}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-warm-gray-400 hover:bg-cream-100 hover:text-warm-gray-600 transition-colors"
+            aria-label={`Add ${spec.label.toLowerCase()}`}
+            className={itemBtn}
           >
             <Icon className="w-4 h-4" />
           </button>

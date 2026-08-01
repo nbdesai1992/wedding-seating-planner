@@ -11,9 +11,23 @@
   }
 
   body {
-    @apply font-sans text-warm-gray-800 bg-cream-50;
+    @apply font-sans text-warm-gray-800;
     font-size: 14px;
     line-height: 1.6;
+    /* Never a flat page: two soft radial washes (rose + gold) anchored
+       off-screen in opposite corners over the cream base (#FFFCF8). */
+    background-color: #fffcf8;
+    background-image: radial-gradient(
+        56rem 56rem at -14% -12%,
+        rgba(232, 180, 184, 0.2),
+        transparent 62%
+      ),
+      radial-gradient(
+        64rem 64rem at 114% 110%,
+        rgba(212, 165, 116, 0.14),
+        transparent 62%
+      );
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4 {
@@ -91,6 +105,79 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
+
+  /* ── Editorial foundation utilities ─────────────────────────────── */
+
+  /* Uppercase eyebrow label: letter-spacing as ornament */
+  .eyebrow {
+    @apply font-sans font-medium uppercase text-warm-gray-400;
+    font-size: 11.5px;
+    letter-spacing: 0.32em;
+  }
+
+  .eyebrow-gold {
+    @apply text-gold-600;
+  }
+
+  .eyebrow-rose {
+    @apply text-rose-600;
+  }
+
+  /* Hairline rule: pair with a serif heading inside a flex row
+     (`flex items-center gap-4`) — whitespace and hairlines, not boxes */
+  .hairline {
+    height: 1px;
+    flex: 1 1 0%;
+    @apply bg-cream-300;
+  }
+
+  .hairline-full {
+    height: 1px;
+    @apply w-full bg-cream-300;
+  }
+
+  /* Frosted card: for empty states and overlays sitting on the gradient */
+  .frosted-card {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    @apply border border-white/70 rounded-card-lg shadow-soft;
+  }
+
+  /* Gold ornament divider: hairlines flanking a rotated gold dot.
+     Usage: <div class="ornament-divider"><span class="ornament-dot" /></div> */
+  .ornament-divider {
+    @apply flex w-full items-center gap-3;
+  }
+
+  .ornament-divider::before,
+  .ornament-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1 1 0%;
+  }
+
+  .ornament-divider::before {
+    background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.55));
+  }
+
+  .ornament-divider::after {
+    background: linear-gradient(90deg, rgba(212, 165, 116, 0.55), transparent);
+  }
+
+  .ornament-dot {
+    width: 5px;
+    height: 5px;
+    transform: rotate(45deg);
+    background: #d4a574;
+    opacity: 0.75;
+    flex: none;
+  }
+
+  /* Press feedback for pill controls */
+  .press:active {
+    transform: translateY(1px);
+  }
 }
 
 /* ─── Clerk auth page overrides (scoped to .auth-page to avoid affecting UserButton) ─── */
@@ -123,12 +210,21 @@
   box-shadow: none !important;
   border: 1px solid #EDE5DD !important;
   background: #FFFFFF !important;
+  border-radius: 9999px !important;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out !important;
+}
+
+.auth-page .cl-socialButtonsBlockButton:hover {
+  background: #FFF8F0 !important;
+  border-color: #DDD3C8 !important;
 }
 
 .auth-page .cl-formFieldInput {
   box-shadow: none !important;
   border: 1px solid #EDE5DD !important;
   background: #FFFFFF !important;
+  border-radius: 10px !important;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out !important;
 }
 
 .auth-page .cl-formFieldInput:focus {
@@ -140,15 +236,28 @@
   gap: 12px !important;
 }
 
+.auth-page .cl-headerTitle {
+  font-family: "Playfair Display", Georgia, serif !important;
+  font-weight: 600 !important;
+  color: #3D3535 !important;
+}
+
 .auth-page .cl-formButtonPrimary {
   background: linear-gradient(135deg, #C4848A 0%, #A86A70 100%) !important;
   box-shadow: 0 2px 10px rgba(168, 106, 112, 0.35) !important;
   border: none !important;
+  border-radius: 9999px !important;
+  transition: box-shadow 200ms ease-out, transform 200ms ease-out !important;
 }
 
 .auth-page .cl-formButtonPrimary:hover {
   background: linear-gradient(135deg, #A86A70 0%, #8C5056 100%) !important;
-  box-shadow: 0 4px 14px rgba(168, 106, 112, 0.45) !important;
+  box-shadow: 0 8px 22px -4px rgba(168, 106, 112, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+.auth-page .cl-formButtonPrimary:active {
+  transform: translateY(1px);
 }
 
 /* Focus visible utility */
@@ -159,5 +268,16 @@
 
   .focus-ring-gold {
     @apply outline-none ring-2 ring-gold-400 ring-offset-2 ring-offset-cream-50;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

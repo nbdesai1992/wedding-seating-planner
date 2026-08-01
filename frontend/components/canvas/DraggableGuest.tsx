@@ -78,11 +78,11 @@ export function DraggableGuest({
         padding: 6px 14px;
         background: white;
         border: 1.5px solid #E8B4B8;
-        border-radius: 20px;
+        border-radius: 9999px;
         font-size: 12px;
         font-weight: 500;
         color: #3D3535;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(61,53,53,0.12);
         white-space: nowrap;
       `;
       document.body.appendChild(ghostEl);
@@ -114,10 +114,11 @@ export function DraggableGuest({
       onDragStart={handleDragStart}
       className={cn(
         "group flex items-center gap-2 select-none",
-        "cursor-grab active:cursor-grabbing transition-all duration-150",
+        "cursor-grab active:cursor-grabbing",
+        "transition-[background-color,border-color,box-shadow] duration-150 ease-out",
         compact
-          ? "px-2 py-1.5 rounded-md hover:bg-rose-50/60"
-          : "px-3 py-2 rounded-lg border border-transparent hover:border-rose-200 hover:bg-rose-50/40 hover:shadow-sm"
+          ? "px-2 py-1.5 rounded-soft hover:bg-rose-50/60"
+          : "px-3 py-2 rounded-card border border-transparent hover:border-rose-200 hover:bg-rose-50/40 hover:shadow-soft"
       )}
     >
       {/* Avatar circle */}

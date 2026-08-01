@@ -38,7 +38,7 @@ export default function EditEventPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-cream-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-2 border-rose-400 border-t-transparent rounded-full" />
       </div>
     );

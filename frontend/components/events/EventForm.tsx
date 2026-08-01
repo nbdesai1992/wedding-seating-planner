@@ -4,7 +4,6 @@ import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Card } from "@/components/ui/Card";
 import { ApiError } from "@/lib/api";
 
 interface EventFormProps {
@@ -66,18 +65,18 @@ export function EventForm({
   }
 
   return (
-    <div className="min-h-screen bg-cream-50 flex flex-col">
-      {/* Top accent bar */}
-      <div className="h-1 bg-gradient-to-r from-rose-200 via-gold-400 to-rose-200" />
+    <div className="min-h-screen flex flex-col">
+      {/* Top accent bar — matches auth pages */}
+      <div className="h-1 bg-gradient-to-r from-rose-300 via-gold-400 to-rose-300" />
 
-      <div className="flex-1 flex items-start justify-center px-4 py-12 sm:py-16">
-        <div className="w-full max-w-lg">
+      <div className="flex-1 flex items-start justify-center px-4 py-14 sm:py-20">
+        <div className="w-full max-w-lg animate-fade-up">
           {/* Header */}
           <div className="mb-8">
             <button
               type="button"
               onClick={() => router.back()}
-              className="text-sm text-warm-gray-400 hover:text-warm-gray-600 transition-colors mb-6 flex items-center gap-1.5"
+              className="text-ui-sm text-warm-gray-400 hover:text-warm-gray-600 transition-colors duration-150 mb-8 flex items-center gap-1.5"
             >
               <svg
                 className="w-4 h-4"
@@ -94,23 +93,26 @@ export function EventForm({
               </svg>
               Back
             </button>
-            <h1 className="text-2xl font-serif font-semibold text-warm-gray-800 mb-1">
+            <p className="eyebrow eyebrow-gold mb-2.5">Your Celebration</p>
+            <h1 className="font-serif text-3xl font-semibold tracking-tight text-warm-gray-800 mb-2">
               {title}
             </h1>
-            <p className="text-sm text-warm-gray-400">{subtitle}</p>
+            <p className="text-ui text-warm-gray-400">{subtitle}</p>
           </div>
 
-          {/* Form Card */}
-          <Card padding="lg">
-            <div className="divider-gold mb-7" />
+          {/* Form Card — frosted, like the auth surfaces */}
+          <div className="frosted-card shadow-lifted px-8 py-8 sm:px-10 sm:py-10">
+            <div className="ornament-divider mb-8">
+              <span className="ornament-dot" />
+            </div>
 
             {error && (
-              <div className="mb-6 px-4 py-3 rounded-soft bg-red-50 border border-red-200 text-red-700 text-sm">
+              <div className="mb-6 px-4 py-3 rounded-card bg-red-50/80 border border-red-200 text-red-700 text-ui">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-7">
               <Input
                 label="Event Name"
                 type="text"
@@ -150,7 +152,7 @@ export function EventForm({
                 </Button>
               </div>
             </form>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

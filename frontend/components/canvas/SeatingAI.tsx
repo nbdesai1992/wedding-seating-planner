@@ -100,16 +100,16 @@ export function SeatingAI({
         }}
         disabled={disabled || isLoading}
         className={cn(
-          "inline-flex items-center gap-2 px-4 py-2 rounded-lg",
-          "text-xs font-medium transition-all duration-200",
-          "shadow-sm hover:shadow-md",
+          "inline-flex items-center gap-2 px-4 py-2 rounded-pill",
+          "text-ui-xs font-medium tracking-[0.01em]",
+          "transition-[background-color,box-shadow,transform] duration-200 ease-out",
+          "active:translate-y-px",
           isOpen
-            ? "bg-rose-500 text-white border border-rose-600/20"
+            ? "bg-rose-600 text-white shadow-btn-rose"
             : [
-                "bg-gradient-to-b from-rose-400 to-rose-500",
-                "text-white",
-                "hover:from-rose-500 hover:to-rose-600",
-                "border border-rose-400/30",
+                "bg-rose-500 text-white",
+                "hover:bg-rose-600 hover:-translate-y-px",
+                "shadow-btn-rose hover:shadow-btn-rose-hover",
               ],
           (disabled || isLoading) && "opacity-60 cursor-not-allowed"
         )}
@@ -122,25 +122,25 @@ export function SeatingAI({
       {isOpen && (
         <div
           className={cn(
-            "absolute top-full left-0 mt-2 z-50",
-            "w-80 bg-white rounded-xl",
-            "border border-cream-200 shadow-lg shadow-warm-gray-800/8",
-            "animate-fade-in"
+            "absolute top-full right-0 mt-2 z-50",
+            "w-80 bg-white/90 backdrop-blur-md rounded-card-lg",
+            "border border-white/70 shadow-lifted",
+            "animate-fade-up"
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 pt-4 pb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center">
-                <Wand2 className="w-3.5 h-3.5 text-rose-500" />
+          <div className="flex items-center justify-between px-5 pt-4 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-pill bg-rose-100 border border-rose-200/70 flex items-center justify-center">
+                <Wand2 className="w-3.5 h-3.5 text-rose-600" />
               </div>
               <div>
-                <h4 className="text-sm font-serif font-semibold text-warm-gray-700">
-                  AI Seating
-                </h4>
-                <p className="text-[10px] text-warm-gray-400">
-                  Let AI suggest seat assignments
+                <p className="eyebrow eyebrow-rose text-[9.5px] leading-none mb-1">
+                  Auto-Seat
                 </p>
+                <h4 className="font-serif text-[15px] font-medium text-warm-gray-800 leading-tight">
+                  Seat your guests
+                </h4>
               </div>
             </div>
             <button
@@ -150,18 +150,23 @@ export function SeatingAI({
                   setError(null);
                 }
               }}
-              className="p-1 rounded-md hover:bg-cream-100 text-warm-gray-400 hover:text-warm-gray-600 transition-colors"
+              className="p-1.5 rounded-pill hover:bg-cream-100 text-warm-gray-400 hover:text-warm-gray-600 transition-colors"
+              aria-label="Close AI seating panel"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Thin gold divider */}
-          <div className="mx-4 h-px bg-gradient-to-r from-transparent via-gold-400/40 to-transparent" />
+          {/* Gold ornament divider */}
+          <div className="px-5">
+            <div className="ornament-divider">
+              <span className="ornament-dot" />
+            </div>
+          </div>
 
           {/* Constraints input */}
-          <div className="p-4">
-            <label className="block text-[11px] font-medium text-warm-gray-500 mb-1.5">
+          <div className="px-5 py-4">
+            <label className="block text-ui-xs font-medium text-warm-gray-500 mb-1.5">
               Constraints{" "}
               <span className="text-warm-gray-300 font-normal">
                 (optional)
@@ -176,11 +181,11 @@ export function SeatingAI({
               rows={3}
               disabled={isLoading}
               className={cn(
-                "w-full px-3 py-2 text-xs leading-relaxed",
-                "bg-cream-50 border border-cream-200 rounded-lg",
+                "w-full px-3.5 py-2.5 text-ui-xs leading-relaxed",
+                "bg-white/70 border border-cream-300 rounded-card",
                 "text-warm-gray-700 placeholder:text-warm-gray-300",
-                "focus:outline-none focus:border-rose-300 focus:ring-1 focus:ring-rose-200",
-                "resize-none transition-all duration-150",
+                "focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200/60",
+                "resize-none transition-[border-color,box-shadow] duration-150",
                 isLoading && "opacity-50 cursor-not-allowed"
               )}
             />
@@ -197,11 +202,11 @@ export function SeatingAI({
                   }
                   disabled={isLoading}
                   className={cn(
-                    "px-2 py-0.5 text-[10px] rounded-full",
-                    "bg-cream-100 text-warm-gray-500",
-                    "border border-cream-200",
+                    "px-2.5 py-1 text-[10.5px] rounded-pill press",
+                    "bg-cream-100/80 text-warm-gray-500",
+                    "border border-cream-300/70",
                     "hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200",
-                    "transition-all duration-150",
+                    "transition-colors duration-150",
                     isLoading && "opacity-40 cursor-not-allowed"
                   )}
                 >
@@ -212,27 +217,27 @@ export function SeatingAI({
 
             {/* Error */}
             {error && (
-              <div className="mt-2 px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg">
-                <p className="text-[11px] text-rose-600">{error}</p>
+              <div className="mt-2 px-3 py-2 bg-rose-50 border border-rose-200 rounded-card">
+                <p className="text-ui-xs text-rose-600">{error}</p>
               </div>
             )}
           </div>
 
           {/* Action buttons */}
-          <div className="px-4 pb-4 flex gap-2">
+          <div className="px-5 pb-4 flex gap-2">
             <button
               onClick={handleSuggest}
               disabled={isLoading}
               className={cn(
                 "flex-1 flex items-center justify-center gap-2",
-                "px-4 py-2.5 rounded-lg text-xs font-medium",
-                "transition-all duration-200",
+                "px-4 py-2.5 rounded-pill text-ui-xs font-medium",
+                "transition-[background-color,box-shadow,transform] duration-200 ease-out",
+                "active:translate-y-px",
                 isLoading
                   ? "bg-rose-300 text-white cursor-wait"
                   : [
-                      "bg-gradient-to-b from-rose-400 to-rose-500 text-white",
-                      "hover:from-rose-500 hover:to-rose-600",
-                      "shadow-sm hover:shadow-md",
+                      "bg-rose-500 text-white hover:bg-rose-600",
+                      "shadow-btn-rose hover:shadow-btn-rose-hover hover:-translate-y-px",
                     ]
               )}
             >
@@ -251,10 +256,10 @@ export function SeatingAI({
           </div>
 
           {/* Keyboard shortcut hint */}
-          <div className="px-4 pb-3 text-center">
-            <span className="text-[10px] text-warm-gray-300">
+          <div className="px-5 pb-3.5 text-center">
+            <span className="text-[10px] text-warm-gray-400">
               Press{" "}
-              <kbd className="px-1 py-0.5 bg-cream-100 border border-cream-200 rounded text-[9px]">
+              <kbd className="px-1.5 py-0.5 bg-cream-100 border border-cream-300/70 rounded-soft text-[9px] text-warm-gray-500">
                 ⌘ Enter
               </kbd>{" "}
               to suggest

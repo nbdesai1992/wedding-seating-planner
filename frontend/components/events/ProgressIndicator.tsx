@@ -140,7 +140,7 @@ export function ProgressIndicator({
         {[...Array(5)].map((_, i) => (
           <div key={i} className="flex items-center gap-2.5 mb-2.5">
             <div className="w-5 h-5 rounded-full bg-cream-200 animate-pulse" />
-            <div className="h-3 w-12 rounded bg-cream-200 animate-pulse" />
+            <div className="h-3 w-12 rounded-pill bg-cream-200 animate-pulse" />
           </div>
         ))}
       </div>
@@ -150,11 +150,9 @@ export function ProgressIndicator({
   return (
     <div className="mb-5">
       {/* Section label */}
-      <p className="text-[10px] uppercase tracking-widest text-warm-gray-400 font-medium mb-3">
-        Your Journey
-      </p>
+      <p className="eyebrow mb-3">Your Journey</p>
 
-      {/* ── Desktop: vertical stepper ── */}
+      {/* ── Desktop: vertical stepper with pill segments ── */}
       <div className="hidden md:block">
         {steps.map((step, i) => {
           const isActive = i === activeIndex;
@@ -178,7 +176,11 @@ export function ProgressIndicator({
                 onClick={
                   isExportDisabled ? (e) => e.preventDefault() : undefined
                 }
-                className={`group flex items-center gap-2.5 ${
+                className={`group flex items-center gap-2.5 rounded-pill -mx-2.5 px-2.5 py-1.5 transition-[background-color,border-color,box-shadow] duration-200 ease-out border ${
+                  isActive
+                    ? "bg-white border-gold-300/70 shadow-soft"
+                    : "border-transparent"
+                } ${
                   isExportDisabled
                     ? "cursor-default opacity-50"
                     : "cursor-pointer"
@@ -186,11 +188,11 @@ export function ProgressIndicator({
               >
                 {/* Step circle */}
                 <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-[background-color,border-color,color] duration-200 ${
                     step.isComplete
                       ? "bg-rose-400 text-white shadow-sm"
                       : isActive
-                        ? "bg-white border-2 border-gold-400 text-gold-500 shadow-gold-glow"
+                        ? "bg-white border-2 border-gold-400 text-gold-500"
                         : "bg-cream-200 text-warm-gray-400 group-hover:bg-cream-300"
                   }`}
                 >
@@ -204,7 +206,7 @@ export function ProgressIndicator({
                 {/* Label + subtitle */}
                 <div className="flex-1 min-w-0">
                   <span
-                    className={`text-xs font-medium leading-none transition-colors ${
+                    className={`text-ui-xs font-medium leading-none transition-colors duration-150 ${
                       isActive
                         ? "text-gold-600"
                         : step.isComplete
@@ -229,7 +231,7 @@ export function ProgressIndicator({
               {/* Connecting line between steps */}
               {!isLast && (
                 <div className="flex items-stretch ml-[9px]">
-                  <div className={`w-px h-3 ${lineColor}`} />
+                  <div className={`w-px h-2.5 ${lineColor}`} />
                 </div>
               )}
             </div>
@@ -258,7 +260,7 @@ export function ProgressIndicator({
                   }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-[background-color,border-color,color] duration-200 ${
                       step.isComplete
                         ? "bg-rose-400 text-white"
                         : isActive

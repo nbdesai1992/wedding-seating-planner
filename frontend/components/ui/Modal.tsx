@@ -56,8 +56,8 @@ export function Modal({
       {/* Content */}
       <div
         className={cn(
-          "relative w-full bg-white rounded-card shadow-modal",
-          "border border-cream-200",
+          "relative w-full bg-white rounded-card-lg shadow-modal",
+          "border border-cream-200/80",
           "animate-fade-in",
           sizeStyles[size]
         )}
@@ -74,7 +74,7 @@ export function Modal({
             <button
               onClick={onClose}
               className={cn(
-                "p-1.5 rounded-soft text-warm-gray-400",
+                "p-1.5 rounded-pill text-warm-gray-400",
                 "hover:text-warm-gray-600 hover:bg-cream-100",
                 "transition-colors duration-150",
                 "focus-visible:focus-ring-rose"

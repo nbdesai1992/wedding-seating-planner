@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   Circle,
 } from "lucide-react";
-import { Card } from "@/components/ui/Card";
+import { Card, Eyebrow, SectionHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { getEvent, type Event } from "@/lib/events";
 import { getLayout, type Layout } from "@/lib/layout";
@@ -115,39 +115,44 @@ export default function EventDetailPage() {
   const showSeatingBadge = hasGuests && !hasLayout;
 
   return (
-    <div className="max-w-3xl animate-fade-in">
-      {/* Page title */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-serif font-semibold text-warm-gray-800 mb-1">
+    <div className="max-w-3xl animate-fade-up">
+      {/* Page title — eyebrow + serif + hairline + action */}
+      <div className="mb-9">
+        <Eyebrow tone="gold" className="mb-2">
+          Event Dashboard
+        </Eyebrow>
+        <div className="flex items-center gap-5">
+          <h1 className="font-serif text-2xl font-semibold tracking-tight text-warm-gray-800 shrink-0">
             Overview
           </h1>
-          <p className="text-sm text-warm-gray-400">
-            Event dashboard and quick actions
-          </p>
+          <div className="hairline" aria-hidden="true" />
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Pencil className="w-3.5 h-3.5" />}
+            onClick={() => router.push(`/events/${eventId}/edit`)}
+            className="shrink-0"
+          >
+            Edit
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={<Pencil className="w-3.5 h-3.5" />}
-          onClick={() => router.push(`/events/${eventId}/edit`)}
-        >
-          Edit
-        </Button>
+        <p className="text-ui text-warm-gray-400 mt-2">
+          Event dashboard and quick actions
+        </p>
       </div>
 
-      {/* Countdown banner */}
+      {/* Countdown banner — frosted, sitting on the gradient */}
       {countdown && (
-        <div className="mb-6 px-5 py-4 rounded-card bg-gradient-to-r from-rose-50 to-cream-100 border border-rose-200/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/80 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-gold-400" />
+        <div className="mb-8 frosted-card px-6 py-5">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-full bg-gold-400/10 border border-gold-400/40 flex items-center justify-center shrink-0">
+              <Sparkles className="w-5 h-5 text-gold-500" />
             </div>
             <div>
-              <p className="text-sm font-medium text-warm-gray-700">
+              <p className="font-serif text-lg font-medium text-warm-gray-800">
                 {countdown}
               </p>
-              <p className="text-xs text-warm-gray-400">
+              <p className="text-ui-xs text-warm-gray-400 mt-0.5">
                 {formatDate(event.date)}
               </p>
             </div>
@@ -156,95 +161,85 @@ export default function EventDetailPage() {
       )}
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
         <Card padding="md">
+          <p className="eyebrow mb-2">Guests</p>
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-rose-50 flex items-center justify-center">
-              <Users className="w-4.5 h-4.5 text-rose-400" />
+            <div className="w-9 h-9 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
+              <Users className="w-4 h-4 text-rose-400" />
             </div>
-            <div>
-              <p className="text-2xl font-serif font-semibold text-warm-gray-800">
-                {guestCount}
-              </p>
-              <p className="text-xs text-warm-gray-400">Guests</p>
-            </div>
+            <p className="font-serif text-2xl font-semibold text-warm-gray-800">
+              {guestCount}
+            </p>
           </div>
         </Card>
 
         <Card padding="md">
+          <p className="eyebrow mb-2">Date</p>
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-cream-100 flex items-center justify-center">
-              <Calendar className="w-4.5 h-4.5 text-gold-400" />
+            <div className="w-9 h-9 rounded-full bg-cream-100 flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4 text-gold-400" />
             </div>
-            <div>
-              <p className="text-sm font-medium text-warm-gray-700">
-                {event.date
-                  ? new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : "Not set"}
-              </p>
-              <p className="text-xs text-warm-gray-400">Date</p>
-            </div>
+            <p className="text-ui font-medium text-warm-gray-700">
+              {event.date
+                ? new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "Not set"}
+            </p>
           </div>
         </Card>
 
         <Card padding="md">
+          <p className="eyebrow mb-2">Venue</p>
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-cream-100 flex items-center justify-center">
-              <MapPin className="w-4.5 h-4.5 text-gold-400" />
+            <div className="w-9 h-9 rounded-full bg-cream-100 flex items-center justify-center shrink-0">
+              <MapPin className="w-4 h-4 text-gold-400" />
             </div>
-            <div>
-              <p className="text-sm font-medium text-warm-gray-700 line-clamp-1">
-                {event.venue_description || "Not set"}
-              </p>
-              <p className="text-xs text-warm-gray-400">Venue</p>
-            </div>
+            <p className="text-ui font-medium text-warm-gray-700 line-clamp-1">
+              {event.venue_description || "Not set"}
+            </p>
           </div>
         </Card>
       </div>
 
-      <div className="divider-gold mb-8" />
-
       {/* Quick actions */}
-      <h2 className="font-serif text-lg font-semibold text-warm-gray-800 mb-4">
-        Get Started
-      </h2>
+      <SectionHeader title="Get Started" eyebrow="Next Steps" className="mb-6" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {/* Guests card — always first */}
         <Card
           hover
           padding="md"
           onClick={() => router.push(`/events/${eventId}/guests`)}
-          className={showGuestBadge ? "ring-2 ring-rose-300/60 ring-offset-1" : ""}
+          className={showGuestBadge ? "ring-1 ring-rose-300/70 ring-offset-1 ring-offset-cream-50" : ""}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
                 <Users className="w-5 h-5 text-rose-400" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-warm-gray-700">
+                  <p className="text-ui font-medium text-warm-gray-700">
                     Manage Guests
                   </p>
                   {showGuestBadge && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-rose-400 text-white shadow-sm">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-pill text-[10px] font-semibold tracking-[0.14em] uppercase bg-rose-500 text-white shadow-btn-rose">
                       Start here
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-warm-gray-400 mt-0.5">
+                <p className="text-ui-xs text-warm-gray-400 mt-0.5">
                   {hasGuests
                     ? `${guestCount} guest${guestCount !== 1 ? "s" : ""} added`
                     : "Add your guest list first"}
                 </p>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-warm-gray-300" />
+            <ArrowRight className="w-4 h-4 text-warm-gray-300 shrink-0" />
           </div>
         </Card>
 
@@ -253,32 +248,32 @@ export default function EventDetailPage() {
           hover
           padding="md"
           onClick={() => router.push(`/events/${eventId}/seating`)}
-          className={showSeatingBadge ? "ring-2 ring-gold-400/60 ring-offset-1" : ""}
+          className={showSeatingBadge ? "ring-1 ring-gold-400/70 ring-offset-1 ring-offset-cream-50" : ""}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-cream-100 flex items-center justify-center">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-full bg-cream-100 flex items-center justify-center shrink-0">
                 <Grid3X3 className="w-5 h-5 text-gold-400" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-warm-gray-700">
+                  <p className="text-ui font-medium text-warm-gray-700">
                     Seating Chart
                   </p>
                   {showSeatingBadge && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-gold-400 text-white shadow-sm">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-pill text-[10px] font-semibold tracking-[0.14em] uppercase bg-gold-400 text-white shadow-btn-gold">
                       Start here
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-warm-gray-400 mt-0.5">
+                <p className="text-ui-xs text-warm-gray-400 mt-0.5">
                   {hasLayout
                     ? `${tableCount} table${tableCount !== 1 ? "s" : ""} set up`
                     : "Create your layout after adding guests"}
                 </p>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-warm-gray-300" />
+            <ArrowRight className="w-4 h-4 text-warm-gray-300 shrink-0" />
           </div>
         </Card>
       </div>
@@ -286,43 +281,45 @@ export default function EventDetailPage() {
       {/* ── Progress Checklist ── */}
       {layoutLoaded && (
         <>
-          <div className="divider-gold my-8" />
-
-          <h2 className="font-serif text-lg font-semibold text-warm-gray-800 mb-4">
-            Planning Checklist
-          </h2>
+          <SectionHeader
+            title="Planning Checklist"
+            eyebrow="Your Progress"
+            className="mt-12 mb-6"
+          />
 
           <Card padding="md">
-            <ul className="space-y-3">
+            <ul>
               {/* Guests check */}
-              <li className="flex items-center gap-3">
+              <li className="flex items-center gap-3 py-3 first:pt-1">
                 {hasGuests ? (
                   <CheckCircle2 className="w-5 h-5 text-rose-400 shrink-0" />
                 ) : (
                   <Circle className="w-5 h-5 text-warm-gray-300 shrink-0" />
                 )}
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${hasGuests ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
+                <div className="flex-1 min-w-0 flex items-baseline justify-between gap-4">
+                  <p className={`text-ui font-medium ${hasGuests ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
                     Guests
                   </p>
-                  <p className={`text-xs ${hasGuests ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
+                  <p className={`text-ui-xs ${hasGuests ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
                     {hasGuests ? `${guestCount} added` : "0 added"}
                   </p>
                 </div>
               </li>
 
+              <li aria-hidden="true"><div className="hairline-full" /></li>
+
               {/* Layout check */}
-              <li className="flex items-center gap-3">
+              <li className="flex items-center gap-3 py-3">
                 {hasLayout ? (
                   <CheckCircle2 className="w-5 h-5 text-rose-400 shrink-0" />
                 ) : (
                   <Circle className="w-5 h-5 text-warm-gray-300 shrink-0" />
                 )}
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${hasLayout ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
+                <div className="flex-1 min-w-0 flex items-baseline justify-between gap-4">
+                  <p className={`text-ui font-medium ${hasLayout ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
                     Layout
                   </p>
-                  <p className={`text-xs ${hasLayout ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
+                  <p className={`text-ui-xs ${hasLayout ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
                     {hasLayout
                       ? `${tableCount} table${tableCount !== 1 ? "s" : ""} created`
                       : "Not created"}
@@ -330,18 +327,20 @@ export default function EventDetailPage() {
                 </div>
               </li>
 
+              <li aria-hidden="true"><div className="hairline-full" /></li>
+
               {/* Seating check */}
-              <li className="flex items-center gap-3">
+              <li className="flex items-center gap-3 py-3 last:pb-1">
                 {guestCount > 0 && seatedCount >= guestCount ? (
                   <CheckCircle2 className="w-5 h-5 text-rose-400 shrink-0" />
                 ) : (
                   <Circle className="w-5 h-5 text-warm-gray-300 shrink-0" />
                 )}
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${guestCount > 0 && seatedCount >= guestCount ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
+                <div className="flex-1 min-w-0 flex items-baseline justify-between gap-4">
+                  <p className={`text-ui font-medium ${guestCount > 0 && seatedCount >= guestCount ? "text-warm-gray-700" : "text-warm-gray-400"}`}>
                     Seating
                   </p>
-                  <p className={`text-xs ${guestCount > 0 && seatedCount >= guestCount ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
+                  <p className={`text-ui-xs ${guestCount > 0 && seatedCount >= guestCount ? "text-warm-gray-500" : "text-warm-gray-400"}`}>
                     {guestCount > 0
                       ? `${seatedCount}/${guestCount} seated`
                       : "0/0 seated"}

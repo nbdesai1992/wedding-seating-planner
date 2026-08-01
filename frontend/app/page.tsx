@@ -52,7 +52,8 @@ export default function Home() {
   const revealRef = useScrollReveal();
 
   return (
-    <div ref={revealRef} className="min-h-screen flex flex-col" style={{ background: "#FFFCF8" }}>
+    // Transparent shell — the global layered gradient body reads through every section
+    <div ref={revealRef} className="min-h-screen flex flex-col">
       <LandingNav />
       <Hero />
       <SocialProof />

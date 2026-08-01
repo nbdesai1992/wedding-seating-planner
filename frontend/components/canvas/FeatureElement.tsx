@@ -280,12 +280,12 @@ export function FeatureElement({
       <div
         className={cn(
           "w-full h-full",
-          "border-2 border-dashed transition-all duration-150",
+          "border-2 border-dashed transition-[border-color,box-shadow] duration-150 ease-out",
           styles.bg,
           isSelected ? "border-gold-400" : styles.border,
           isSelected
-            ? "shadow-lg"
-            : "shadow-sm group-hover:shadow-md",
+            ? "shadow-lifted"
+            : "shadow-card group-hover:shadow-card-hover",
           isCircle ? "rounded-full" : "rounded-card",
           "flex flex-col items-center justify-center gap-1"
         )}
