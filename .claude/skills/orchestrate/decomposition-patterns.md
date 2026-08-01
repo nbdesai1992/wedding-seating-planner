@@ -19,22 +19,34 @@ Goal: "Add user registration with API and UI"
 ### Phases
 ```
 phase-1: Infrastructure Setup (NFR-1)
-    p1-task-1: Verify Render services exist, pull DB credentials,
-               create backend/.env with DATABASE_URL, record service URLs → infra-worker
-    NOTE: Human should have created Blueprint Instance before orchestration.
-          If services don't exist, raise a blocker for the human.
+    p1-task-1: Full Render state audit + environment setup → infra-worker
+               1. Verify workspace is correct
+               2. Verify services exist (if not, blocker: "Create Blueprint Instance")
+               3. Discover ACTUAL service URLs (Render adds random suffixes)
+               4. Audit env vars: compare live Render state against render.yaml, flag drift
+               5. Set cross-service URLs via API (API_URL, FRONTEND_URL, CORS_ORIGINS) with full https://
+               6. Pull DB credentials, create backend/.env
+               7. Verify DB connectivity
+               8. Record actual URLs in the final report's Interface Contracts + update CLAUDE.md
 
 phase-2: Backend Development (FR-1, FR-2, FR-3)
-    p2-task-1: Database models + migrations (run against Render DB via .env) → backend-worker
-    p2-task-2: API endpoints (registration, login), tested against Render DB → backend-worker (depends on p2-task-1)
-    p2-task-3: Commit code + raise blocker for human to push.
-               After push: Render auto-deploys. Verify backend health. → infra-worker (depends on p2-task-2)
+    p2-task-1: Auth middleware setup (if auth configured in CLAUDE.md) → backend-worker
+               Clerk: verify JWT tokens, create auth dependency for protected routes.
+               This MUST come before any user-specific models or endpoints.
+    p2-task-2: Database models + migrations (run against Render DB via .env) → backend-worker (depends on p2-task-1 if models need user_id)
+    p2-task-3: API endpoints, tested against Render DB → backend-worker (depends on p2-task-2)
+    p2-task-4: Commit code + raise blocker for human to push.
+               After push: poll deploy status until live or failed.
+               If failed: pull build logs, raise blocker with error.
+               If live: verify health endpoints. → infra-worker (depends on p2-task-3)
 
 phase-3: Frontend Development (FR-1, FR-2, NFR-2)
     p3-task-1: Registration UI + dashboard (local dev, wired to deployed backend API) → frontend-worker
     p3-task-2: Polish + local visual verification → frontend-worker (depends on p3-task-1)
     p3-task-3: Commit code + raise blocker for human to push.
-               After push: Render auto-deploys frontend. → infra-worker (depends on p3-task-2)
+               After push: poll deploy status until live or failed.
+               If failed: pull build logs, raise blocker with error.
+               If live: verify health endpoints. → infra-worker (depends on p3-task-2)
     p3-task-4: Post-deploy verification — screenshot deployed frontend URL,
                verify against requirements + design direction → frontend-worker (depends on p3-task-3)
 ```

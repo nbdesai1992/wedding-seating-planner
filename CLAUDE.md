@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-This would be an AI-based wedding seat planner and guest management app. It's marketed towards a bride to keep track of their guests and can use a description to generate a spatial layout of their room and align the tables, dance floor, etc all ke yaspects of the layout and it will have a very intuitive and easy to use layout and methodology for assignign guests to tables. We hsoud be thinking about usability and flexibilty both. Users should nto get frustrated that it cant do what they want, but it should also be easy. We should also have a PDF export option of the actual seting chart. We should offer support for multiple events as well. This should give you an idea
+AI-based wedding seat planner and guest management app for brides: track guests across multiple events, generate a spatial room layout (tables, dance floor, key elements) from a text description, assign guests to tables through an intuitive drag-and-drop flow, and export the finished seating chart to PDF. Usability and flexibility are both first-class: it should never frustrate users by refusing what they want, while staying effortless for the common path.
 
 ## Design Context
 
-visual feel should be marketd at a bride it should feel like like the UI/UX is geared towards that. It needs to be beautiful and streamliend but not over hte top. The oclro scheme and ease of use go a long way here.
+Designed for a bride: beautiful, streamlined, not over the top. The color scheme and ease of use carry the experience. Elegant, calm, celebratory - never generic SaaS.
 
 ## Architecture
 
@@ -14,6 +14,7 @@ visual feel should be marketd at a bride it should feel like like the UI/UX is g
 - **Backend**: fastapi
 - **Database**: postgresql
 - **Deployment**: render
+- **Auth**: clerk
 
 ## Deployment
 
@@ -23,39 +24,57 @@ visual feel should be marketd at a bride it should feel like like the UI/UX is g
 - Backend API URL: https://wedding-planner-api.onrender.com
 - Frontend URL: https://wedding-planner-frontend-c7a4.onrender.com
 
+### Environment
+- Shared env group: `general_builder_keys` (linked to all services via render.yaml `fromGroup`)
+- Cross-service URLs: `API_URL` on frontend, `FRONTEND_URL` + `CORS_ORIGINS` on backend — declared in render.yaml as `sync: false`, set by infra-worker via Render API with actual `https://` URLs after discovering real service URLs
+- render.yaml is the **complete, authoritative declaration** of all service configuration. Every env var, env group link, and runtime setting must be in render.yaml. If a worker adds a new env var dependency, it must update render.yaml.
+
+### Authentication — Clerk
+
+**Do NOT implement custom auth.** No password hashing, no JWT generation, no session management, no login/signup forms from scratch. Use Clerk for all authentication.
+
+- **Frontend**: Use `@clerk/nextjs` — `<ClerkProvider>` in layout, `<SignIn>`, `<SignUp>`, `<UserButton>` components, `auth()` for server-side auth checks, `useAuth()` for client-side
+- **Backend**: Use `clerk-backend-api` Python SDK — verify session tokens from the `Authorization: Bearer <token>` header. Protect routes with a dependency that validates the Clerk JWT.
+- **Keys**: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` are declared in render.yaml (`sync: false`) and set in the Render Dashboard by the human.
+- **Auth is infrastructure, not a feature.** It should be set up in the first backend task (Clerk middleware) before any user-specific endpoints are built. Models that need `user_id` depend on auth being in place.
+
 ### Development Workflow
 
 Backend and database run on Render. Frontend runs locally during development for fast visual iteration, proxying API calls to the deployed backend. The orchestrator deploys backend code before starting frontend tasks, so the frontend always hits a real API with a real database.
 
-## Orchestration System
+## Operating Structure: The Brief Board
 
-This project uses an autonomous development orchestration system. Key commands:
+This project is developed through goal briefs on a Kanban board at `briefs/` (committed to git). **Folder location IS status** — the brief file is the card and it moves; nothing else does.
 
-- `/spec create` — Create a structured development specification
-- `/spec update` — Modify an existing spec
-- `/spec show` — View spec with completion status
-- `/orchestrate` — Execute the spec: decompose, spawn workers, track progress
-- `/status` — Diagnostic: where things stand relative to the spec
+```
+briefs/
+  1-backlog/    scoped briefs, not started (any number)
+  2-active/     being executed (WIP limit: exactly 1)
+  3-blocked/    NEEDS HUMAN INTERVENTION — distinct terminal, NOT done
+  4-done/       completed — every requirement verified
+```
+
+Key commands:
+
+- `/spec create` — Interview → goal brief in `1-backlog/` + a ready-to-paste `/goal` prompt
+- `/spec update {id}` — Modify a brief's requirements
+- `/orchestrate` — Run the board one turn: select/resume a brief, delegate subtasks, route
+- `/status` — Board diagnostic: where everything stands
+- `/goal <generated prompt>` — Autonomous mode: keeps running turns until the brief reaches a terminal folder
 
 ### How It Works
 
-1. Human creates a spec with `/spec create "description"`
-2. `/orchestrate` reads the spec, decomposes into phases and tasks
-3. Worker agents are spawned as independent `claude -p` sessions (frontend-worker, backend-worker, infra-worker) and execute tasks autonomously
-4. Progress is tracked in `session/` directory (gitignored)
-5. Blockers are surfaced to the human for resolution
-6. `/status` shows progress at any time
-7. Orchestrator resumes across conversations by reading session state from disk
+1. Human creates a brief with `/spec create "description"` and pastes the generated `/goal` prompt (or runs `/orchestrate` manually per turn)
+2. The runner moves the brief to `2-active/`, decomposes it into a Task Breakdown, and delegates each subtask to worker subagents (frontend-worker, backend-worker, infra-worker) via the Task tool
+3. The brief itself carries all state: requirement checkboxes, Task Breakdown statuses, an append-only Progress Log (a Stop hook enforces per-turn updates), and Blockers
+4. Human blockers are parked, not fatal: the runner records the question and keeps executing everything not downstream of it
+5. Terminal routing is by requirement state — all boxes checked → `4-done/`; requirements remain with zero runnable subtasks → `3-blocked/` with a "NEEDS HUMAN INTERVENTION" announcement. Blocked and done are DIFFERENT outcomes; a blocked brief is never presented as complete
+6. To resume a blocked brief: answer its `Resolution:` lines, then run `/orchestrate`
+7. Machine state (trajectory logs for evals) lives in `session/{brief-id}/`, gitignored; `session/design-direction.md` is the shared design direction
 
-### Session Directory
+### Single-Writer Rule
 
-All orchestration state lives in `session/` (ephemeral, gitignored):
-- `spec.md` — The human-approved specification
-- `phases/*.md` — Phase definitions with task tables
-- `tasks/*.md` — In-progress task files with progress logs
-- `tasks/completed/*.md` — Completed task files (moved here on completion)
-- `turn-log.json` — Cross-conversation resume support
-- `changelog.md`, `decisions.md`, `blockers.md` — Audit trail
+Only the main (runner) session edits briefs or moves them between folders. Worker subagents read the brief but never write it — they return structured reports and the runner records the results.
 
 ## Testing Policy
 

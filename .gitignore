@@ -9,3 +9,13 @@ session/
 # Python
 __pycache__/
 *.pyc
+
+# Orchestration (added by software-factory)
+.claude/.turn-marker
+.env.local
+*.env.local
+
+# Build artifacts (added by software-factory)
+node_modules/
+.next/
+*.tsbuildinfo
