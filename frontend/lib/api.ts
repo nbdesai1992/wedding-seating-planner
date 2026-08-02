@@ -1,5 +1,5 @@
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://wedding-planner-api-z0l3.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://wedding-planner-api-xnoq.onrender.com";
 
 class ApiError extends Error {
   status: number;
