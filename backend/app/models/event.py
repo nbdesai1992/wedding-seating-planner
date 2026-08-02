@@ -7,7 +7,7 @@ from datetime import date, datetime, timezone
 from typing import List, Optional
 
 from sqlalchemy import String, Date, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -20,7 +20,7 @@ class Event(Base):
         primary_key=True, default=uuid.uuid4
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)

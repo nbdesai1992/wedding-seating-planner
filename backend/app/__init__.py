@@ -43,4 +43,12 @@ def create_app() -> FastAPI:
     def health():
         return {"status": "ok"}
 
+    # SQLite mode (no managed database service): bootstrap the schema at
+    # startup. Postgres deployments continue to use alembic migrations.
+    if settings.DATABASE_URL.startswith("sqlite"):
+        from app.database import Base, engine
+        from app import models  # noqa: F401  (registers all models on Base)
+
+        Base.metadata.create_all(bind=engine)
+
     return app

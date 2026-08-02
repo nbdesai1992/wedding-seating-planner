@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import Integer, Float, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -20,11 +20,11 @@ class Seat(Base):
         primary_key=True, default=uuid.uuid4
     )
     table_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("tables.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(), ForeignKey("tables.id", ondelete="CASCADE"), nullable=False, index=True
     )
     seat_index: Mapped[int] = mapped_column(Integer, nullable=False)
     guest_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("guests.id", ondelete="SET NULL"), nullable=True
+        Uuid(), ForeignKey("guests.id", ondelete="SET NULL"), nullable=True
     )
     x_offset: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     y_offset: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)

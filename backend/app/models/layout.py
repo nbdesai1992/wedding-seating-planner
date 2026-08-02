@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import List
 
 from sqlalchemy import Integer, Float, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -20,7 +20,7 @@ class Layout(Base):
         primary_key=True, default=uuid.uuid4
     )
     event_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("events.id", ondelete="CASCADE"), unique=True, nullable=False
+        Uuid(), ForeignKey("events.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     canvas_width: Mapped[int] = mapped_column(Integer, default=2000)
     canvas_height: Mapped[int] = mapped_column(Integer, default=1500)

@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import String, Text, Boolean, Integer, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -20,19 +20,19 @@ class Guest(Base):
         primary_key=True, default=uuid.uuid4
     )
     event_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("events.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(), ForeignKey("events.id", ondelete="CASCADE"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     meal_preference: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     is_plus_one: Mapped[bool] = mapped_column(Boolean, default=False)
     plus_one_of: Mapped[Optional[uuid.UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("guests.id", ondelete="SET NULL"), nullable=True
+        Uuid(), ForeignKey("guests.id", ondelete="SET NULL"), nullable=True
     )
     group_tag: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     table_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("tables.id", ondelete="SET NULL"), nullable=True, index=True
+        Uuid(), ForeignKey("tables.id", ondelete="SET NULL"), nullable=True, index=True
     )
     seat_index: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

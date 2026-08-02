@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import String, Float, DateTime, ForeignKey, Enum
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -33,7 +33,7 @@ class VenueFeature(Base):
         primary_key=True, default=uuid.uuid4
     )
     layout_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("layouts.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(), ForeignKey("layouts.id", ondelete="CASCADE"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[VenueFeatureType] = mapped_column(
