@@ -162,6 +162,11 @@ _Append-only. One entry per working turn: timestamp, what happened, what's next.
 - NFR-2 evidence: live screenshots at 1440px and 375px — restyled landing renders correctly, no overlap/clipping.
 - Remaining for a future turn: reconcile FR checkboxes against restyle + live evidence; FR-3 legacy test-fixture modernization (pre-existing debt); authenticated live flow check.
 
+### 2026-08-02T18:55Z — Deploy verification complete; Clerk routing fixed (main session)
+- Full sweep: both deploys live; API /health + /docs 200, protected routes 401 correctly; frontend /, /api/health, /sign-in 200; /dashboard correctly gates via Clerk (curl 404 = Clerk's non-browser response, by design; browser gets 307 handshake).
+- Defect found + fixed: NEXT_PUBLIC_CLERK_*_URL routing vars were never set on the Render service, so signed-out users saw Clerk's default hosted page. Set all four + redeployed; verified by screenshot — the styled in-app sign-in now renders (heart mark, SEATED eyebrow, Playfair "Welcome Back", rose gradient CTA).
+- Known non-issues: API root path 404s (no route at /, by design); Clerk is a pk_test development instance (human deferred production Clerk).
+
 ## Blockers
 
 ### B-1: Render workspace `nealdes.ai` unreachable from CLI login
