@@ -2,9 +2,9 @@
 id: 001-editorial-restyle-redeploy
 title: "Editorial Restyle + Render Redeploy"
 created: "2026-08-01T19:05:00Z"
-updated: "2026-08-01T19:05:00Z"
+updated: "2026-08-02T00:00:00Z"
 completion: 0/8
-outcome: needs-human
+outcome: pending
 pending_replan: false
 turn_cap: 34
 ---
@@ -86,13 +86,8 @@ These rules bind ANY session working this brief. The `/orchestrate` skill is the
 2. **Decompose before building.** If Task Breakdown below is empty, fill it before any implementation. Every requirement must map to at least one subtask.
 3. **Delegate, don't implement.** Execute each subtask via the matching subagent (frontend-worker / backend-worker / infra-worker). The main session plans, verifies, records, and routes.
 4. **Verify before checking.** A requirement checkbox may only be checked when its acceptance criteria are demonstrably met (test output, screenshot, health check in the transcript). Never weaken, reinterpret, or remove a requirement to make it pass.
-5. **Park blockers, keep moving.** When a subtask hits a human blocker: record it under `
-### 2026-08-02T00:15Z — PAUSED by human redirection (main session)
-- Human clarified the true deliverable lives in the `wedding-seating` repo (that app's functionality, frontend-only, wearing THIS app's palette). This brief's remaining phases are superseded for now.
-- State at pause: restyle p3-task-1/2/3 completed and verified; p3-task-4 (seating editor) IN PROGRESS — components modified but NOT visually verified; backend regression, deploy, and live verification not run. Blueprint Instance was never created (B-3 unresolved).
-- All restyle work is committed. Nothing here is wrong — it is real improvement to this app — but finishing it awaits an explicit human decision.
-
-## Blockers` (question + options + empty `Resolution:` line), mark the subtask blocked, and continue every subtask NOT downstream of the blockage (by dependency, file ownership, or shared requirement). Max 3 attempts per subtask; the 3rd failure becomes a blocker.
+5. **Park blockers, keep moving.** When a subtask hits a human blocker: record it under `## Blockers` (question + options + empty `Resolution:` line), mark the subtask blocked, and continue every subtask NOT downstream of the blockage (by dependency, file ownership, or shared requirement). Max 3 attempts per subtask; the 3rd failure becomes a blocker.
+   > _Historical note (2026-08-02T00:15Z, PAUSE — now LIFTED per B-3 Resolution 2026-08-02):_ a human redirection had paused this brief mid-p3-task-4 (seating editor components modified but NOT visually verified; backend regression, deploy, live verification not run). The human has since confirmed THIS APP IS THE DELIVERABLE — resume p3-task-4 onward per the B-1/B-2/B-3 resolutions.
 6. **Document every turn.** Append a Progress Log entry each working turn (a Stop hook enforces this).
 7. **Route on terminal state — two DISTINCT outcomes:**
    - **COMPLETE**: all requirement checkboxes checked → set `outcome: completed`, write `## Outcome`, `mv` this file to `briefs/4-done/`, announce "BRIEF COMPLETE".
@@ -106,13 +101,14 @@ _Filled just-in-time by the runner when this brief becomes active. Current phase
 | ID | Phase | Description | Agent | Requirements | Depends On | Files Owned | Status | Attempts |
 |----|-------|-------------|-------|--------------|------------|-------------|--------|----------|
 | p1-task-1 | 1 | Render state audit + revival: confirm CLI auth + `nealdes.ai` workspace, list services/DBs, diagnose 503s (suspended/failed/deleted), attempt non-creating revival (resume or redeploy existing services), discover actual URLs, verify DB connectivity via `backend/.env`. Report actual hosts as interface contracts. If services/DB deleted → blocked with Blueprint instructions. | infra-worker | NFR-1, FR-6 | — | backend/.env | completed (audit done; revival superseded by B-2 resolution → fresh deploy, see p1-task-2) | 1 |
-| p1-task-2 | 1 | Fresh-deployment discovery in `nealdes.ai` (tea-crni5668ii6s73es22s0): confirm CLI workspace active, list services/DBs, identify Blueprint-created wedding services (NEVER touch `personal_homepage` srv-d787ms3uibrs73bhot2g / `personal_site` srv-d0tmjlm3jp1c73ep7rag, NEVER touch old-workspace orphans), discover URLs + DB, verify DB connectivity, set `backend/.env` DATABASE_URL for pytest, verify env group `general_builder_keys` linkage. Report hosts as interface contracts. If Blueprint Instance absent → blocked with exact human instructions. | infra-worker | NFR-1, FR-6 | — | backend/.env | blocked (B-3) | 1 |
+| p1-task-2 | 1 | Fresh-deployment discovery in `nealdes.ai` (tea-crni5668ii6s73es22s0): confirm CLI workspace active, list services/DBs, identify Blueprint-created wedding services (NEVER touch `personal_homepage` srv-d787ms3uibrs73bhot2g / `personal_site` srv-d0tmjlm3jp1c73ep7rag, NEVER touch old-workspace orphans), discover URLs + DB, verify DB connectivity, set `backend/.env` DATABASE_URL for pytest, verify env group `general_builder_keys` linkage. Report hosts as interface contracts. If Blueprint Instance absent → blocked with exact human instructions. | infra-worker | NFR-1, FR-6 | — | backend/.env | waiting-external (B-3 resolved: park-and-continue; re-check for Blueprint services each turn) | 1 |
 | p2-task-1 | 2 | Backend regression: full pytest suite (~256 tests) against real DB — needs live DB from p1-task-2 | backend-worker | FR-3 | p1-task-2 | backend/* | pending | 0 |
 | p3-task-1 | 3 | Editorial foundation: layered gradient page background, warm ink-tinted shadow + pill + transition system in globals.css/tailwind config (NO color-token or font changes), restyle shared UI primitives (Button, Card, Input, Modal, Toast), Navbar/Sidebar, extend Clerk appearance in app/layout.tsx | frontend-worker | FR-1, FR-2 | — | frontend/app/globals.css, frontend/tailwind.config.ts, frontend/app/layout.tsx, frontend/components/ui/*, frontend/components/layout/*, frontend/components/providers/ToastProvider.tsx | completed | 1 |
 | p3-task-2 | 3 | Landing + auth restyle: landing page sections, sign-in/sign-up (+ legacy login/register), eyebrows, hairline section headers, ornament dividers, editorial hero | frontend-worker | FR-1, FR-2 | p3-task-1 | frontend/app/page.tsx, frontend/components/landing/*, frontend/app/sign-in/**, frontend/app/sign-up/**, frontend/app/login/page.tsx, frontend/app/register/page.tsx | completed | 1 |
 | p3-task-3 | 3 | Dashboard + events + guests restyle: dashboard (incl. designed empty state: frosted card, warm invitation, starter pills, dashed create-tile), event overview/create/edit, guests page, event/guest components | frontend-worker | FR-1, FR-2, FR-4 | p3-task-1 | frontend/app/dashboard/*, frontend/app/events/** (except seating/page.tsx), frontend/components/events/*, frontend/components/guests/* | completed | 1 |
-| p3-task-4 | 3 | Seating editor restyle: canvas chrome, toolbars, guest sidebar, wizard, AI panels, zoom controls + designed empty-canvas state (ghost placeholders) | frontend-worker | FR-1, FR-2, FR-4 | p3-task-1 | frontend/app/events/[eventId]/seating/page.tsx, frontend/components/canvas/* | pending | 0 |
-| p4-task-1 | 4 | Integrated verification + fix pass: FR-5 breakpoints (1440px/375px on landing, dashboard, seating editor), FR-2 cross-surface consistency gates, FR-1 token-freeze check (`git diff tailwind.config.ts`), fix any defects found (owns all frontend files, runs alone in its phase) | frontend-worker | FR-1, FR-2, FR-5 | p3-task-1, p3-task-2, p3-task-3, p3-task-4 | frontend/** | pending | 0 |
+| p3-task-4 | 3 | Seating editor restyle: canvas chrome, toolbars, guest sidebar, wizard, AI panels, zoom controls + designed empty-canvas state (ghost placeholders) | frontend-worker | FR-1, FR-2, FR-4 | p3-task-1 | frontend/app/events/[eventId]/seating/page.tsx, frontend/components/canvas/* | completed | 1 |
+| p4-task-0 | 4 | Fix Auto-Seat request contract (pre-existing bug gating FR-3's "AI seating suggestions work"): `lib/layout.ts` `suggestSeating` sends no body / `{constraints: "<text>"}` while backend `SeatingSuggestRequest` requires `{constraints: [{type, guest_ids}]}` → always 422. Frontend adapts to the backend contract (backend changes out of scope): always send `{constraints: []}`-shaped valid body; make the SeatingAI input honest (the free-text field never worked — remove or replace with something the contract supports; no new features). Verify live via the local-backend harness proven in p3-task-4. | frontend-worker | FR-3 | p3-task-4 | frontend/lib/layout.ts, frontend/components/canvas/SeatingAI.tsx | pending | 0 |
+| p4-task-1 | 4 | Integrated verification + fix pass: FR-5 breakpoints (1440px/375px on landing, dashboard, seating editor), FR-2 cross-surface consistency gates, FR-1 token-freeze check (`git diff tailwind.config.ts`), fix any defects found (owns all frontend files, runs alone in its phase) | frontend-worker | FR-1, FR-2, FR-5 | p3-task-1, p3-task-2, p3-task-3, p3-task-4, p4-task-0 | frontend/** | pending | 0 |
 | p5-task-1 | 5 | URL alignment + deploy + live verification (placeholder — decomposed after phases 1–4) | infra-worker | FR-6, NFR-1, NFR-2 | p1-task-2, p4-task-1 | render.yaml, CLAUDE.md, frontend/lib/api.ts | pending | 0 |
 
 ## Progress Log
@@ -152,6 +148,13 @@ _Append-only. One entry per working turn: timestamp, what happened, what's next.
 - NOT visually verified (gated on B-2): /events/{id} overview, edit, guests — `getEvent` failure redirects to /dashboard. Statically verified: `tsc --noEmit` 0, `npm run build` clean.
 - Next: p3-task-4 (seating editor restyle + canvas empty state).
 
+### 2026-08-02T00:55Z — Turn 2 (resume): brief re-activated; p3-task-4 completed
+- Resumed from 3-blocked per filled B-1/B-2/B-3 resolutions (pause lifted; this app is the deliverable; fresh rebuild in nealdes.ai; auto-push authorized). Brief → 2-active, outcome: pending; p1-task-2 → waiting-external (park-and-continue).
+- Per-turn Blueprint check: workspace tea-crni5668ii6s73es22s0 still has NO wedding-planner services and NO Postgres (only personal_site, personal_homepage, suspended wedding-seating — all untouched). Human Blueprint creation still pending.
+- **p3-task-4 completed** (frontend-worker): audited the a9e3b6d2 partial restyle, fixed remaining contract violations (transition-all → property-scoped in SeatDot/RotateHandle/GuestSidebar, rounded-md → pill, generic shadows → warm soft/lifted, SeatingAI error copy). Verified against a REAL local stack: uvicorn + scratch SQLite (no backend code changes, cleaned up after), real Clerk sign-in (+clerk_test/OTP), event/guests/tables created through the UI, PDF export 200. FR-4 empty-canvas state (ghost sweetheart/dance-floor/family tables + frosted "The Room Awaits" wizard) screenshot-verified; all four bold-design gates PASS; DOM probes confirm pills 9999px, frosted blur(14px), warm ink shadows, Playfair 500/600, eyebrow 0.32em tracking. Runner spot-check: only 4 claimed files modified, tailwind.config.ts untouched (FR-1 freeze holds), tsc --noEmit exit 0 (Node 22; the anaconda Node 10 on default PATH can't run tsc — use ~/.nvm/versions/node/v22.22.3/bin).
+- **Found gating bug** (worker-flagged, runner-confirmed in code): Auto-Seat `POST /seating/suggest` always 422s — `lib/layout.ts` sends no body or `{constraints: "<text>"}` vs backend's required `{constraints: [{type, guest_ids}]}`. Pre-existing, but FR-3 lists AI seating suggestions as must-work → added p4-task-0 (frontend adapts to backend contract); p4-task-1 now depends on it.
+- Next: spawn p4-task-0, then p4-task-1 (integrated verification).
+
 ## Blockers
 
 ### B-1: Render workspace `nealdes.ai` unreachable from CLI login
@@ -185,5 +188,5 @@ _Append-only. One entry per working turn: timestamp, what happened, what's next.
 
 _Written when this brief is routed out of 2-active/. States which terminal (completed / needs-human) and why._
 
-**Terminal: NEEDS HUMAN (paused, not failed).** Routed to 3-blocked on 2026-08-02 after the human redirected the mission to the `wedding-seating` repo. Open question: should the planner's restyle ever be finished (resume p3-task-4 onward), or is this app retired? Answer on B-4's Resolution line and run /orchestrate to resume.
+_(Previous needs-human outcome cleared on resume 2026-08-02: all blockers B-1/B-2/B-3 carry filled Resolutions — pause lifted, this app confirmed as the deliverable, fresh rebuild in nealdes.ai, auto-push authorized. Brief returned to 2-active.)_
 
