@@ -167,6 +167,11 @@ _Append-only. One entry per working turn: timestamp, what happened, what's next.
 - Defect found + fixed: NEXT_PUBLIC_CLERK_*_URL routing vars were never set on the Render service, so signed-out users saw Clerk's default hosted page. Set all four + redeployed; verified by screenshot — the styled in-app sign-in now renders (heart mark, SEATED eyebrow, Playfair "Welcome Back", rose gradient CTA).
 - Known non-issues: API root path 404s (no route at /, by design); Clerk is a pk_test development instance (human deferred production Clerk).
 
+### 2026-08-02T19:20Z — Fixed: create-event 401 (main session)
+- Root cause: the API's only build predated the env-group link, so the process had no Clerk keys ("Invalid Clerk publishable key format" in logs); Render's rootDir build-skipping meant frontend/docs pushes never rebuilt the backend. Manual API redeploy loaded the keys; live again with health 200.
+- Lesson recorded: after linking an env group to a running service, always trigger a redeploy of that service.
+- Human friction noted: sign-in-walled experience differs from their memory — AUTH_DISABLED demo-mode bypass offered, awaiting decision.
+
 ## Blockers
 
 ### B-1: Render workspace `nealdes.ai` unreachable from CLI login
