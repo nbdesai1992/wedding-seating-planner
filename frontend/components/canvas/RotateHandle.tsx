@@ -99,7 +99,7 @@ export function RotateHandle({
       />
       {/* Handle circle */}
       <div
-        className="absolute z-30 pointer-events-auto w-5 h-5 rounded-full bg-white border border-gold-400 shadow-sm flex items-center justify-center cursor-grab hover:border-gold-500 hover:shadow-md transition-all active:cursor-grabbing"
+        className="absolute z-30 pointer-events-auto w-5 h-5 rounded-full bg-white border border-gold-400 shadow-soft flex items-center justify-center cursor-grab hover:border-gold-500 hover:shadow-lifted transition-[border-color,box-shadow] duration-150 ease-out active:cursor-grabbing"
         style={{
           left: `${width / 2 - 10}px`,
           top: `${HANDLE_OFFSET - 10}px`,

@@ -51,11 +51,36 @@ export interface Layout {
 export interface SeatingAssignment {
   seat_id: string;
   guest_id: string;
+  /** Provided by the backend on AI suggestions */
+  guest_name?: string;
+  table_name?: string;
 }
 
 export interface SeatingSuggestion {
   assignments: SeatingAssignment[];
   reasoning: string;
+}
+
+/** Structured constraint accepted by POST /seating/suggest.
+ *  Mirrors backend/app/schemas/seating.py::SeatingConstraint exactly. */
+export interface SeatingConstraint {
+  type: "group_together" | "keep_apart" | "near_head_table";
+  guest_ids: string[];
+}
+
+/** Wire shape of the backend suggest response (SeatingSuggestResponse). */
+interface SeatingSuggestWireResponse {
+  suggestions: {
+    seat_id: string;
+    guest_id: string;
+    guest_name: string;
+    table_name: string;
+  }[];
+  unassigned: {
+    guest_id: string;
+    guest_name: string;
+    reason: string;
+  }[];
 }
 
 // ── Layout CRUD ────────────────────────────────────────────
@@ -191,12 +216,31 @@ export async function unassignSeat(
 
 export async function suggestSeating(
   eventId: string,
-  constraints?: string
+  constraints: SeatingConstraint[] = []
 ): Promise<SeatingSuggestion> {
-  return api.post<SeatingSuggestion>(
+  // Always send a schema-valid body — the backend requires
+  // { constraints: SeatingConstraint[] } (empty list is valid).
+  const res = await api.post<SeatingSuggestWireResponse>(
     `/api/events/${eventId}/seating/suggest`,
-    constraints ? { constraints } : undefined
+    { constraints }
   );
+
+  // Adapt the wire response to the shape the preview overlay consumes.
+  const assignments: SeatingAssignment[] = res.suggestions.map((s) => ({
+    seat_id: s.seat_id,
+    guest_id: s.guest_id,
+    guest_name: s.guest_name,
+    table_name: s.table_name,
+  }));
+
+  const reasoning =
+    res.unassigned.length > 0
+      ? `Not seated: ${res.unassigned
+          .map((u) => `${u.guest_name} — ${u.reason}`)
+          .join("; ")}`
+      : "";
+
+  return { assignments, reasoning };
 }
 
 export async function applySeating(

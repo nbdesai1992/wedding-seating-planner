@@ -138,7 +138,7 @@ export function SeatDot({
       {/* Visual seat dot */}
       <div
         className={cn(
-          "absolute rounded-full flex items-center justify-center transition-all duration-150",
+          "absolute rounded-full flex items-center justify-center transition-[background-color,border-color,box-shadow,transform] duration-150 ease-out",
           "pointer-events-none",
           isOccupied
             ? "bg-rose-400 border-[1.5px] border-rose-500 shadow-sm"

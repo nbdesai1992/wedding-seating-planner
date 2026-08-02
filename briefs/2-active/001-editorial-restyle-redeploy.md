@@ -2,8 +2,8 @@
 id: 001-editorial-restyle-redeploy
 title: "Editorial Restyle + Render Redeploy"
 created: "2026-08-01T19:05:00Z"
-updated: "2026-08-02T00:00:00Z"
-completion: 0/8
+updated: "2026-08-02T04:20:00Z"
+completion: 1/8
 outcome: pending
 pending_replan: false
 turn_cap: 34
@@ -42,7 +42,7 @@ The styling reference is technique-only. Do NOT copy its palette (blush `#e7c9c4
   - Acceptance: dev-browser screenshots of each listed page pass the bold-design quality gates (AI Slop, Swap, Squint, Signature) and share the same card/shadow/typography language.
 - [ ] **FR-3**: Zero feature regressions. Events CRUD, guest management + CSV import, AI layout generate/modify, layout wizard, manual table/feature editing (drag, resize, rotate), drag-and-drop seat assignment, AI seating suggestions (preview-then-apply), PDF export, and Clerk auth all still work.
   - Acceptance: full backend pytest suite passes (`cd backend && python -m pytest -q` — currently ~256 tests, 0 failures); dashboard → create event → add guest → open seating editor exercised in the browser with screenshots.
-- [ ] **FR-4**: Designed empty states. Dashboard-with-no-events and empty seating canvas get inviting empty states (frosted card + warm one-line invitation + starter actions; ghost placeholders on the canvas) instead of bare panels.
+- [x] **FR-4**: Designed empty states. Dashboard-with-no-events and empty seating canvas get inviting empty states (frosted card + warm one-line invitation + starter actions; ghost placeholders on the canvas) instead of bare panels.
   - Acceptance: screenshots of both empty states; neither is a blank surface.
 - [ ] **FR-5**: UI integrity at common breakpoints: no overlapping elements, no clipped text, no horizontal page scroll at 1440px and 375px widths on landing, dashboard, and seating editor.
   - Acceptance: screenshots at both widths for the three pages, visually checked; any defect fixed and re-shot.
@@ -107,7 +107,7 @@ _Filled just-in-time by the runner when this brief becomes active. Current phase
 | p3-task-2 | 3 | Landing + auth restyle: landing page sections, sign-in/sign-up (+ legacy login/register), eyebrows, hairline section headers, ornament dividers, editorial hero | frontend-worker | FR-1, FR-2 | p3-task-1 | frontend/app/page.tsx, frontend/components/landing/*, frontend/app/sign-in/**, frontend/app/sign-up/**, frontend/app/login/page.tsx, frontend/app/register/page.tsx | completed | 1 |
 | p3-task-3 | 3 | Dashboard + events + guests restyle: dashboard (incl. designed empty state: frosted card, warm invitation, starter pills, dashed create-tile), event overview/create/edit, guests page, event/guest components | frontend-worker | FR-1, FR-2, FR-4 | p3-task-1 | frontend/app/dashboard/*, frontend/app/events/** (except seating/page.tsx), frontend/components/events/*, frontend/components/guests/* | completed | 1 |
 | p3-task-4 | 3 | Seating editor restyle: canvas chrome, toolbars, guest sidebar, wizard, AI panels, zoom controls + designed empty-canvas state (ghost placeholders) | frontend-worker | FR-1, FR-2, FR-4 | p3-task-1 | frontend/app/events/[eventId]/seating/page.tsx, frontend/components/canvas/* | completed | 1 |
-| p4-task-0 | 4 | Fix Auto-Seat request contract (pre-existing bug gating FR-3's "AI seating suggestions work"): `lib/layout.ts` `suggestSeating` sends no body / `{constraints: "<text>"}` while backend `SeatingSuggestRequest` requires `{constraints: [{type, guest_ids}]}` → always 422. Frontend adapts to the backend contract (backend changes out of scope): always send `{constraints: []}`-shaped valid body; make the SeatingAI input honest (the free-text field never worked — remove or replace with something the contract supports; no new features). Verify live via the local-backend harness proven in p3-task-4. | frontend-worker | FR-3 | p3-task-4 | frontend/lib/layout.ts, frontend/components/canvas/SeatingAI.tsx | pending | 0 |
+| p4-task-0 | 4 | Fix Auto-Seat request contract (pre-existing bug gating FR-3's "AI seating suggestions work"): `lib/layout.ts` `suggestSeating` sends no body / `{constraints: "<text>"}` while backend `SeatingSuggestRequest` requires `{constraints: [{type, guest_ids}]}` → always 422. Frontend adapts to the backend contract (backend changes out of scope): always send `{constraints: []}`-shaped valid body; make the SeatingAI input honest (the free-text field never worked — remove or replace with something the contract supports; no new features). Verify live via the local-backend harness proven in p3-task-4. | frontend-worker | FR-3 | p3-task-4 | frontend/lib/layout.ts, frontend/components/canvas/SeatingAI.tsx | completed | 1 |
 | p4-task-1 | 4 | Integrated verification + fix pass: FR-5 breakpoints (1440px/375px on landing, dashboard, seating editor), FR-2 cross-surface consistency gates, FR-1 token-freeze check (`git diff tailwind.config.ts`), fix any defects found (owns all frontend files, runs alone in its phase) | frontend-worker | FR-1, FR-2, FR-5 | p3-task-1, p3-task-2, p3-task-3, p3-task-4, p4-task-0 | frontend/** | pending | 0 |
 | p5-task-1 | 5 | URL alignment + deploy + live verification (placeholder — decomposed after phases 1–4) | infra-worker | FR-6, NFR-1, NFR-2 | p1-task-2, p4-task-1 | render.yaml, CLAUDE.md, frontend/lib/api.ts | pending | 0 |
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Sparkles, X, ArrowRight, Wand2 } from "lucide-react";
+import { Sparkles, X, Wand2, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { suggestSeating, type SeatingSuggestion } from "@/lib/layout";
 
@@ -17,11 +17,9 @@ export function SeatingAI({
   disabled,
 }: SeatingAIProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [constraints, setConstraints] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Close on outside click
   useEffect(() => {
@@ -38,57 +36,46 @@ export function SeatingAI({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [isOpen, isLoading]);
 
-  // Focus textarea on open
+  // Close on Escape
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+    if (!isOpen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape" && !isLoading) {
+        setIsOpen(false);
+        setError(null);
+      }
     }
-  }, [isOpen]);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen, isLoading]);
 
   const handleSuggest = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const trimmed = constraints.trim();
-      const suggestion = await suggestSeating(
-        eventId,
-        trimmed || undefined
-      );
+      const suggestion = await suggestSeating(eventId);
+      if (suggestion.assignments.length === 0) {
+        setError(
+          suggestion.reasoning ||
+            "Everyone is already seated — there's nothing left to arrange."
+        );
+        return;
+      }
       onSuggestions(suggestion);
       setIsOpen(false);
-      setConstraints("");
     } catch (err) {
+      // Surface a human message — API validation errors arrive as objects
+      const raw = err instanceof Error ? err.message : "";
       const message =
-        err instanceof Error ? err.message : "Failed to get suggestions";
+        raw && raw !== "[object Object]" && !raw.startsWith("[")
+          ? raw
+          : "We couldn't arrange seats just now — please try again in a moment.";
       setError(message);
     } finally {
       setIsLoading(false);
     }
-  }, [eventId, constraints, onSuggestions]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        handleSuggest();
-      }
-      if (e.key === "Escape") {
-        if (!isLoading) {
-          setIsOpen(false);
-          setError(null);
-        }
-      }
-    },
-    [handleSuggest, isLoading]
-  );
-
-  const exampleConstraints = [
-    "Keep the Johnson family together",
-    "Separate exes: Sarah & Mike",
-    "Put kids near the entrance",
-    "Group college friends at the same table",
-  ];
+  }, [eventId, onSuggestions]);
 
   return (
     <div className="relative" ref={panelRef}>
@@ -164,72 +151,37 @@ export function SeatingAI({
             </div>
           </div>
 
-          {/* Constraints input */}
+          {/* What will happen — honest, minimal */}
           <div className="px-5 py-4">
-            <label className="block text-ui-xs font-medium text-warm-gray-500 mb-1.5">
-              Constraints{" "}
-              <span className="text-warm-gray-300 font-normal">
-                (optional)
-              </span>
-            </label>
-            <textarea
-              ref={inputRef}
-              value={constraints}
-              onChange={(e) => setConstraints(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Describe any seating preferences or rules..."
-              rows={3}
-              disabled={isLoading}
-              className={cn(
-                "w-full px-3.5 py-2.5 text-ui-xs leading-relaxed",
-                "bg-white/70 border border-cream-300 rounded-card",
-                "text-warm-gray-700 placeholder:text-warm-gray-300",
-                "focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200/60",
-                "resize-none transition-[border-color,box-shadow] duration-150",
-                isLoading && "opacity-50 cursor-not-allowed"
-              )}
-            />
-
-            {/* Quick constraint chips */}
-            <div className="mt-2 flex flex-wrap gap-1">
-              {exampleConstraints.map((c, i) => (
-                <button
-                  key={i}
-                  onClick={() =>
-                    setConstraints((prev) =>
-                      prev ? `${prev}\n${c}` : c
-                    )
-                  }
-                  disabled={isLoading}
-                  className={cn(
-                    "px-2.5 py-1 text-[10.5px] rounded-pill press",
-                    "bg-cream-100/80 text-warm-gray-500",
-                    "border border-cream-300/70",
-                    "hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200",
-                    "transition-colors duration-150",
-                    isLoading && "opacity-40 cursor-not-allowed"
-                  )}
-                >
-                  {c}
-                </button>
-              ))}
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 rounded-pill bg-cream-100 border border-cream-300/70 flex items-center justify-center shrink-0 mt-0.5">
+                <Users className="w-3.5 h-3.5 text-gold-600" />
+              </div>
+              <p className="text-ui-xs text-warm-gray-500 leading-relaxed">
+                We&rsquo;ll place your{" "}
+                <span className="font-medium text-warm-gray-700">
+                  unseated guests
+                </span>{" "}
+                at open seats, keeping groups together where we can. You review
+                every placement before anything is saved.
+              </p>
             </div>
 
             {/* Error */}
             {error && (
-              <div className="mt-2 px-3 py-2 bg-rose-50 border border-rose-200 rounded-card">
+              <div className="mt-3 px-3 py-2 bg-rose-50 border border-rose-200 rounded-card">
                 <p className="text-ui-xs text-rose-600">{error}</p>
               </div>
             )}
           </div>
 
-          {/* Action buttons */}
-          <div className="px-5 pb-4 flex gap-2">
+          {/* Action button */}
+          <div className="px-5 pb-4">
             <button
               onClick={handleSuggest}
               disabled={isLoading}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2",
+                "w-full flex items-center justify-center gap-2",
                 "px-4 py-2.5 rounded-pill text-ui-xs font-medium",
                 "transition-[background-color,box-shadow,transform] duration-200 ease-out",
                 "active:translate-y-px",
@@ -244,7 +196,7 @@ export function SeatingAI({
               {isLoading ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  <span>Thinking...</span>
+                  <span>Arranging seats&hellip;</span>
                 </>
               ) : (
                 <>
@@ -253,17 +205,6 @@ export function SeatingAI({
                 </>
               )}
             </button>
-          </div>
-
-          {/* Keyboard shortcut hint */}
-          <div className="px-5 pb-3.5 text-center">
-            <span className="text-[10px] text-warm-gray-400">
-              Press{" "}
-              <kbd className="px-1.5 py-0.5 bg-cream-100 border border-cream-300/70 rounded-soft text-[9px] text-warm-gray-500">
-                ⌘ Enter
-              </kbd>{" "}
-              to suggest
-            </span>
           </div>
         </div>
       )}

@@ -294,7 +294,7 @@ export function GuestSidebar({
         {/* Progress bar */}
         <div className="mt-2.5 h-1.5 bg-cream-200/80 rounded-pill overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-rose-300 to-rose-400 rounded-full transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-rose-300 to-rose-400 rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${
                 guests.length > 0
@@ -372,7 +372,7 @@ export function GuestSidebar({
                           className={cn(
                             "w-full flex items-center gap-1.5 px-2 py-1.5",
                             "text-[11px] text-warm-gray-500 hover:text-warm-gray-700",
-                            "rounded-md hover:bg-cream-50 transition-colors"
+                            "rounded-pill hover:bg-cream-50 transition-colors duration-150"
                           )}
                         >
                           {isExpanded ? (
