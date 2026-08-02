@@ -22,7 +22,7 @@ Designed for a bride: beautiful, streamlined, not over the top. The color scheme
 - Dev server port: 3000
 - Dev server command: `npm run dev`
 - Backend API URL: https://wedding-planner-api-xnoq.onrender.com
-- Frontend URL: https://wedding-planner-frontend-c7a4.onrender.com
+- Frontend URL: https://wedding-planner-frontend-hqgl.onrender.com
 
 ### Environment
 - Shared env group: `general_builder_keys` (linked to all services via render.yaml `fromGroup`)

@@ -155,6 +155,13 @@ _Append-only. One entry per working turn: timestamp, what happened, what's next.
 - **Found gating bug** (worker-flagged, runner-confirmed in code): Auto-Seat `POST /seating/suggest` always 422s — `lib/layout.ts` sends no body or `{constraints: "<text>"}` vs backend's required `{constraints: [{type, guest_ids}]}`. Pre-existing, but FR-3 lists AI seating suggestions as must-work → added p4-task-0 (frontend adapts to backend contract); p4-task-1 now depends on it.
 - Next: spawn p4-task-0, then p4-task-1 (integrated verification).
 
+### 2026-08-02T18:50Z — DEPLOYED LIVE (main session, human-directed spin-up)
+- Human redirected: no database service, no Blueprint — services API-provisioned directly (authorized). Backend made SQLite-compatible (portable Uuid columns, startup create_all; commit 13590bc8) — test_auth 16/16 + test_models 38/40 prove compatibility; mass errors in older suites are PRE-EXISTING legacy-auth fixtures (deleted /register endpoint), not SQLite.
+- LIVE in nealdes.ai (free plan): wedding-planner-api-xnoq.onrender.com (health 200) + wedding-planner-frontend-hqgl.onrender.com (health 200; first build failed on env-group race, retriggered OK).
+- FR-6 aligned: api.ts, CLAUDE.md, render.yaml all reference the -xnoq/-hqgl hosts; render.yaml rewritten as API-provisioned/SQLite documentation.
+- NFR-2 evidence: live screenshots at 1440px and 375px — restyled landing renders correctly, no overlap/clipping.
+- Remaining for a future turn: reconcile FR checkboxes against restyle + live evidence; FR-3 legacy test-fixture modernization (pre-existing debt); authenticated live flow check.
+
 ## Blockers
 
 ### B-1: Render workspace `nealdes.ai` unreachable from CLI login
